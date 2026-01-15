@@ -1,0 +1,122 @@
+[
+    {
+        "song_name": "I Remember John Summit Remix Extended Mix",
+        "artist_name": "Kaskade, deadmau5",
+        "label_name": "mau5trap Recordings Limited / Arkade / Epicwin Ltd., John Summit",
+        "genre": "Progressive House",
+        "bpm_key": "126 BPM - B Minor",
+        "album_art": "./dmt10_files/0ebd7b5b-5154-4512-a1ad-dbad5791f1b8(1).jpg"
+    },
+    {
+        "song_name": "I Remember Tommy Phillips Extended Remix",
+        "artist_name": "Kaskade, deadmau5",
+        "label_name": "mau5trap, Tommy Phillips",
+        "genre": "Deep House",
+        "bpm_key": "131 BPM - B Minor",
+        "album_art": "./dmt10_files/5e3028df-a8e2-4a7a-a3f2-68cda772f8c5(1).jpg"
+    },
+    {
+        "song_name": "Escape John Summit Remix Extended Mix",
+        "artist_name": "Kaskade, deadmau5, HAYLA",
+        "label_name": "mau5trap, John Summit",
+        "genre": "Dance / Pop",
+        "bpm_key": "126 BPM - A Minor",
+        "album_art": "./dmt10_files/db9eaa14-2293-47e6-b00f-c16f632c4439(1).jpg"
+    },
+    {
+        "song_name": "Strobe Victor Ruiz Remix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap, Victor Ruiz",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - Ab Minor",
+        "album_art": "./dmt10_files/06a24f30-5cab-4cb0-8af6-f0915d1d17aa(1).jpg"
+    },
+    {
+        "song_name": "Strobe Layton Giordani Extended Remix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap, Layton Giordani",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Ab Minor",
+        "album_art": "./dmt10_files/bf50982c-631a-41ce-8fa9-bad3f619e281.jpg"
+    },
+    {
+        "song_name": "Endless feat. Ed Graves Extended Mix",
+        "artist_name": "deadmau5, Rebuke, Ed Graves",
+        "label_name": "ERA",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - A Major",
+        "album_art": "./dmt10_files/1c5ab887-34f9-439f-b6bd-a0f2707f3e19.jpg"
+    },
+    {
+        "song_name": "Escape feat. Hayla Extended Mix",
+        "artist_name": "Kaskade, deadmau5, Kx5",
+        "label_name": "mau5trap",
+        "genre": "Dance / Pop",
+        "bpm_key": "126 BPM - A Minor",
+        "album_art": "./dmt10_files/bf572c8a-ccfa-4c1b-8912-58408466fde6.jpg"
+    },
+    {
+        "song_name": "Jupiter Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - C Major",
+        "album_art": "./dmt10_files/9a000f2b-f0e6-4ab5-b8ce-966dbf864614.jpg"
+    },
+    {
+        "song_name": "8ths Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "147 BPM - C Major",
+        "album_art": "./dmt10_files/6cd84348-4e19-4e04-9f43-8d1e8fd2a2b7.jpg"
+    },
+    {
+        "song_name": "Ameonna Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Trance (Main Floor)",
+        "bpm_key": "128 BPM - Ab Major",
+        "album_art": "./dmt10_files/e7e2f82b-1ac1-4581-aea1-ba5681be47aa.jpg"
+    },
+    {
+        "song_name": "Some Chords Dillon Francis Remix",
+        "artist_name": "deadmau5, Dillon Francis",
+        "label_name": "mau5trap",
+        "genre": "Dance / Pop",
+        "bpm_key": "66 BPM - Ab Minor",
+        "album_art": "./dmt10_files/95469b19-43b3-4221-8667-a8cb856b7951.jpg"
+    },
+    {
+        "song_name": "Input Output Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "85 BPM - Eb Major",
+        "album_art": "./dmt10_files/c3484f66-a3d1-4de8-b7c9-1deff5c43990.jpg"
+    },
+    {
+        "song_name": "Sever Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "83 BPM - A Major",
+        "album_art": "./dmt10_files/c3484f66-a3d1-4de8-b7c9-1deff5c43990.jpg"
+    },
+    {
+        "song_name": "Wet Original Mix",
+        "artist_name": "deadmau5, TESTPILOT",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "96 BPM - E Major",
+        "album_art": "./dmt10_files/c3484f66-a3d1-4de8-b7c9-1deff5c43990.jpg"
+    },
+    {
+        "song_name": "Quezacotl Original Mix",
+        "artist_name": "deadmau5",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "92 BPM - D Major",
+        "album_art": "./dmt10_files/c3484f66-a3d1-4de8-b7c9-1deff5c43990.jpg"
+    }
+]
