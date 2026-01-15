@@ -35,12 +35,13 @@ class BeatportScraper:
             service = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    def fetch_html(self, url: str) -> Optional[str]:
+    def fetch_html(self, url: str, save_debug_html: bool = True) -> Optional[str]:
         """
         Fetch HTML content from Beatport URL using Selenium.
 
         Args:
             url: Beatport playlist URL
+            save_debug_html: Save HTML to debug.html for inspection
 
         Returns:
             HTML content as string, or None if request fails
@@ -53,16 +54,43 @@ class BeatportScraper:
 
             try:
                 print("Waiting for track list to load...")
-                wait = WebDriverWait(self.driver, 10)
-                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.bucket-item, li.bucket-item, div.track')))
-                print("Track list loaded!")
-            except Exception as e:
-                print(f"Warning: Timeout waiting for tracks, proceeding anyway: {e}")
-                time.sleep(5)
+                wait = WebDriverWait(self.driver, 15)
 
-            time.sleep(2)
+                selectors_to_try = [
+                    'div.bucket-item',
+                    'li.bucket-item',
+                    'div.track',
+                    'div[class*="track"]',
+                    'tr.track-row',
+                    'div.playqueue-track',
+                    'li[class*="track"]'
+                ]
+
+                for selector in selectors_to_try:
+                    try:
+                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
+                        print(f"Track list loaded using selector: {selector}")
+                        break
+                    except:
+                        continue
+
+            except Exception as e:
+                print(f"Warning: Timeout waiting for tracks with all selectors")
+                print("The page might require authentication or use different selectors.")
+
+            print("Waiting additional time for dynamic content...")
+            time.sleep(3)
 
             html = self.driver.page_source
+
+            if save_debug_html:
+                try:
+                    with open('debug.html', 'w', encoding='utf-8') as f:
+                        f.write(html)
+                    print("Saved page HTML to debug.html for inspection")
+                except Exception as e:
+                    print(f"Could not save debug HTML: {e}")
+
             return html
         except Exception as e:
             print(f"Error fetching URL with Selenium: {e}")
@@ -107,18 +135,31 @@ class BeatportScraper:
         soup = BeautifulSoup(html, 'lxml')
         tracks = []
 
-        track_elements = soup.find_all('div', class_=lambda x: x and 'bucket-item' in x and 'track' in x)
+        selectors = [
+            ('div', lambda x: x and 'bucket-item' in x and 'track' in x),
+            ('li', 'bucket-item'),
+            ('div', 'track'),
+            ('tr', 'track-row'),
+            ('div', 'playqueue-track'),
+            ('li', lambda x: x and 'track' in x if x else False)
+        ]
+
+        for tag, class_filter in selectors:
+            track_elements = soup.find_all(tag, class_=class_filter)
+            if track_elements:
+                print(f"Found {len(track_elements)} track elements using <{tag}> with class filter")
+                break
 
         if not track_elements:
-            track_elements = soup.find_all('li', class_='bucket-item')
+            print("No track elements found with standard selectors.")
+            print("Checking for common class patterns...")
+            all_divs = soup.find_all('div', class_=True)
+            track_like = [d for d in all_divs if any(word in ' '.join(d.get('class', [])).lower() for word in ['track', 'song', 'item'])]
+            if track_like:
+                print(f"Found {len(track_like)} potential track elements")
+                track_elements = track_like[:50]
 
-        if not track_elements:
-            track_elements = soup.find_all('div', class_='track')
-
-        if not track_elements:
-            track_elements = soup.find_all('tr', class_='track-row')
-
-        print(f"Found {len(track_elements)} track elements")
+        print(f"Attempting to parse {len(track_elements)} elements")
 
         for element in track_elements:
             track_info = self._extract_track_info(element)
@@ -139,26 +180,36 @@ class BeatportScraper:
         """
         try:
             artist = ''
-            artist_elem = element.find('span', class_='track-artists')
-            if not artist_elem:
-                artist_elem = element.find('p', class_='buk-track-artists')
-            if not artist_elem:
-                artist_elem = element.find('a', class_='artist')
-            if not artist_elem:
-                artist_elem = element.find('span', class_='artist')
-            if artist_elem:
-                artist = artist_elem.get_text(strip=True)
+            artist_selectors = [
+                ('span', 'track-artists'),
+                ('p', 'buk-track-artists'),
+                ('a', 'artist'),
+                ('span', 'artist'),
+                ('div', lambda x: x and 'artist' in x if x else False),
+                ('span', lambda x: x and 'artist' in x if x else False)
+            ]
+
+            for tag, class_filter in artist_selectors:
+                artist_elem = element.find(tag, class_=class_filter)
+                if artist_elem:
+                    artist = artist_elem.get_text(strip=True)
+                    break
 
             track = ''
-            track_elem = element.find('span', class_='track-title')
-            if not track_elem:
-                track_elem = element.find('p', class_='buk-track-primary-title')
-            if not track_elem:
-                track_elem = element.find('a', class_='track-title')
-            if not track_elem:
-                track_elem = element.find('a', class_='buk-track-title')
-            if track_elem:
-                track = track_elem.get_text(strip=True)
+            track_selectors = [
+                ('span', 'track-title'),
+                ('p', 'buk-track-primary-title'),
+                ('a', 'track-title'),
+                ('a', 'buk-track-title'),
+                ('div', lambda x: x and 'title' in x if x else False),
+                ('span', lambda x: x and 'title' in x if x else False)
+            ]
+
+            for tag, class_filter in track_selectors:
+                track_elem = element.find(tag, class_=class_filter)
+                if track_elem:
+                    track = track_elem.get_text(strip=True)
+                    break
 
             remix = ''
             remix_elem = element.find('p', class_='buk-track-remixed')
@@ -189,7 +240,6 @@ class BeatportScraper:
             return None
 
         except Exception as e:
-            print(f"Error extracting track info: {e}")
             return None
 
     def create_search_string(self, track_info: Dict[str, str]) -> str:

@@ -156,7 +156,25 @@ Files saved to: downloads/
 ============================================================
 ```
 
+## Authentication & Private Playlists
+
+**Important:** URLs like `https://www.beatport.com/library/playlists/XXXXXX` are private and require authentication.
+
+For detailed solutions, see [AUTHENTICATION.md](AUTHENTICATION.md)
+
+**Quick solutions:**
+- Use public Beatport charts instead (Top 100, genre charts)
+- Save the playlist page as HTML after logging in
+- Use the debug helper: `python inspect_html.py` to analyze issues
+
 ## Troubleshooting
+
+### No Tracks Found / Private Playlists
+
+If the scraper can't find tracks, the playlist might require authentication:
+1. Check `debug.html` (generated automatically) to see what was loaded
+2. Run `python inspect_html.py` to analyze the HTML structure
+3. See [AUTHENTICATION.md](AUTHENTICATION.md) for detailed solutions
 
 ### 403 Forbidden Error
 
@@ -187,10 +205,12 @@ Install ffmpeg using the instructions in the Installation section.
 .
 ├── server.js                    # Node.js Express backend
 ├── beatport_downloader.py       # Python orchestration script
-├── scraper.py                   # Beatport scraping logic
+├── scraper.py                   # Beatport scraping logic (Selenium + BeautifulSoup)
 ├── downloader.py                # yt-dlp download logic
+├── inspect_html.py              # Debug helper for analyzing HTML
 ├── requirements.txt             # Python dependencies
 ├── package.json                 # Node.js dependencies
+├── AUTHENTICATION.md            # Guide for private playlists
 ├── frontend/                    # React web interface
 │   ├── vite.config.js
 │   ├── index.html
