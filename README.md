@@ -236,7 +236,7 @@ Downloaded files are saved in the `downloads` folder (or specified output direct
 
 ## MP3 Metadata Support
 
-When using JSON files with metadata fields, the downloader automatically embeds ID3 tags:
+When using JSON files with metadata fields, the downloader automatically embeds ID3v2.4 tags (fully compatible with macOS):
 
 - **Title** (TIT2): From `song_name` field
 - **Artist** (TPE1): From `artist_name` field
@@ -246,7 +246,30 @@ When using JSON files with metadata fields, the downloader automatically embeds 
 - **Key** (TKEY): Extracted from `bpm_key` field (e.g., "128 BPM - G Minor" → "G Minor")
 - **Album Art** (APIC): Embedded from image file specified in `album_art` field
 
-If metadata is missing or cannot be written, the download continues without interruption.
+The metadata writer:
+- Uses ID3v2.4 format for maximum compatibility with macOS Music/iTunes
+- Properly overwrites existing tags to ensure clean metadata
+- Handles UTF-8 encoding for international characters
+- Continues downloading if metadata writing fails
+
+### Testing Metadata Locally
+
+To test metadata writing on a single MP3 file:
+
+```bash
+# Read existing metadata
+python test_metadata.py your_track.mp3 --read-only
+
+# Write test metadata and verify
+python test_metadata.py your_track.mp3
+```
+
+The test script will:
+1. Show existing metadata in the file
+2. Write test metadata (title, artist, album, genre, BPM, key, album art)
+3. Display the updated metadata for verification
+
+You can then check the file in macOS Finder (Get Info) or Music app to verify the tags are visible.
 
 ## Example
 

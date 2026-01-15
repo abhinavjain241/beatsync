@@ -68,39 +68,48 @@ class MetadataWriter:
             return False
 
         try:
-            # Load or create ID3 tags
+            # Load the MP3 file
+            audio = MP3(mp3_file_path, ID3=ID3)
+
+            # Try to add tags if they don't exist
             try:
-                audio = MP3(mp3_file_path, ID3=ID3)
                 audio.add_tags()
             except error:
-                # Tags already exist
-                audio = MP3(mp3_file_path, ID3=ID3)
+                pass
 
-            # Write title
+            # Ensure tags exist
+            if audio.tags is None:
+                print(f"  ⚠ Metadata: Could not create ID3 tags")
+                return False
+
+            # Delete existing tags before adding new ones to ensure clean state
             if metadata.get('song_name'):
-                audio.tags.add(TIT2(encoding=3, text=metadata['song_name']))
+                audio.tags.delall('TIT2')
+                audio.tags['TIT2'] = TIT2(encoding=3, text=metadata['song_name'])
 
-            # Write artist
             if metadata.get('artist_name'):
-                audio.tags.add(TPE1(encoding=3, text=metadata['artist_name']))
+                audio.tags.delall('TPE1')
+                audio.tags['TPE1'] = TPE1(encoding=3, text=metadata['artist_name'])
 
-            # Write album (using label name)
             if metadata.get('label_name'):
-                audio.tags.add(TALB(encoding=3, text=metadata['label_name']))
+                audio.tags.delall('TALB')
+                audio.tags['TALB'] = TALB(encoding=3, text=metadata['label_name'])
 
-            # Write genre
             if metadata.get('genre'):
-                audio.tags.add(TCON(encoding=3, text=metadata['genre']))
+                audio.tags.delall('TCON')
+                audio.tags['TCON'] = TCON(encoding=3, text=metadata['genre'])
 
             # Parse and write BPM and key
             if metadata.get('bpm_key'):
                 bpm, key = self.parse_bpm_key(metadata['bpm_key'])
 
                 if bpm:
-                    audio.tags.add(TBPM(encoding=3, text=bpm))
+                    audio.tags.delall('TBPM')
+                    audio.tags['TBPM'] = TBPM(encoding=3, text=bpm)
 
                 if key:
-                    audio.tags.add(TKEY(encoding=3, text=key))
+                    audio.tags.delall('TKEY')
+                    audio.tags['TKEY'] = TKEY(encoding=3, text=key)
 
             # Embed album art
             if metadata.get('album_art'):
@@ -113,30 +122,38 @@ class MetadataWriter:
                     album_art_path = os.path.join(base_dir, album_art_path)
 
                 if os.path.exists(album_art_path):
-                    with open(album_art_path, 'rb') as img_file:
-                        image_data = img_file.read()
+                    try:
+                        with open(album_art_path, 'rb') as img_file:
+                            image_data = img_file.read()
 
-                    # Determine MIME type from file extension
-                    ext = os.path.splitext(album_art_path)[1].lower()
-                    mime_type = 'image/jpeg' if ext in ['.jpg', '.jpeg'] else 'image/png'
+                        # Determine MIME type from file extension
+                        ext = os.path.splitext(album_art_path)[1].lower()
+                        mime_type = 'image/jpeg' if ext in ['.jpg', '.jpeg'] else 'image/png'
 
-                    # Add album art (type 3 = front cover)
-                    audio.tags.add(
-                        APIC(
+                        # Remove existing album art first
+                        audio.tags.delall('APIC')
+
+                        # Add album art (type 3 = front cover)
+                        audio.tags['APIC'] = APIC(
                             encoding=3,
                             mime=mime_type,
                             type=3,
                             desc='Cover',
                             data=image_data
                         )
-                    )
+                    except Exception as e:
+                        print(f"  ⚠ Album art error: {e}")
+                else:
+                    print(f"  ⚠ Album art not found: {album_art_path}")
 
-            # Save tags
-            audio.save()
+            # Save tags with ID3v2.4 (most compatible with macOS)
+            audio.save(v2_version=4)
             return True
 
         except Exception as e:
             print(f"  ⚠ Metadata write error: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     def apply_metadata_to_track(self, mp3_file_path: str, track_metadata: Dict[str, str]) -> bool:
