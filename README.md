@@ -2,8 +2,11 @@
 
 A modern web application that downloads music from Beatport playlists by scraping track information and downloading audio from SoundCloud or YouTube. Features both a web UI and command-line interface.
 
+**Includes ready-to-use sample JSON files for popular Beatport Top 100 playlists (Bass House, Melodic Techno, Tech House)!**
+
 ## Features
 
+- **Includes sample JSON files - Get started immediately with Bass House, Melodic Techno, and Tech House Top 100 playlists**
 - Modern web interface for easy downloads
 - **NEW: Album art URL support - Use direct image URLs or local paths in JSON files**
 - **NEW: Enhanced track matching - Intelligently parses artists, track names, and mix types (Extended Mix, Remix, etc.)**
@@ -66,31 +69,34 @@ cd frontend && npm install && cd ..
 
 ## Usage
 
-### Web Interface (Recommended)
+### Command Line (Recommended)
 
-1. Install dependencies (see Installation section)
-2. Start the application:
+The recommended way to use this tool is through the command line with the sample JSON files included in the project folder.
+
+#### Quick Start - Using Sample JSON Files
+
+The project includes several ready-to-use JSON files with popular Beatport Top 100 tracks:
+
+- **basshouse_t100.json** - Bass House Top 100
+- **melodictech_t100.json** - Melodic Techno Top 100
+- **techhouse_t100.json** - Tech House Top 100
+
+Simply run:
 
 ```bash
-npm run dev
+# Download Bass House Top 100 (default AUTO mode)
+python beatport_downloader.py --json-file basshouse_t100.json
+
+# Download Melodic Techno Top 100
+python beatport_downloader.py --json-file melodictech_t100.json
+
+# Download Tech House Top 100
+python beatport_downloader.py --json-file techhouse_t100.json
 ```
 
-3. Open your browser and go to `http://localhost:5173`
-4. Enter your Beatport playlist URL and click "Download Playlist"
-5. Watch the progress in real-time
+Files will be automatically saved to `~/Music/{json_filename}/` with proper metadata.
 
-For production build and server:
-
-```bash
-npm run build
-npm run start
-```
-
-Then open `http://localhost:3000`
-
-### Command Line
-
-#### Using JSON File (Recommended)
+#### Using JSON File (Full Details)
 
 The fastest and most reliable method is to use a JSON file with track data:
 
@@ -185,6 +191,30 @@ python beatport_downloader.py --json-file tracks.json --source soundcloud --outp
 # Show help
 python beatport_downloader.py --help
 ```
+
+### Web Interface (Alternative)
+
+If you prefer a graphical interface:
+
+1. Install dependencies (see Installation section)
+2. Start the application:
+
+```bash
+npm run dev
+```
+
+3. Open your browser and go to `http://localhost:5173`
+4. Enter your Beatport playlist URL and click "Download Playlist"
+5. Watch the progress in real-time
+
+For production build and server:
+
+```bash
+npm run build
+npm run start
+```
+
+Then open `http://localhost:3000`
 
 ## How It Works
 
