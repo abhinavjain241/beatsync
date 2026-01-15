@@ -50,6 +50,7 @@ class BeatportPlaylistDownloader:
             'metadata_failed': 0
         }
         self.track_metadata_map = {}
+        self.json_file_dir = None
 
     def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
             local_html: Optional[str] = None, base_music_dir: Optional[str] = None):
@@ -88,6 +89,8 @@ class BeatportPlaylistDownloader:
         if json_file:
             print(f"Loading tracks from JSON file: {json_file}")
             tracks = self.scraper.load_json_file(json_file)
+            # Store JSON file directory for resolving relative album art paths
+            self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
             # Store metadata for later use
             self._store_track_metadata(tracks)
 
@@ -126,7 +129,9 @@ class BeatportPlaylistDownloader:
             if choice == '1':
                 json_file = input("Enter path to JSON file: ").strip()
                 if json_file:
+                    self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
                     tracks = self.scraper.load_json_file(json_file)
+                    self._store_track_metadata(tracks)
             elif choice == '2':
                 url = input("Enter Beatport playlist URL: ").strip()
                 if url:
@@ -248,6 +253,13 @@ class BeatportPlaylistDownloader:
                 if actual_filename:
                     metadata = self._get_metadata_for_track(track)
                     if metadata and not already_existed:
+                        # Resolve album art path relative to JSON file directory
+                        if metadata.get('album_art') and self.json_file_dir:
+                            album_art_path = metadata['album_art']
+                            if not os.path.isabs(album_art_path):
+                                # Resolve relative path from JSON file directory
+                                metadata['album_art'] = os.path.join(self.json_file_dir, album_art_path)
+
                         mp3_path = os.path.join(self.downloader.output_dir, actual_filename)
                         try:
                             if self.metadata_writer.apply_metadata_to_track(mp3_path, metadata):

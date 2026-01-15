@@ -68,9 +68,71 @@ class AudioDownloader:
         text = re.sub(r'\s+', ' ', text)
         return text.strip()
 
+    def extract_track_components(self, text: str) -> Dict[str, any]:
+        """
+        Extract track components (artists, track name, mix type) from a track title.
+
+        Args:
+            text: Track title or search query
+
+        Returns:
+            Dictionary with extracted components
+        """
+        text_lower = text.lower()
+
+        # Common mix/remix patterns in electronic music
+        mix_patterns = [
+            r'\b(extended|original|radio|club|dub|instrumental|acapella|vip|bootleg)\s+(mix|edit|version|remix)\b',
+            r'\b(remix|edit|rework|flip|refix|reboot|version)\b',
+            r'\b[a-z]+\s+remix\b',  # e.g., "Someone Remix"
+        ]
+
+        mix_info = []
+        clean_text = text
+
+        # Extract mix information
+        for pattern in mix_patterns:
+            matches = re.finditer(pattern, text_lower)
+            for match in matches:
+                mix_info.append(match.group(0))
+                # Remove from text for cleaner artist/title extraction
+                clean_text = clean_text[:match.start()] + clean_text[match.end():]
+
+        # Normalize the cleaned text
+        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
+
+        # Split by common separators
+        parts = re.split(r'\s*[-–—/]\s*', clean_text)
+
+        # Extract artists and track name
+        artists = []
+        track_name = ""
+
+        if len(parts) >= 2:
+            # First part is usually artist(s)
+            artist_part = parts[0]
+            # Split multiple artists by comma, &, 'and', 'feat', 'ft', 'vs', 'x'
+            artist_separators = r'[,&]|\band\b|\bfeat\.?\b|\bft\.?\b|\bvs\.?\b|\bx\b'
+            artists = [a.strip() for a in re.split(artist_separators, artist_part) if a.strip()]
+
+            # Rest is track name
+            track_name = ' '.join(parts[1:])
+        else:
+            track_name = clean_text
+
+        return {
+            'artists': artists,
+            'track_name': track_name,
+            'mix_info': mix_info,
+            'normalized_artists': [self.normalize_text(a) for a in artists],
+            'normalized_track': self.normalize_text(track_name),
+            'normalized_mix': [self.normalize_text(m) for m in mix_info]
+        }
+
     def calculate_match_score(self, requested_query: str, found_title: str) -> float:
         """
-        Calculate how well a found track matches the requested query.
+        Calculate how well a found track matches the requested query using a more nuanced algorithm.
+        Takes into account artists, track name, and mix information separately.
 
         Args:
             requested_query: The search query (e.g., "Artist - Track Name Extended Mix")
@@ -79,19 +141,67 @@ class AudioDownloader:
         Returns:
             Match score between 0.0 and 1.0 (higher is better)
         """
+        req_components = self.extract_track_components(requested_query)
+        found_components = self.extract_track_components(found_title)
+
+        # Calculate scores for different components
+        scores = []
+        weights = []
+
+        # Artist matching (weight: 40%)
+        if req_components['normalized_artists'] and found_components['normalized_artists']:
+            req_artists = set(' '.join(req_components['normalized_artists']).split())
+            found_artists = set(' '.join(found_components['normalized_artists']).split())
+
+            if req_artists and found_artists:
+                artist_score = len(req_artists.intersection(found_artists)) / max(len(req_artists), len(found_artists))
+                scores.append(artist_score)
+                weights.append(0.4)
+
+        # Track name matching (weight: 45%)
+        if req_components['normalized_track'] and found_components['normalized_track']:
+            req_track_words = set(req_components['normalized_track'].split())
+            found_track_words = set(found_components['normalized_track'].split())
+
+            if req_track_words and found_track_words:
+                track_score = len(req_track_words.intersection(found_track_words)) / max(len(req_track_words), len(found_track_words))
+                scores.append(track_score)
+                weights.append(0.45)
+
+        # Mix info matching (weight: 15%) - less important but still relevant
+        if req_components['normalized_mix'] or found_components['normalized_mix']:
+            req_mix_words = set(' '.join(req_components['normalized_mix']).split())
+            found_mix_words = set(' '.join(found_components['normalized_mix']).split())
+
+            if req_mix_words and found_mix_words:
+                mix_score = len(req_mix_words.intersection(found_mix_words)) / max(len(req_mix_words), len(found_mix_words))
+                scores.append(mix_score)
+                weights.append(0.15)
+            elif not req_mix_words and not found_mix_words:
+                # Both have no mix info - that's a match
+                scores.append(1.0)
+                weights.append(0.15)
+            else:
+                # One has mix info, the other doesn't - partial penalty
+                scores.append(0.5)
+                weights.append(0.15)
+
+        # Calculate weighted average
+        if scores and weights:
+            total_weight = sum(weights)
+            weighted_score = sum(s * w for s, w in zip(scores, weights)) / total_weight
+            return weighted_score
+
+        # Fallback to simple word matching
         req_norm = self.normalize_text(requested_query)
         found_norm = self.normalize_text(found_title)
-
         req_words = set(req_norm.split())
         found_words = set(found_norm.split())
 
         if not req_words or not found_words:
             return 0.0
 
-        common_words = req_words.intersection(found_words)
-        score = len(common_words) / max(len(req_words), len(found_words))
-
-        return score
+        return len(req_words.intersection(found_words)) / max(len(req_words), len(found_words))
 
     def is_valid_match(self, requested_query: str, found_title: str, threshold: float = 0.5) -> bool:
         """

@@ -2,13 +2,14 @@
 MP3 Metadata Writer Module
 
 Handles writing ID3 tags and embedding album art into MP3 files.
+Optimized for Rekordbox compatibility.
 """
 
 import os
 import re
 from typing import Dict, Optional
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TIT2, TPE1, TALB, TCON, TBPM, TKEY, APIC, error
+from mutagen.id3 import ID3, TIT2, TPE1, TPE2, TALB, TCON, TBPM, TKEY, TYER, COMM, APIC, error
 
 
 class MetadataWriter:
@@ -48,7 +49,7 @@ class MetadataWriter:
 
     def write_metadata(self, mp3_file_path: str, metadata: Dict[str, str]) -> bool:
         """
-        Write metadata to an MP3 file.
+        Write metadata to an MP3 file with full Rekordbox compatibility.
 
         Args:
             mp3_file_path: Path to the MP3 file
@@ -82,44 +83,51 @@ class MetadataWriter:
                 print(f"  ⚠ Metadata: Could not create ID3 tags")
                 return False
 
-            # Delete existing tags before adding new ones to ensure clean state
+            # Clear all existing tags for clean state
+            audio.tags.clear()
+
+            # Title (TIT2) - Required by Rekordbox
             if metadata.get('song_name'):
-                audio.tags.delall('TIT2')
-                audio.tags['TIT2'] = TIT2(encoding=3, text=metadata['song_name'])
+                audio.tags.add(TIT2(encoding=3, text=metadata['song_name']))
 
+            # Artist (TPE1) - Required by Rekordbox
             if metadata.get('artist_name'):
-                audio.tags.delall('TPE1')
-                audio.tags['TPE1'] = TPE1(encoding=3, text=metadata['artist_name'])
+                audio.tags.add(TPE1(encoding=3, text=metadata['artist_name']))
+                # Also set album artist (TPE2) for better compatibility
+                audio.tags.add(TPE2(encoding=3, text=metadata['artist_name']))
 
+            # Album (TALB) - Use label name
             if metadata.get('label_name'):
-                audio.tags.delall('TALB')
-                audio.tags['TALB'] = TALB(encoding=3, text=metadata['label_name'])
+                audio.tags.add(TALB(encoding=3, text=metadata['label_name']))
 
+            # Genre (TCON) - Important for Rekordbox organization
             if metadata.get('genre'):
-                audio.tags.delall('TCON')
-                audio.tags['TCON'] = TCON(encoding=3, text=metadata['genre'])
+                audio.tags.add(TCON(encoding=3, text=metadata['genre']))
 
             # Parse and write BPM and key
             if metadata.get('bpm_key'):
                 bpm, key = self.parse_bpm_key(metadata['bpm_key'])
 
+                # BPM (TBPM) - Critical for Rekordbox DJ features
                 if bpm:
-                    audio.tags.delall('TBPM')
-                    audio.tags['TBPM'] = TBPM(encoding=3, text=bpm)
+                    audio.tags.add(TBPM(encoding=3, text=bpm))
 
+                # Key (TKEY) - Critical for harmonic mixing in Rekordbox
                 if key:
-                    audio.tags.delall('TKEY')
-                    audio.tags['TKEY'] = TKEY(encoding=3, text=key)
+                    audio.tags.add(TKEY(encoding=3, text=key))
 
-            # Embed album art
+            # Add current year if not present
+            from datetime import datetime
+            current_year = str(datetime.now().year)
+            audio.tags.add(TYER(encoding=3, text=current_year))
+
+            # Add comment with source info for tracking
+            comment_text = f"Downloaded from Beatport - {metadata.get('label_name', 'Unknown Label')}"
+            audio.tags.add(COMM(encoding=3, lang='eng', desc='', text=comment_text))
+
+            # Embed album art - CRITICAL for Rekordbox
             if metadata.get('album_art'):
                 album_art_path = metadata['album_art']
-
-                # Handle relative paths
-                if not os.path.isabs(album_art_path):
-                    # Get the directory of the JSON file (or current directory)
-                    base_dir = os.path.dirname(os.path.abspath(__file__))
-                    album_art_path = os.path.join(base_dir, album_art_path)
 
                 if os.path.exists(album_art_path):
                     try:
@@ -130,24 +138,25 @@ class MetadataWriter:
                         ext = os.path.splitext(album_art_path)[1].lower()
                         mime_type = 'image/jpeg' if ext in ['.jpg', '.jpeg'] else 'image/png'
 
-                        # Remove existing album art first
-                        audio.tags.delall('APIC')
-
-                        # Add album art (type 3 = front cover)
-                        audio.tags['APIC'] = APIC(
-                            encoding=3,
+                        # Add album art with Rekordbox-compatible settings
+                        # encoding=0 for binary data (not text)
+                        # type=3 is front cover (standard for album art)
+                        audio.tags.add(APIC(
+                            encoding=0,
                             mime=mime_type,
                             type=3,
                             desc='Cover',
                             data=image_data
-                        )
+                        ))
+                        print(f"  ✓ Embedded album art from: {os.path.basename(album_art_path)}")
                     except Exception as e:
                         print(f"  ⚠ Album art error: {e}")
                 else:
                     print(f"  ⚠ Album art not found: {album_art_path}")
 
-            # Save tags with ID3v2.4 (most compatible with macOS)
-            audio.save(v2_version=4)
+            # Save with ID3v2.3 for maximum Rekordbox compatibility
+            # v2.3 is better supported by Rekordbox than v2.4
+            audio.save(v2_version=3)
             return True
 
         except Exception as e:
@@ -171,14 +180,14 @@ class MetadataWriter:
 
         if success:
             metadata_summary = []
-            if track_metadata.get('artist_name'):
-                metadata_summary.append(f"Artist: {track_metadata['artist_name']}")
-            if track_metadata.get('label_name'):
-                metadata_summary.append(f"Label: {track_metadata['label_name']}")
             if track_metadata.get('bpm_key'):
                 metadata_summary.append(f"{track_metadata['bpm_key']}")
+            if track_metadata.get('genre'):
+                metadata_summary.append(f"Genre: {track_metadata['genre']}")
+            if track_metadata.get('label_name'):
+                metadata_summary.append(f"Label: {track_metadata['label_name']}")
 
-            summary_str = " | ".join(metadata_summary) if metadata_summary else "metadata"
-            print(f"  ✓ Added {summary_str}")
+            summary_str = " | ".join(metadata_summary) if metadata_summary else "Complete metadata"
+            print(f"  ✓ Metadata: {summary_str}")
 
         return success
