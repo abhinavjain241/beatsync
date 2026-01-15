@@ -8,6 +8,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 - **NEW: AUTO mode - Searches BOTH SoundCloud AND YouTube, downloads the longer version**
 - **NEW: JSON file input for fastest and most reliable track loading**
 - **NEW: YouTube download support alongside SoundCloud**
+- **NEW: Automatic filtering of DJ sets (max 15 minutes per track)**
 - Scrapes Beatport playlist URLs to extract track information
 - Intelligent duration comparison to get extended mixes
 - Downloads as high-quality MP3 files
@@ -166,9 +167,10 @@ python beatport_downloader.py --help
 2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
 3. **Search**: In AUTO mode (default), searches BOTH SoundCloud AND YouTube simultaneously
 4. **Compare**: Gets duration information from both sources without downloading
-5. **Select**: Chooses the longer version (usually the extended mix)
-6. **Download**: Downloads the selected audio and converts it to MP3 format
-7. **Save**: Saves files as `Artist - Track.mp3` in the `downloads` folder
+5. **Filter**: Automatically filters out tracks longer than 15 minutes (likely DJ sets)
+6. **Select**: Chooses the longer version (usually the extended mix)
+7. **Download**: Downloads the selected audio and converts it to MP3 format
+8. **Save**: Saves files as `Artist - Track.mp3` in the output folder
 
 ### Download Modes
 

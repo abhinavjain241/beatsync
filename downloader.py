@@ -13,6 +13,9 @@ from typing import Dict, Optional, Tuple
 class AudioDownloader:
     """Downloads audio tracks using yt-dlp."""
 
+    # Maximum duration in seconds (15 minutes) to filter out DJ sets
+    MAX_DURATION = 900  # 15 minutes
+
     def __init__(self, output_dir: str = 'downloads', source: str = 'auto'):
         """
         Initialize downloader.
@@ -124,15 +127,26 @@ class AudioDownloader:
     def select_best_source(self, sc_info: Optional[Dict], yt_info: Optional[Dict]) -> Optional[Dict]:
         """
         Select the best source based on duration (longer is better).
+        Filters out tracks longer than MAX_DURATION to avoid DJ sets.
 
         Args:
             sc_info: SoundCloud track info
             yt_info: YouTube track info
 
         Returns:
-            Selected track info or None if both failed
+            Selected track info or None if both failed or are too long
         """
+        # Filter out tracks that are too long (likely DJ sets)
+        if sc_info and sc_info['duration'] > self.MAX_DURATION:
+            print(f"  SoundCloud: {sc_info['title']} ({self._format_duration(sc_info['duration'])}) - TOO LONG, skipping")
+            sc_info = None
+
+        if yt_info and yt_info['duration'] > self.MAX_DURATION:
+            print(f"  YouTube: {yt_info['title']} ({self._format_duration(yt_info['duration'])}) - TOO LONG, skipping")
+            yt_info = None
+
         if not sc_info and not yt_info:
+            print(f"  ✗ No valid tracks found (all results exceed {self.MAX_DURATION // 60} minute limit)")
             return None
 
         if not sc_info:
@@ -195,13 +209,26 @@ class AudioDownloader:
             # Use the URL directly instead of search
             download_url = selected['url']
         else:
-            # Single source search
+            # Single source search - check duration before downloading
             if self.source == 'soundcloud':
-                download_url = f"scsearch1:{search_query}"
+                search_url = f"scsearch1:{search_query}"
                 print(f"  Searching SoundCloud: {search_query}")
             else:  # youtube
-                download_url = f"ytsearch1:{search_query}"
+                search_url = f"ytsearch1:{search_query}"
                 print(f"  Searching YouTube: {search_query}")
+
+            # Get track info to check duration
+            track_info = self.get_track_info(search_url)
+            if not track_info:
+                print(f"  ✗ Track not found")
+                return False
+
+            if track_info['duration'] > self.MAX_DURATION:
+                print(f"  ✗ Track too long: {self._format_duration(track_info['duration'])} (max {self.MAX_DURATION // 60} minutes)")
+                return False
+
+            print(f"  Found: {track_info['title']} ({self._format_duration(track_info['duration'])})")
+            download_url = track_info['url']
 
         # Output template without extension (yt-dlp will add .mp3)
         output_template = os.path.join(
