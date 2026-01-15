@@ -43,7 +43,16 @@ def debug_beatport_page(url):
     print()
 
     # Check for various track container types
+    tracklist_table = soup.find('table', class_='tracklist')
+    tracklist_rows = []
+    if tracklist_table:
+        tbody = tracklist_table.find('tbody')
+        if tbody:
+            tracklist_rows = tbody.find_all('tr')
+
     checks = [
+        ('table.tracklist', [tracklist_table] if tracklist_table else []),
+        ('table.tracklist tbody tr', tracklist_rows),
         ('li.bucket-item', soup.find_all('li', class_='bucket-item')),
         ('div.track', soup.find_all('div', class_='track')),
         ('tr.track-row', soup.find_all('tr', class_='track-row')),
@@ -92,11 +101,20 @@ def debug_beatport_page(url):
 
     # Try to find any track-like element
     sample = None
-    for selector, elements in checks:
-        if elements:
-            sample = elements[0]
-            print(f"Found using: {selector}")
-            break
+    sample_selector = None
+
+    # Prioritize tracklist rows if available
+    if tracklist_rows:
+        sample = tracklist_rows[0]
+        sample_selector = 'table.tracklist tbody tr'
+        print(f"Found using: {sample_selector}")
+    else:
+        for selector, elements in checks:
+            if elements and elements[0] is not None:
+                sample = elements[0]
+                sample_selector = selector
+                print(f"Found using: {selector}")
+                break
 
     if sample:
         print()

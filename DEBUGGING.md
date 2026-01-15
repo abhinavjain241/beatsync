@@ -37,16 +37,41 @@ This will show:
    - You may get a CAPTCHA or error page
    - Solution: Save the page manually from your browser
 
+### Supported URL Formats
+
+The scraper now supports multiple Beatport URL formats:
+
+**Public Charts/Playlists:**
+```
+https://www.beatport.com/chart/top-100/...
+https://www.beatport.com/chart/techno-top-100/...
+```
+
+**Playlist Share URLs:**
+```
+https://www.beatport.com/playlists/share/6421928
+https://www.beatport.com/playlists/share/[playlist-id]
+```
+
+Each format uses a different HTML structure:
+- Charts use `<li class="bucket-item">` or similar structures
+- Playlist shares use `<table class="tracklist">` with rows
+
+The scraper will automatically detect and use the correct parsing method.
+
 ### Testing from Command Line
 
 Test the downloader without the web interface:
 
 ```bash
-# Web-optimized version (no prompts)
-python beatport_downloader_web.py "https://www.beatport.com/chart/..."
+# Test with playlist share URL
+python beatport_downloader_web.py "https://www.beatport.com/playlists/share/6421928"
+
+# Test with chart URL
+python beatport_downloader_web.py "https://www.beatport.com/chart/top-100/..."
 
 # Interactive version
-python beatport_downloader.py "https://www.beatport.com/chart/..."
+python beatport_downloader.py
 ```
 
 ### Using a Saved HTML File

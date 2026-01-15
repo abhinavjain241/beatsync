@@ -5,7 +5,10 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
-- Scrapes Beatport playlist URLs to extract track information
+- Supports multiple Beatport URL formats:
+  - Public playlists and charts
+  - Playlist share URLs (e.g., `/playlists/share/...`)
+  - Multiple HTML structure types
 - Searches and downloads audio from SoundCloud using yt-dlp
 - Downloads as high-quality MP3 files
 - Real-time progress tracking and updates
@@ -13,6 +16,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 - Skip already downloaded tracks
 - Detailed download summary
 - Command-line interface for automation
+- Built-in debugging tools
 
 ## Requirements
 
