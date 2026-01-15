@@ -1,90 +1,70 @@
-#!/usr/bin/env python3
 """
-Helper script to inspect debug.html and find potential track selectors.
+Extract and analyze track data from Beatport HTML file.
 """
+import json
+import re
 
-from bs4 import BeautifulSoup
-import os
+with open('basshouse_t100.html', 'r', encoding='utf-8') as f:
+    html = f.read()
 
+# Look for __NEXT_DATA__ JSON
+pattern = r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>'
+match = re.search(pattern, html, re.DOTALL)
 
-def inspect_html(file_path='debug.html'):
-    """Inspect HTML file to find potential track elements."""
-    if not os.path.exists(file_path):
-        print(f"File {file_path} not found.")
-        print("Run the scraper first to generate debug.html")
-        return
+if match:
+    json_str = match.group(1)
+    try:
+        data = json.loads(json_str)
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        html = f.read()
+        # Pretty print structure
+        print("Found __NEXT_DATA__ JSON!")
+        print("\nTop-level keys:", list(data.keys()))
 
-    soup = BeautifulSoup(html, 'lxml')
+        # Navigate to find tracks
+        if 'props' in data:
+            print("\nprops keys:", list(data['props'].keys()))
+            if 'pageProps' in data['props']:
+                print("pageProps keys:", list(data['props']['pageProps'].keys()))
 
-    print("=" * 60)
-    print("HTML INSPECTION REPORT")
-    print("=" * 60)
-    print()
+                # Look for playlist or tracks data
+                page_props = data['props']['pageProps']
+                for key in page_props:
+                    if 'track' in key.lower() or 'playlist' in key.lower():
+                        print(f"\nFound key: {key}")
+                        print(f"Type: {type(page_props[key])}")
+                        if isinstance(page_props[key], dict):
+                            print(f"Sub-keys: {list(page_props[key].keys())}")
+                        elif isinstance(page_props[key], list) and len(page_props[key]) > 0:
+                            print(f"List with {len(page_props[key])} items")
+                            print(f"First item keys: {list(page_props[key][0].keys()) if isinstance(page_props[key][0], dict) else 'Not a dict'}")
 
-    print("1. Checking for authentication/login indicators...")
-    login_indicators = soup.find_all(['button', 'a', 'div'], string=lambda x: x and any(
-        word in x.lower() for word in ['log in', 'sign in', 'login', 'signin']
-    ))
-    if login_indicators:
-        print(f"   Found {len(login_indicators)} login-related elements")
-        print("   This page might require authentication!")
-    else:
-        print("   No obvious login indicators found")
-    print()
+                # Try to find the tracks array
+                if 'dehydratedState' in page_props:
+                    print("\n=== Dehydrated State Found ===")
+                    dehydrated = page_props['dehydratedState']
+                    if 'queries' in dehydrated:
+                        print(f"Found {len(dehydrated['queries'])} queries")
+                        for i, query in enumerate(dehydrated['queries'][:3]):
+                            print(f"\nQuery {i}:")
+                            if 'state' in query and 'data' in query['state']:
+                                state_data = query['state']['data']
+                                print(f"  Data keys: {list(state_data.keys()) if isinstance(state_data, dict) else type(state_data)}")
+                                if isinstance(state_data, dict) and 'results' in state_data:
+                                    results = state_data['results']
+                                    print(f"  Results type: {type(results)}")
+                                    if isinstance(results, list):
+                                        print(f"  Number of results: {len(results)}")
+                                        if len(results) > 0:
+                                            print(f"  First result keys: {list(results[0].keys())}")
+                                            print(f"\n  SAMPLE TRACK DATA:")
+                                            print(json.dumps(results[0], indent=2)[:1000])
 
-    print("2. Looking for track-related class names...")
-    all_elements = soup.find_all(class_=True)
-    track_classes = set()
-    for elem in all_elements:
-        classes = elem.get('class', [])
-        for cls in classes:
-            if any(word in cls.lower() for word in ['track', 'song', 'item', 'playlist', 'queue']):
-                track_classes.add(cls)
+                # Save full JSON to file for inspection
+                with open('beatport_data.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2)
+                print("\n\nSaved full JSON to beatport_data.json")
 
-    if track_classes:
-        print(f"   Found {len(track_classes)} classes with track-related names:")
-        for cls in sorted(track_classes)[:20]:
-            print(f"     - {cls}")
-        if len(track_classes) > 20:
-            print(f"     ... and {len(track_classes) - 20} more")
-    else:
-        print("   No track-related classes found")
-    print()
-
-    print("3. Checking common element patterns...")
-    patterns = {
-        'div.bucket-item': soup.find_all('div', class_='bucket-item'),
-        'li.bucket-item': soup.find_all('li', class_='bucket-item'),
-        'div.track': soup.find_all('div', class_='track'),
-        'tr with track': soup.find_all('tr', class_=lambda x: x and 'track' in x if x else False),
-        'divs with "track" in class': soup.find_all('div', class_=lambda x: x and 'track' in x if x else False)
-    }
-
-    for pattern_name, elements in patterns.items():
-        print(f"   {pattern_name}: {len(elements)} found")
-    print()
-
-    print("4. Sample of first few potential track containers:")
-    track_containers = soup.find_all(['div', 'li', 'tr'], class_=lambda x: x and any(
-        word in ' '.join(x).lower() for word in ['track', 'item']
-    ) if x else False)
-
-    if track_containers:
-        for i, container in enumerate(track_containers[:3], 1):
-            print(f"\n   Container {i}:")
-            print(f"   Tag: {container.name}")
-            print(f"   Classes: {container.get('class', [])}")
-            text = container.get_text(strip=True)[:100]
-            print(f"   Text preview: {text}...")
-    else:
-        print("   No potential track containers found")
-    print()
-
-    print("=" * 60)
-
-
-if __name__ == '__main__':
-    inspect_html()
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+else:
+    print("No __NEXT_DATA__ found")

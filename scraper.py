@@ -52,34 +52,65 @@ class BeatportScraper:
 
             self.driver.get(url)
 
-            try:
-                print("Waiting for track list to load...")
-                wait = WebDriverWait(self.driver, 15)
-
-                selectors_to_try = [
-                    'div.bucket-item',
-                    'li.bucket-item',
-                    'div.track',
-                    'div[class*="track"]',
-                    'tr.track-row',
-                    'div.playqueue-track',
-                    'li[class*="track"]'
-                ]
-
-                for selector in selectors_to_try:
-                    try:
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
-                        print(f"Track list loaded using selector: {selector}")
-                        break
-                    except:
-                        continue
-
-            except Exception as e:
-                print(f"Warning: Timeout waiting for tracks with all selectors")
-                print("The page might require authentication or use different selectors.")
-
-            print("Waiting additional time for dynamic content...")
+            # Wait for the page to load
+            print("Waiting for page to load...")
             time.sleep(3)
+
+            # Scroll down to trigger lazy loading of tracks
+            print("Scrolling to load all tracks...")
+            last_height = self.driver.execute_script("return document.body.scrollHeight")
+
+            for i in range(10):  # Scroll up to 10 times
+                # Scroll down
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(1)
+
+                # Check if we've loaded more content
+                new_height = self.driver.execute_script("return document.body.scrollHeight")
+                if new_height == last_height:
+                    # No more content loaded
+                    break
+                last_height = new_height
+                print(f"  Scroll {i+1}: Page height = {new_height}")
+
+            # Scroll back to top
+            self.driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(1)
+
+            # Wait for __NEXT_DATA__ to be populated with track data
+            print("Waiting for track data to load...")
+            max_wait = 30
+            for attempt in range(max_wait):
+                html = self.driver.page_source
+
+                # Check if track data is present in JSON
+                import re
+                import json
+                pattern = r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>'
+                match = re.search(pattern, html, re.DOTALL)
+
+                if match:
+                    try:
+                        data = json.loads(match.group(1))
+                        # Check if queries contain track data
+                        queries = data.get('props', {}).get('pageProps', {}).get('dehydratedState', {}).get('queries', [])
+
+                        for query in queries:
+                            state_data = query.get('state', {}).get('data', {})
+                            if isinstance(state_data, dict):
+                                track_list = state_data.get('results') or state_data.get('tracks') or []
+                                if isinstance(track_list, list) and len(track_list) > 0:
+                                    print(f"✓ Track data loaded! Found {len(track_list)} tracks")
+                                    break
+
+                        if track_list and len(track_list) > 0:
+                            break
+
+                    except json.JSONDecodeError:
+                        pass
+
+                print(f"  Waiting for tracks... ({attempt + 1}/{max_wait})")
+                time.sleep(1)
 
             html = self.driver.page_source
 
@@ -132,8 +163,28 @@ class BeatportScraper:
         Returns:
             List of track dictionaries with 'artist', 'track', 'remix', and 'label' keys
         """
-        soup = BeautifulSoup(html, 'lxml')
+        import json
+        import re
+
         tracks = []
+
+        # First, try to extract from __NEXT_DATA__ JSON (modern Beatport)
+        pattern = r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>'
+        match = re.search(pattern, html, re.DOTALL)
+
+        if match:
+            try:
+                data = json.loads(match.group(1))
+                tracks = self._extract_from_json(data)
+                if tracks:
+                    print(f"Successfully extracted {len(tracks)} tracks from JSON data")
+                    return tracks
+            except json.JSONDecodeError:
+                print("Found __NEXT_DATA__ but couldn't parse JSON")
+
+        # Fallback to HTML parsing
+        soup = BeautifulSoup(html, 'lxml')
+        track_elements = []
 
         selectors = [
             ('div', lambda x: x and 'bucket-item' in x and 'track' in x),
@@ -167,6 +218,95 @@ class BeatportScraper:
                 tracks.append(track_info)
 
         return tracks
+
+    def _extract_from_json(self, data: dict) -> List[Dict[str, str]]:
+        """
+        Extract tracks from Beatport's __NEXT_DATA__ JSON structure.
+
+        Args:
+            data: Parsed JSON data from __NEXT_DATA__
+
+        Returns:
+            List of track dictionaries
+        """
+        tracks = []
+
+        try:
+            # Navigate through the JSON structure
+            page_props = data.get('props', {}).get('pageProps', {})
+            dehydrated = page_props.get('dehydratedState', {})
+            queries = dehydrated.get('queries', [])
+
+            # Look through all queries for track data
+            for query in queries:
+                state_data = query.get('state', {}).get('data', {})
+
+                # Check if this query contains tracks
+                if isinstance(state_data, dict):
+                    # Check for 'results' or 'tracks' key
+                    track_list = state_data.get('results') or state_data.get('tracks') or []
+
+                    if isinstance(track_list, list) and len(track_list) > 0:
+                        # Check if first item looks like a track
+                        first_item = track_list[0]
+                        if isinstance(first_item, dict) and 'name' in first_item:
+                            for track_data in track_list:
+                                track_info = self._parse_json_track(track_data)
+                                if track_info:
+                                    tracks.append(track_info)
+
+                            if tracks:
+                                return tracks
+
+        except Exception as e:
+            print(f"Error extracting from JSON: {e}")
+
+        return tracks
+
+    def _parse_json_track(self, track_data: dict) -> Optional[Dict[str, str]]:
+        """
+        Parse a single track from JSON data.
+
+        Args:
+            track_data: Dictionary containing track information
+
+        Returns:
+            Dictionary with track info or None if parsing fails
+        """
+        try:
+            # Extract track name
+            track = track_data.get('name', '')
+
+            # Extract artists
+            artists_list = track_data.get('artists', [])
+            if isinstance(artists_list, list):
+                artist_names = [a.get('name', '') for a in artists_list if isinstance(a, dict)]
+                artist = ', '.join(artist_names)
+            else:
+                artist = ''
+
+            # Extract remix info
+            remix = track_data.get('mix_name', '')
+
+            # Extract label
+            label_data = track_data.get('label') or track_data.get('release', {}).get('label', {})
+            if isinstance(label_data, dict):
+                label = label_data.get('name', '')
+            else:
+                label = ''
+
+            if artist and track:
+                return {
+                    'artist': artist,
+                    'track': track,
+                    'remix': remix,
+                    'label': label
+                }
+
+        except Exception as e:
+            print(f"Error parsing track: {e}")
+
+        return None
 
     def _extract_track_info(self, element) -> Optional[Dict[str, str]]:
         """
