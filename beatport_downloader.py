@@ -4,11 +4,13 @@ Beatport Playlist Downloader
 
 Downloads music from Beatport playlists by:
 1. Scraping track information from Beatport (URL or JSON file)
-2. Searching for tracks on SoundCloud or YouTube
-3. Downloading audio as MP3 files
+2. Searching for tracks on both SoundCloud AND YouTube (AUTO mode)
+3. Comparing durations and downloading the longer version
+4. Downloading audio as MP3 files
 
 Usage:
     python beatport_downloader.py --json-file <path_to_json>
+    python beatport_downloader.py --json-file <path_to_json> --source soundcloud
     python beatport_downloader.py --json-file <path_to_json> --source youtube
     python beatport_downloader.py --url <beatport_url>
     python beatport_downloader.py --local-html <path_to_html>
@@ -26,13 +28,13 @@ from downloader import AudioDownloader
 class BeatportPlaylistDownloader:
     """Main orchestrator for the Beatport playlist download process."""
 
-    def __init__(self, output_dir: str = 'downloads', source: str = 'soundcloud'):
+    def __init__(self, output_dir: str = 'downloads', source: str = 'auto'):
         """
         Initialize downloader.
 
         Args:
             output_dir: Directory to save downloaded files
-            source: Download source ('soundcloud' or 'youtube')
+            source: Download source ('soundcloud', 'youtube', or 'auto' to search both)
         """
         self.scraper = BeatportScraper()
         self.downloader = AudioDownloader(output_dir, source)
@@ -57,7 +59,10 @@ class BeatportPlaylistDownloader:
         print("=" * 60)
         print("Beatport Playlist Downloader")
         print("=" * 60)
-        print(f"Download source: {self.source.upper()}")
+        if self.source == 'auto':
+            print("Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)")
+        else:
+            print(f"Download source: {self.source.upper()}")
         print()
 
         tracks = []
@@ -216,24 +221,28 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Use JSON file with SoundCloud (default)
+  # Use JSON file with AUTO mode (default - searches both sources, downloads longer)
   python beatport_downloader.py --json-file tracks.json
 
-  # Use JSON file with YouTube
+  # Use JSON file with SoundCloud only
+  python beatport_downloader.py --json-file tracks.json --source soundcloud
+
+  # Use JSON file with YouTube only
   python beatport_downloader.py --json-file tracks.json --source youtube
 
   # Use Beatport URL
   python beatport_downloader.py --url https://www.beatport.com/library/playlists/12345
 
-  # Use local HTML file with YouTube
+  # Use local HTML file with specific source
   python beatport_downloader.py --local-html playlist.html --source youtube
 
   # Interactive mode
   python beatport_downloader.py
 
 Download Sources:
-  - soundcloud: Default source, searches SoundCloud
-  - youtube: Alternative source, searches YouTube
+  - auto: (DEFAULT) Searches both SoundCloud and YouTube, downloads the longer version
+  - soundcloud: Searches SoundCloud only
+  - youtube: Searches YouTube only
 
 JSON Format:
   [
@@ -279,9 +288,9 @@ JSON Format:
         '--source',
         '-s',
         type=str,
-        choices=['soundcloud', 'youtube'],
-        default='soundcloud',
-        help='Download source: soundcloud (default) or youtube'
+        choices=['soundcloud', 'youtube', 'auto'],
+        default='auto',
+        help='Download source: auto (default - searches both and downloads longer), soundcloud, or youtube'
     )
 
     args = parser.parse_args()
