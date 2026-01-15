@@ -96,10 +96,10 @@ The fastest and most reliable method is to use a JSON file with track data:
 
 ```bash
 # AUTO mode (default) - Searches both SoundCloud and YouTube, downloads longer version
-# Downloads to /Users/srinidhi/Music/{json_filename}/
+# Downloads to ~/Music/{json_filename}/
 python beatport_downloader.py --json-file tracks.json
 
-# Example: basshouse_t100.json downloads to /Users/srinidhi/Music/basshouse_t100/
+# Example: basshouse_t100.json downloads to ~/Music/basshouse_t100/
 python beatport_downloader.py --json-file basshouse_t100.json
 
 # SoundCloud only
@@ -227,8 +227,8 @@ python beatport_downloader.py --help
 ### When Using JSON Files
 
 Files are automatically organized by playlist:
-- **Location**: `/Users/srinidhi/Music/{json_filename}/`
-- **Example**: `basshouse_t100.json` → `/Users/srinidhi/Music/basshouse_t100/`
+- **Location**: `~/Music/{json_filename}/`
+- **Example**: `basshouse_t100.json` → `~/Music/basshouse_t100/`
 - **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Extended Mix).mp3`)
 - **Metadata**: If JSON includes metadata fields (label_name, genre, bpm_key, album_art), they are embedded as ID3 tags
 
@@ -316,7 +316,7 @@ $ python beatport_downloader.py --json-file basshouse_t100.json
 Beatport Playlist Downloader
 ============================================================
 Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)
-Output directory: /Users/srinidhi/Music/basshouse_t100
+Output directory: ~/Music/basshouse_t100
 
 Reading JSON file: basshouse_t100.json
 Found 100 tracks in JSON file
@@ -376,7 +376,7 @@ Metadata added:    18
 
 Success rate: 90.0%
 
-Files saved to: /Users/srinidhi/Music/basshouse_t100/
+Files saved to: ~/Music/basshouse_t100/
 ============================================================
 ```
 

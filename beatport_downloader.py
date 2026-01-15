@@ -325,7 +325,7 @@ def main():
         epilog="""
 Examples:
   # Use JSON file with AUTO mode (default - searches both sources, downloads longer)
-  # Downloads to /Users/srinidhi/Music/{json_filename}/
+  # Downloads to ~/Music/{json_filename}/
   python beatport_downloader.py --json-file tracks.json
 
   # Use JSON file with SoundCloud only
@@ -349,8 +349,8 @@ Download Sources:
   - youtube: Searches YouTube only
 
 Output Directory:
-  - When using --json-file: Creates folder named after JSON file in /Users/srinidhi/Music/
-    Example: basshouse_t100.json -> /Users/srinidhi/Music/basshouse_t100/
+  - When using --json-file: Creates folder named after JSON file in ~/Music/
+    Example: basshouse_t100.json -> ~/Music/basshouse_t100/
   - Override with --output-dir to specify custom location
   - For URLs/HTML files: Uses --output-dir value (default: downloads/)
 
@@ -413,7 +413,7 @@ JSON Format:
     elif args.json_file:
         # Using JSON file - use temporary dir, will be updated in run()
         output_dir = 'downloads'  # temporary
-        base_music_dir = '/Users/srinidhi/Music'
+        base_music_dir = os.path.expanduser('~/Music')
     else:
         # URL or HTML - use default downloads folder
         output_dir = 'downloads'
