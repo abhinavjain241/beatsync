@@ -250,25 +250,40 @@ class BeatportPlaylistDownloader:
                     self.stats['downloaded'] += 1
 
                 # Apply metadata if we have it and the file exists
-                if actual_filename:
+                if actual_filename and not already_existed:
                     metadata = self._get_metadata_for_track(track)
-                    if metadata and not already_existed:
-                        # Resolve album art path relative to JSON file directory
+                    if metadata:
+                        print(f"  Applying metadata to: {actual_filename}")
+
+                        # Resolve album art path relative to JSON file directory (only for non-URLs)
                         if metadata.get('album_art') and self.json_file_dir:
                             album_art_path = metadata['album_art']
-                            if not os.path.isabs(album_art_path):
-                                # Resolve relative path from JSON file directory
-                                metadata['album_art'] = os.path.join(self.json_file_dir, album_art_path)
+                            # Only resolve path if it's not a URL and not absolute
+                            if not album_art_path.startswith(('http://', 'https://')) and not os.path.isabs(album_art_path):
+                                resolved_path = os.path.join(self.json_file_dir, album_art_path)
+                                print(f"  Resolved album art path: {album_art_path} -> {resolved_path}")
+                                metadata['album_art'] = resolved_path
 
                         mp3_path = os.path.join(self.downloader.output_dir, actual_filename)
-                        try:
-                            if self.metadata_writer.apply_metadata_to_track(mp3_path, metadata):
-                                self.stats['metadata_added'] += 1
-                            else:
-                                self.stats['metadata_failed'] += 1
-                        except Exception as e:
-                            print(f"  ⚠ Metadata error (skipping): {e}")
+
+                        # Verify file exists before writing metadata
+                        if not os.path.exists(mp3_path):
+                            print(f"  ⚠ MP3 file not found: {mp3_path}")
                             self.stats['metadata_failed'] += 1
+                        else:
+                            print(f"  MP3 file confirmed: {mp3_path}")
+                            try:
+                                if self.metadata_writer.apply_metadata_to_track(mp3_path, metadata):
+                                    self.stats['metadata_added'] += 1
+                                else:
+                                    self.stats['metadata_failed'] += 1
+                            except Exception as e:
+                                print(f"  ⚠ Metadata error: {e}")
+                                import traceback
+                                traceback.print_exc()
+                                self.stats['metadata_failed'] += 1
+                    else:
+                        print(f"  ⚠ No metadata found for track in JSON")
             else:
                 self.stats['failed'] += 1
 

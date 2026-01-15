@@ -257,24 +257,53 @@ The metadata writer:
 - Handles UTF-8 encoding for international characters
 - Continues downloading if metadata writing fails
 
-### Testing Metadata Locally
+### Testing and Verifying Metadata
 
-To test metadata writing on a single MP3 file:
+#### Test Metadata Writing System
+
+Test that the metadata writing system works correctly:
 
 ```bash
-# Read existing metadata
-python test_metadata.py your_track.mp3 --read-only
-
-# Write test metadata and verify
-python test_metadata.py your_track.mp3
+python3 test_metadata_write.py
 ```
 
-The test script will:
-1. Show existing metadata in the file
-2. Write test metadata (title, artist, album, genre, BPM, key, album art)
-3. Display the updated metadata for verification
+This creates a test MP3 and writes metadata to verify everything works.
 
-You can then check the file in macOS Finder (Get Info) or Music app to verify the tags are visible.
+#### Check Metadata in Existing Files
+
+Check what metadata is in a downloaded MP3 file:
+
+```bash
+python3 check_mp3_metadata.py path/to/your/track.mp3
+```
+
+This shows all tags, album art status, and whether the file is properly tagged for Rekordbox.
+
+#### Troubleshooting Metadata Issues
+
+If metadata isn't showing in your files or Rekordbox:
+
+1. **Run the test script first:**
+   ```bash
+   python3 test_metadata_write.py
+   ```
+
+2. **Check a downloaded file:**
+   ```bash
+   python3 check_mp3_metadata.py downloads/track.mp3
+   ```
+
+3. **Review the detailed logs** when downloading - look for:
+   - `[Metadata] Starting metadata write`
+   - `✓✓✓ METADATA WRITE SUCCESSFUL`
+   - Any `⚠` warning messages
+
+4. **See the troubleshooting guide:**
+   ```bash
+   cat METADATA_TROUBLESHOOTING.md
+   ```
+
+The new logging system provides detailed output showing exactly what metadata is being written and any errors that occur.
 
 ## Example
 
