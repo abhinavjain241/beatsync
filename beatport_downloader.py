@@ -4,12 +4,13 @@ Beatport Playlist Downloader
 
 Downloads music from Beatport playlists by:
 1. Scraping track information from Beatport (URL or JSON file)
-2. Searching for tracks on SoundCloud
+2. Searching for tracks on SoundCloud or YouTube
 3. Downloading audio as MP3 files
 
 Usage:
-    python beatport_downloader.py --url <beatport_url>
     python beatport_downloader.py --json-file <path_to_json>
+    python beatport_downloader.py --json-file <path_to_json> --source youtube
+    python beatport_downloader.py --url <beatport_url>
     python beatport_downloader.py --local-html <path_to_html>
     python beatport_downloader.py  # Interactive mode
 """
@@ -25,9 +26,17 @@ from downloader import AudioDownloader
 class BeatportPlaylistDownloader:
     """Main orchestrator for the Beatport playlist download process."""
 
-    def __init__(self, output_dir: str = 'downloads'):
+    def __init__(self, output_dir: str = 'downloads', source: str = 'soundcloud'):
+        """
+        Initialize downloader.
+
+        Args:
+            output_dir: Directory to save downloaded files
+            source: Download source ('soundcloud' or 'youtube')
+        """
         self.scraper = BeatportScraper()
-        self.downloader = AudioDownloader(output_dir)
+        self.downloader = AudioDownloader(output_dir, source)
+        self.source = source
         self.stats = {
             'total': 0,
             'downloaded': 0,
@@ -48,6 +57,7 @@ class BeatportPlaylistDownloader:
         print("=" * 60)
         print("Beatport Playlist Downloader")
         print("=" * 60)
+        print(f"Download source: {self.source.upper()}")
         print()
 
         tracks = []
@@ -206,17 +216,24 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Use JSON file (recommended)
+  # Use JSON file with SoundCloud (default)
   python beatport_downloader.py --json-file tracks.json
+
+  # Use JSON file with YouTube
+  python beatport_downloader.py --json-file tracks.json --source youtube
 
   # Use Beatport URL
   python beatport_downloader.py --url https://www.beatport.com/library/playlists/12345
 
-  # Use local HTML file
-  python beatport_downloader.py --local-html playlist.html
+  # Use local HTML file with YouTube
+  python beatport_downloader.py --local-html playlist.html --source youtube
 
   # Interactive mode
   python beatport_downloader.py
+
+Download Sources:
+  - soundcloud: Default source, searches SoundCloud
+  - youtube: Alternative source, searches YouTube
 
 JSON Format:
   [
@@ -258,10 +275,22 @@ JSON Format:
         help='Output directory for downloaded files (default: downloads)'
     )
 
+    parser.add_argument(
+        '--source',
+        '-s',
+        type=str,
+        choices=['soundcloud', 'youtube'],
+        default='soundcloud',
+        help='Download source: soundcloud (default) or youtube'
+    )
+
     args = parser.parse_args()
 
     # Create and run downloader
-    downloader = BeatportPlaylistDownloader(output_dir=args.output_dir)
+    downloader = BeatportPlaylistDownloader(
+        output_dir=args.output_dir,
+        source=args.source
+    )
     downloader.run(
         url=args.url,
         json_file=args.json_file,

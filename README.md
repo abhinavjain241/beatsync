@@ -1,13 +1,14 @@
 # Beatport Playlist Downloader
 
-A modern web application that downloads music from Beatport playlists by scraping track information and downloading audio from SoundCloud. Features both a web UI and command-line interface.
+A modern web application that downloads music from Beatport playlists by scraping track information and downloading audio from SoundCloud or YouTube. Features both a web UI and command-line interface.
 
 ## Features
 
 - Modern web interface for easy downloads
 - **NEW: JSON file input for fastest and most reliable track loading**
+- **NEW: YouTube download support alongside SoundCloud**
 - Scrapes Beatport playlist URLs to extract track information
-- Searches and downloads audio from SoundCloud using yt-dlp
+- Searches and downloads audio from SoundCloud or YouTube using yt-dlp
 - Downloads as high-quality MP3 files
 - Real-time progress tracking and updates
 - Fallback to local HTML file if URL scraping fails
@@ -83,7 +84,11 @@ Then open `http://localhost:3000`
 The fastest and most reliable method is to use a JSON file with track data:
 
 ```bash
+# Download from SoundCloud (default)
 python beatport_downloader.py --json-file tracks.json
+
+# Download from YouTube
+python beatport_downloader.py --json-file tracks.json --source youtube
 ```
 
 **JSON Format:**
@@ -103,13 +108,21 @@ python beatport_downloader.py --json-file tracks.json
 #### Using Beatport URL
 
 ```bash
+# SoundCloud (default)
 python beatport_downloader.py --url "https://www.beatport.com/chart/..."
+
+# YouTube
+python beatport_downloader.py --url "https://www.beatport.com/chart/..." --source youtube
 ```
 
 #### Using Local HTML File
 
 ```bash
+# SoundCloud (default)
 python beatport_downloader.py --local-html playlist.html
+
+# YouTube
+python beatport_downloader.py --local-html playlist.html --source youtube
 ```
 
 #### Interactive Mode
@@ -126,6 +139,12 @@ Select from multiple input options when prompted.
 # Specify custom output directory
 python beatport_downloader.py --json-file tracks.json --output-dir "my_music"
 
+# Use YouTube as source
+python beatport_downloader.py --json-file tracks.json --source youtube
+
+# Combine options
+python beatport_downloader.py --json-file tracks.json --source youtube --output-dir "my_music"
+
 # Show help
 python beatport_downloader.py --help
 ```
@@ -134,9 +153,20 @@ python beatport_downloader.py --help
 
 1. **Input**: Accepts JSON file (recommended), Beatport URL, or local HTML file
 2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
-3. **Search**: Creates a search query and uses yt-dlp to find the top result on SoundCloud
+3. **Search**: Creates a search query and uses yt-dlp to find the top result on SoundCloud or YouTube
 4. **Download**: Downloads the audio and converts it to MP3 format
 5. **Save**: Saves files as `Artist - Track.mp3` in the `downloads` folder
+
+### Download Sources
+
+- **SoundCloud** (default): Good for DJ mixes, remixes, and electronic music
+- **YouTube**: Alternative source with broader music catalog
+
+Choose your source with the `--source` flag:
+```bash
+--source soundcloud  # Default
+--source youtube     # Alternative
+```
 
 ### Why Use JSON Files?
 

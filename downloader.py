@@ -1,6 +1,6 @@
 """
 Audio downloader module using yt-dlp.
-Handles searching and downloading audio from SoundCloud.
+Handles searching and downloading audio from SoundCloud and YouTube.
 """
 
 import os
@@ -11,8 +11,18 @@ from typing import Dict, Optional
 class AudioDownloader:
     """Downloads audio tracks using yt-dlp."""
 
-    def __init__(self, output_dir: str = 'downloads'):
+    def __init__(self, output_dir: str = 'downloads', source: str = 'soundcloud'):
+        """
+        Initialize downloader.
+
+        Args:
+            output_dir: Directory to save downloaded files
+            source: Download source ('soundcloud' or 'youtube')
+        """
         self.output_dir = output_dir
+        self.source = source.lower()
+        if self.source not in ['soundcloud', 'youtube']:
+            raise ValueError("Source must be 'soundcloud' or 'youtube'")
         self._ensure_output_dir()
 
     def _ensure_output_dir(self):
@@ -51,7 +61,7 @@ class AudioDownloader:
 
     def download_track(self, search_query: str, output_filename: str) -> bool:
         """
-        Download a track from SoundCloud using yt-dlp.
+        Download a track from SoundCloud or YouTube using yt-dlp.
 
         Args:
             search_query: Search string for the track
@@ -67,9 +77,14 @@ class AudioDownloader:
             print(f"  ✓ Already exists: {output_filename}")
             return True
 
-        # Construct yt-dlp command
-        # Use scsearch1: to search SoundCloud and get top result
-        search_url = f"scsearch1:{search_query}"
+        # Construct search URL based on source
+        # scsearch1: for SoundCloud, ytsearch1: for YouTube (get top result)
+        if self.source == 'soundcloud':
+            search_url = f"scsearch1:{search_query}"
+            print(f"  Searching SoundCloud: {search_query}")
+        else:  # youtube
+            search_url = f"ytsearch1:{search_query}"
+            print(f"  Searching YouTube: {search_query}")
 
         # Output template without extension (yt-dlp will add .mp3)
         output_template = os.path.join(
