@@ -3,7 +3,6 @@ import cors from 'cors'
 import { spawn } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { existsSync, mkdirSync } from 'fs'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -14,23 +13,9 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3000
 
-const downloadsDir = path.join(__dirname, 'downloads')
-if (!existsSync(downloadsDir)) {
-  mkdirSync(downloadsDir, { recursive: true })
-  console.log('Created downloads directory')
-}
-
 app.use(cors())
 app.use(express.json())
-
-const distPath = path.join(__dirname, 'frontend', 'dist')
-if (existsSync(distPath)) {
-  app.use(express.static(distPath))
-  console.log(`Serving static files from ${distPath}`)
-} else {
-  console.warn(`Warning: Frontend dist folder not found at ${distPath}`)
-  console.warn('Run "npm run build" to build the frontend')
-}
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')))
 
 let ongoingDownloads = new Map()
 
@@ -41,50 +26,17 @@ app.post('/api/download', (req, res) => {
     return res.status(400).json({ error: 'URL is required' })
   }
 
-  const pythonScript = path.join(__dirname, 'beatport_downloader_web.py')
-
-  if (!existsSync(pythonScript)) {
-    return res.status(500).json({
-      error: 'Python downloader script not found',
-      path: pythonScript
-    })
-  }
-
   const downloadId = Date.now().toString()
 
   res.setHeader('Content-Type', 'application/x-ndjson')
   res.setHeader('Transfer-Encoding', 'chunked')
   res.setHeader('Cache-Control', 'no-cache')
 
-  function sendProgress(data) {
-    try {
-      res.write(JSON.stringify(data) + '\n')
-    } catch (error) {
-      console.error('Error sending progress:', error)
-    }
-  }
+  const pythonScript = path.join(__dirname, 'beatport_downloader.py')
 
-  let pythonProcess
-  try {
-    pythonProcess = spawn('python3', [pythonScript, url], {
-      cwd: __dirname,
-      stdio: ['ignore', 'pipe', 'pipe']
-    })
-  } catch (error) {
-    return res.status(500).json({
-      error: 'Failed to start Python process',
-      message: error.message,
-      hint: 'Make sure Python 3 is installed'
-    })
-  }
-
-  pythonProcess.on('error', (error) => {
-    console.error('Python process error:', error)
-    sendProgress({
-      type: 'error',
-      message: `Failed to start downloader: ${error.message}. Make sure Python 3 is installed.`
-    })
-    res.end()
+  const pythonProcess = spawn('python3', [pythonScript, url], {
+    cwd: __dirname,
+    stdio: ['ignore', 'pipe', 'pipe']
   })
 
   ongoingDownloads.set(downloadId, pythonProcess)
@@ -246,6 +198,10 @@ app.post('/api/download', (req, res) => {
 
     res.end()
   })
+
+  function sendProgress(data) {
+    res.write(JSON.stringify(data) + '\n')
+  }
 })
 
 app.get('/api/downloads', (req, res) => {
@@ -256,41 +212,12 @@ app.get('/api/downloads', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'frontend', 'dist', 'index.html')
-  if (existsSync(indexPath)) {
-    res.sendFile(indexPath)
-  } else {
-    res.status(503).send(`
-      <html>
-        <head><title>Beatport Downloader</title></head>
-        <body style="font-family: system-ui; padding: 2rem; max-width: 600px; margin: 0 auto;">
-          <h1>🎵 Beatport Downloader</h1>
-          <p><strong>Frontend not built yet.</strong></p>
-          <p>Please run the following command to build the frontend:</p>
-          <pre style="background: #f5f5f5; padding: 1rem; border-radius: 4px;">npm run build</pre>
-          <p>Then restart the server.</p>
-          <hr style="margin: 2rem 0;">
-          <p><strong>API Endpoints:</strong></p>
-          <ul>
-            <li>POST /api/download - Start a download</li>
-            <li>GET /api/downloads - Check active downloads</li>
-          </ul>
-        </body>
-      </html>
-    `)
-  }
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
 })
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
-  console.log(`API: http://localhost:${PORT}/api`)
-
-  const indexPath = path.join(__dirname, 'frontend', 'dist', 'index.html')
-  if (existsSync(indexPath)) {
-    console.log(`Frontend: http://localhost:${PORT}`)
-  } else {
-    console.log(`⚠ Frontend not built - run "npm run build"`)
-  }
+  console.log(`Frontend: http://localhost:${PORT}`)
 })
 
 function parseDownloadSummary(fullBuffer, lines) {

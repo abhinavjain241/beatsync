@@ -13,7 +13,7 @@ class BeatportScraper:
 
     def __init__(self):
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Accept-Encoding': 'gzip, deflate, br',
@@ -76,53 +76,17 @@ class BeatportScraper:
         tracks = []
 
         # Try multiple selectors as Beatport's structure may vary
-        # Method 0: tracklist table (playlist share pages)
-        tracklist_table = soup.find('table', class_='tracklist')
-        if tracklist_table:
-            print(f"Method 0 (tracklist table): Found table")
-            tbody = tracklist_table.find('tbody')
-            if tbody:
-                track_rows = tbody.find_all('tr')
-                print(f"Method 0 (tracklist table): Found {len(track_rows)} rows")
-
-                for row in track_rows:
-                    track_info = self._extract_track_info_from_table(row)
-                    if track_info:
-                        tracks.append(track_info)
-
-                if tracks:
-                    return tracks
-
-        # Method 1: bucket-item (older Beatport structure)
         track_elements = soup.find_all('li', class_='bucket-item')
-        print(f"Method 1 (bucket-item): Found {len(track_elements)} elements")
 
         if not track_elements:
-            # Method 2: track class
+            # Alternative selector
             track_elements = soup.find_all('div', class_='track')
-            print(f"Method 2 (div.track): Found {len(track_elements)} elements")
 
         if not track_elements:
-            # Method 3: table rows
+            # Try finding tracks in a table structure
             track_elements = soup.find_all('tr', class_='track-row')
-            print(f"Method 3 (track-row): Found {len(track_elements)} elements")
 
-        if not track_elements:
-            # Method 4: li with track class
-            track_elements = soup.find_all('li', class_='track')
-            print(f"Method 4 (li.track): Found {len(track_elements)} elements")
-
-        if not track_elements:
-            # Method 5: Look for data-track attributes (modern Beatport)
-            track_elements = soup.find_all(['div', 'li', 'tr'], attrs={'data-track': True})
-            print(f"Method 5 (data-track): Found {len(track_elements)} elements")
-
-        if not track_elements:
-            # Method 6: Look for playable-track class
-            track_elements = soup.find_all(['div', 'li'], class_='playable-track')
-            print(f"Method 6 (playable-track): Found {len(track_elements)} elements")
-
-        print(f"Total track elements to process: {len(track_elements)}")
+        print(f"Found {len(track_elements)} track elements")
 
         for element in track_elements:
             track_info = self._extract_track_info(element)
@@ -130,84 +94,6 @@ class BeatportScraper:
                 tracks.append(track_info)
 
         return tracks
-
-    def _extract_track_info_from_table(self, row) -> Optional[Dict[str, str]]:
-        """
-        Extract track information from a table row (tracklist table format).
-
-        Args:
-            row: BeautifulSoup tr element containing track info
-
-        Returns:
-            Dictionary with track info or None if extraction fails
-        """
-        try:
-            tds = row.find_all('td')
-
-            if len(tds) < 2:
-                return None
-
-            # First td contains the track title
-            title = ''
-            if tds[0]:
-                # Try to find title in various elements
-                title_elem = tds[0].find('a')
-                if not title_elem:
-                    title_elem = tds[0].find('span', class_='track-title')
-                if not title_elem:
-                    title_elem = tds[0].find('div', class_='track-title')
-                if not title_elem:
-                    # Just get the text from the td
-                    title = tds[0].get_text(strip=True)
-                else:
-                    title = title_elem.get_text(strip=True)
-
-            # Second td contains artist/label
-            artist = ''
-            if len(tds) > 1:
-                # Try to find artist in various elements
-                artist_elem = tds[1].find('a')
-                if not artist_elem:
-                    artist_elem = tds[1].find('span', class_='artist')
-                if not artist_elem:
-                    artist_elem = tds[1].find('div', class_='artist')
-                if not artist_elem:
-                    # Just get the text from the td
-                    artist = tds[1].get_text(strip=True)
-                else:
-                    artist = artist_elem.get_text(strip=True)
-
-            # Look for remix information in title or in additional columns
-            remix = ''
-
-            # Check if title contains remix info in parentheses
-            if '(' in title and ')' in title:
-                # Extract remix from title
-                import re
-                remix_match = re.search(r'\(([^)]+(?:Remix|Mix|Edit|Version))\)', title, re.IGNORECASE)
-                if remix_match:
-                    remix = remix_match.group(1)
-                    # Remove remix from title
-                    title = re.sub(r'\s*\([^)]+(?:Remix|Mix|Edit|Version)\)', '', title, flags=re.IGNORECASE).strip()
-
-            # Clean up
-            title = title.replace('\n', ' ').strip()
-            artist = artist.replace('\n', ' ').strip()
-            remix = remix.replace('\n', ' ').strip()
-
-            # Only return if we have at least artist and title
-            if artist and title:
-                return {
-                    'artist': artist,
-                    'track': title,
-                    'remix': remix
-                }
-
-            return None
-
-        except Exception as e:
-            print(f"Error extracting track info from table row: {e}")
-            return None
 
     def _extract_track_info(self, element) -> Optional[Dict[str, str]]:
         """
@@ -220,51 +106,26 @@ class BeatportScraper:
             Dictionary with track info or None if extraction fails
         """
         try:
-            # Try to find artist - multiple approaches
+            # Try to find artist
             artist = ''
-
-            # Method 1: buk-track-artists (older Beatport)
             artist_elem = element.find('p', class_='buk-track-artists')
             if not artist_elem:
-                # Method 2: Various artist classes
                 artist_elem = element.find('a', class_='artist')
             if not artist_elem:
                 artist_elem = element.find('span', class_='artist')
-            if not artist_elem:
-                # Method 3: Modern structure - look for artist link/span in track container
-                artist_elem = element.select_one('.track-artists a, .track-artist a, [class*="artist"] a')
-            if not artist_elem:
-                # Method 4: Look for data-artist attribute
-                artist_elem = element.find(attrs={'data-artist': True})
-                if artist_elem:
-                    artist = artist_elem.get('data-artist', '')
-            if artist_elem and not artist:
+            if artist_elem:
                 artist = artist_elem.get_text(strip=True)
 
-            # Try to find track name - multiple approaches
+            # Try to find track name
             track = ''
-
-            # Method 1: buk-track-primary-title (older Beatport)
             track_elem = element.find('p', class_='buk-track-primary-title')
             if not track_elem:
-                # Method 2: buk-track-title
-                track_elem = element.find('a', class_='buk-track-title')
-            if not track_elem:
-                # Method 3: track-title class
                 track_elem = element.find('a', class_='track-title')
             if not track_elem:
                 track_elem = element.find('span', class_='track-title')
             if not track_elem:
-                # Method 4: Modern structure - look for title in various containers
-                track_elem = element.select_one('.track-title, .track-name, [class*="title"] a, [class*="name"] a')
-            if not track_elem:
-                # Method 5: Look for data-title or data-track-title attribute
-                track_elem = element.find(attrs={'data-title': True})
-                if not track_elem:
-                    track_elem = element.find(attrs={'data-track-title': True})
-                if track_elem:
-                    track = track_elem.get('data-title', '') or track_elem.get('data-track-title', '')
-            if track_elem and not track:
+                track_elem = element.find('a', class_='buk-track-title')
+            if track_elem:
                 track = track_elem.get_text(strip=True)
 
             # Try to find remix name
@@ -274,15 +135,8 @@ class BeatportScraper:
                 remix_elem = element.find('span', class_='buk-track-remixed')
             if not remix_elem:
                 remix_elem = element.find('span', class_='remix')
-            if not remix_elem:
-                remix_elem = element.select_one('.track-remix, [class*="remix"]')
             if remix_elem:
                 remix = remix_elem.get_text(strip=True)
-
-            # Clean up artist and track
-            artist = artist.replace('\n', ' ').strip()
-            track = track.replace('\n', ' ').strip()
-            remix = remix.replace('\n', ' ').strip()
 
             # Only return if we have at least artist and track
             if artist and track:

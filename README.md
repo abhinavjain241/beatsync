@@ -5,10 +5,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
-- Supports multiple Beatport URL formats:
-  - Public playlists and charts
-  - Playlist share URLs (e.g., `/playlists/share/...`)
-  - Multiple HTML structure types
+- Scrapes Beatport playlist URLs to extract track information
 - Searches and downloads audio from SoundCloud using yt-dlp
 - Downloads as high-quality MP3 files
 - Real-time progress tracking and updates
@@ -16,7 +13,6 @@ A modern web application that downloads music from Beatport playlists by scrapin
 - Skip already downloaded tracks
 - Detailed download summary
 - Command-line interface for automation
-- Built-in debugging tools
 
 ## Requirements
 
@@ -211,53 +207,7 @@ Install ffmpeg using the instructions in the Installation section.
 └── downloads/                   # Output directory (created automatically)
 ```
 
-## Deployment
-
-### Verifying Installation
-
-Run the verification script to check if all required files are present:
-
-```bash
-npm run verify
-```
-
-This will check for:
-- Python scripts (beatport_downloader.py, scraper.py, downloader.py)
-- Node.js server (server.js)
-- Frontend build files
-- Configuration files
-
-### Build Before Deployment
-
-Make sure to build the frontend before deploying:
-
-```bash
-npm install
-npm run build
-npm run verify
-npm run start
-```
-
-The server will automatically:
-- Create the `downloads` directory if it doesn't exist
-- Serve the frontend from `frontend/dist`
-- Display helpful error messages if files are missing
-
 ## Troubleshooting
-
-### Deployment Errors
-
-**"No such file or directory" error:**
-- Run `npm run verify` to check which files are missing
-- Make sure you've run `npm run build` before deploying
-- Ensure Python scripts are not in .gitignore
-- Check that `frontend/dist` folder exists with index.html
-
-**Frontend not loading:**
-- Verify the build completed: `ls frontend/dist/`
-- Rebuild if needed: `npm run build`
-- Check server logs for path errors
-- Server will show a helpful message if dist is missing
 
 ### Web UI Issues
 
@@ -273,30 +223,9 @@ PORT=3001 npm run start
 - Check browser console for errors (F12)
 
 **Downloads not starting:**
-- Verify Python and dependencies are installed: `python check_dependencies.py`
+- Verify Python and dependencies are installed
 - Check server logs for errors
 - Ensure the Beatport URL is valid
-- Make sure Python 3 is in your PATH
-- Run `npm run verify` to check all files are present
-
-**"Process exited with code 1" / No tracks found:**
-This is the most common issue and means the scraper couldn't extract tracks from the Beatport page.
-
-**Quick Fix:**
-```bash
-# Run the debug script to see what's wrong
-python debug_beatport.py "your-beatport-url"
-```
-
-**Common causes:**
-1. Beatport changed their HTML structure (they do this frequently)
-2. The page loads content via JavaScript (not visible in raw HTML)
-3. Anti-scraping measures are blocking the request
-
-**Solutions:**
-- See [DEBUGGING.md](DEBUGGING.md) for detailed troubleshooting
-- Save the Beatport page as HTML from your browser and use the local file option
-- Test directly: `python beatport_downloader_web.py "your-url"`
 
 ### Command Line Issues
 

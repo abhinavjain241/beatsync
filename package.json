@@ -3,19 +3,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "cd frontend && npm install",
     "dev": "npm run dev:frontend & npm run dev:backend",
-    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:frontend": "cd frontend && vite",
     "dev:backend": "node server.js",
-    "build": "npm run build --prefix frontend",
-    "preview": "npm run preview --prefix frontend",
+    "build": "cd frontend && vite build",
+    "preview": "cd frontend && vite preview",
     "start": "node server.js",
-    "verify": "node verify-deployment.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8",
+    "@vitejs/plugin-react": "^4.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

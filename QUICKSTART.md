@@ -5,27 +5,23 @@ Get started with the Beatport Playlist Downloader in 3 simple steps.
 ## Step 1: Install Dependencies
 
 ```bash
-# Install Python dependencies
 pip install -r requirements.txt
-
-# Install Node.js dependencies (for web interface)
-npm install
 ```
 
 Also install ffmpeg (required for audio conversion):
 
 **macOS:**
 ```bash
-brew install ffmpeg node
+brew install ffmpeg
 ```
 
 **Ubuntu/Debian:**
 ```bash
-sudo apt install ffmpeg nodejs npm
+sudo apt install ffmpeg
 ```
 
 **Windows:**
-Download ffmpeg from https://ffmpeg.org/download.html and Node.js from https://nodejs.org/
+Download from https://ffmpeg.org/download.html and add to PATH
 
 ## Step 2: Verify Installation
 
@@ -37,60 +33,21 @@ python check_dependencies.py
 
 You should see checkmarks for all dependencies.
 
-## Step 3: Test the Scraper (Important!)
+## Step 3: Run the Downloader
 
-Before using the web interface, test if the scraper works with your URL:
-
-```bash
-python test_scraper.py "https://www.beatport.com/chart/your-playlist-url"
-```
-
-**Expected output:**
-- ✓ Fetched HTML successfully
-- ✓ Found X tracks
-- List of first 5 tracks
-
-**If it fails:**
-```bash
-# Run the debug script to see why
-python debug_beatport.py "your-url"
-```
-
-Common issue: Beatport may have changed their HTML structure. See [DEBUGGING.md](DEBUGGING.md) for solutions.
-
-## Step 4: Run the Downloader
-
-### Option A: Web Interface (Recommended)
+### Option A: Command Line
 
 ```bash
-# Build the frontend
-npm run build
-
-# Start the server
-npm start
+python beatport_downloader.py "https://www.beatport.com/chart/your-playlist-url"
 ```
 
-Then open `http://localhost:3000` in your browser and paste your Beatport URL!
-
-### Option B: Command Line
-
-```bash
-# Non-interactive (for automation)
-python beatport_downloader_web.py "https://www.beatport.com/chart/..."
-
-# Interactive mode (with prompts)
-python beatport_downloader.py "https://www.beatport.com/chart/..."
-```
-
-### Option C: Interactive with Local HTML File
-
-If direct URL fetching fails:
+### Option B: Interactive Mode
 
 ```bash
 python beatport_downloader.py
 ```
 
-When prompted, provide a local HTML file saved from your browser.
+Then paste your Beatport playlist URL when prompted.
 
 ## That's It!
 
@@ -98,50 +55,17 @@ Your tracks will be downloaded to the `downloads/` folder as MP3 files.
 
 ## Troubleshooting
 
-### "Process exited with code 1" or "No tracks found"
-
-This is the most common issue. The scraper couldn't extract tracks from the Beatport page.
-
-**Quick fix:**
-```bash
-# See what's wrong
-python debug_beatport.py "your-url"
-```
-
-**Common causes:**
-1. Beatport changed their HTML structure (happens frequently)
-2. Page loads content via JavaScript
-3. Anti-scraping measures
-
-**Solutions:**
-- Save the Beatport page as HTML from your browser (Ctrl+S / Cmd+S)
-- Use the interactive mode: `python beatport_downloader.py`
-- See [DEBUGGING.md](DEBUGGING.md) for detailed fixes
-
 ### Getting 403 Errors?
 
 If the script can't access Beatport directly:
 
 1. Open the playlist in your browser
 2. Save the page as HTML (Ctrl+S or Cmd+S)
-3. Run the interactive script: `python beatport_downloader.py`
-4. Provide the path to the HTML file when prompted
-
-### Web Interface Not Loading?
-
-```bash
-# Make sure frontend is built
-npm run build
-
-# Verify files are present
-npm run verify
-
-# Check server logs for errors
-```
+3. Run the script and provide the path to the HTML file when prompted
 
 ### Still Having Issues?
 
-Check [DEBUGGING.md](DEBUGGING.md) for detailed troubleshooting or the full [README.md](README.md) for more options.
+Check the full README.md for detailed troubleshooting steps.
 
 ## Example Output
 
