@@ -1,402 +1,794 @@
 [
     {
         "song_name": "Take Your Places Extended Mix",
-        "artist_name": "Westend, SIDEPIECE"
+        "artist_name": "Westend, SIDEPIECE",
+        "label_name": "LIP SERVICE",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Major",
+        "album_art": "./basshouse_t100_files/60d7e08a-b6d2-40ad-ba77-fa49651bf7be(1).jpg"
     },
     {
-        "song_name": "Up Down Extended Mix",
-        "artist_name": "bradeazy"
+        "song_name": "Up Down  Extended Mix",
+        "artist_name": "bradeazy",
+        "label_name": "Boom Records LLC",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/352d9321-c3a5-46f1-954f-c033f1f80f36(1).jpg"
     },
     {
         "song_name": "Get Busy Odd Mob Extended Club Mix",
-        "artist_name": "Sean Paul, Odd Mob"
+        "artist_name": "Sean Paul, Odd Mob",
+        "label_name": "Big Beat Records",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - G Minor",
+        "album_art": "./basshouse_t100_files/46a074dc-55b5-4aab-b6b2-96b64a9a023d(1).jpg"
     },
     {
-        "song_name": "I Cannot Extended Mix",
-        "artist_name": "Anti Up"
+        "song_name": "I Cannot  Extended Mix",
+        "artist_name": "Anti Up",
+        "label_name": "Anti Up",
+        "genre": "Bass House",
+        "bpm_key": "133 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/1e90843e-0d53-4fb0-a1f1-7f4d006708db(1).jpg"
     },
     {
-        "song_name": "LA NOCHE Extended Mix",
-        "artist_name": "Chris Lake, Skrillex, ANITA B QUEEN"
+        "song_name": "LA NOCHE  Extended Mix",
+        "artist_name": "Chris Lake, Skrillex, ANITA B QUEEN",
+        "label_name": "Black Book Records",
+        "genre": "Bass House",
+        "bpm_key": "127 BPM - Ab Major",
+        "album_art": "./basshouse_t100_files/5b21efd0-1f42-43ff-bd28-f83f2b36ac68.jpg"
     },
     {
         "song_name": "Side Man Extended Mix",
-        "artist_name": "Juos, Techno Tupac"
+        "artist_name": "Juos, Techno Tupac",
+        "label_name": "THRIVE MUSIC",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - E Major",
+        "album_art": "./basshouse_t100_files/4a6518d1-263d-4d4d-8e69-b7bdc79256a6.jpg"
     },
     {
-        "song_name": "Make It Work Extended Mix",
-        "artist_name": "TyriqueOrDie, bradeazy"
+        "song_name": "Make It Work  Extended Mix",
+        "artist_name": "TyriqueOrDie, bradeazy",
+        "label_name": "Boom Records LLC",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/1bd7db29-0844-413d-bdcf-8e4eaa73de85.jpg"
     },
     {
         "song_name": "Turn the Volume Up Extended Mix",
-        "artist_name": "Truth x Lies"
+        "artist_name": "Truth x Lies",
+        "label_name": "Create Music Group",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/36cd78ea-da26-4bcc-a80c-8854e34418cd.jpg"
     },
     {
         "song_name": "WHO BRANDON Remix, Extended Mix",
-        "artist_name": "Plastik Funk, Tujamo, BRANDON (DE)"
+        "artist_name": "Plastik Funk, Tujamo, BRANDON (DE)",
+        "label_name": "CITY STARS RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/dc23a100-1e61-4b3f-880d-324c4f695141.jpg"
     },
     {
-        "song_name": "Wannabe Extended Mix",
-        "artist_name": "Volac"
+        "song_name": "Wannabe  Extended Mix",
+        "artist_name": "Volac",
+        "label_name": "The Myth of NYX",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - G Major",
+        "album_art": "./basshouse_t100_files/27ecb2f4-f39b-4622-b725-bffaf2477c78.jpg"
     },
     {
         "song_name": "Beto's Horns fred remix",
-        "artist_name": "Fred again.., CA7RIEL & Paco Amoroso"
+        "artist_name": "Fred again.., CA7RIEL & Paco Amoroso",
+        "label_name": "Atlantic Records UK",
+        "genre": "Bass House",
+        "bpm_key": "127 BPM - E Minor",
+        "album_art": "./basshouse_t100_files/67733fe9-69d3-4305-a482-4fe64c12a0cc.jpg"
     },
     {
         "song_name": "Sound of da Police Extended Mix",
-        "artist_name": "Don Diablo"
+        "artist_name": "Don Diablo",
+        "label_name": "HEXAGON",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/1d109fea-b654-43fe-872b-b2450147785e.jpg"
     },
     {
         "song_name": "EZ Extended Mix",
-        "artist_name": "Puku, ACRAZE"
+        "artist_name": "Puku, ACRAZE",
+        "label_name": "THRIVE MUSIC",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Major",
+        "album_art": "./basshouse_t100_files/7fbcb41d-ea35-4969-847d-8c06fe3ee135.jpg"
     },
     {
         "song_name": "Blow Your Mind Extended",
-        "artist_name": "NO STATIC, POLOVICH"
+        "artist_name": "NO STATIC, POLOVICH",
+        "label_name": "GDB RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/26c4dac8-ba41-4c3a-a7ec-fe72a4e4cce2.jpg"
     },
     {
         "song_name": "Push The Tempo Extended Mix",
-        "artist_name": "Volac"
+        "artist_name": "Volac",
+        "label_name": "HUB Records",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/1fe2c1e1-1e19-4b90-91de-c3c3da58bf81.jpg"
     },
     {
         "song_name": "Gimme That Money Extended Mix",
-        "artist_name": "Wax Motif"
+        "artist_name": "Wax Motif",
+        "label_name": "Divided Souls",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - C Minor",
+        "album_art": "./basshouse_t100_files/51f140dd-7502-44c9-a9b1-5a61ecae3050.jpg"
     },
     {
         "song_name": "Baby again.. Original Mix",
-        "artist_name": "Four Tet, Skrillex, Fred again.."
+        "artist_name": "Four Tet, Skrillex, Fred again..",
+        "label_name": "Atlantic Records UK",
+        "genre": "Bass House",
+        "bpm_key": "127 BPM - G Major",
+        "album_art": "./basshouse_t100_files/63924f3e-e43c-4e0e-90a9-c9be25119586.jpg"
     },
     {
         "song_name": "Vertigo Extended Mix",
-        "artist_name": "Kamino, Kyra Mastro"
+        "artist_name": "Kamino, Kyra Mastro",
+        "label_name": "THRIVE MUSIC",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - E Major",
+        "album_art": "./basshouse_t100_files/28194685-d54e-433a-8c7f-55120cceabb0.jpg"
     },
     {
         "song_name": "Girls Extended Mix",
-        "artist_name": "G-Pol, ANSWER (CN)"
+        "artist_name": "G-Pol, ANSWER (CN)",
+        "label_name": "HEXAGON",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Db Minor",
+        "album_art": "./basshouse_t100_files/d07e85c4-44f3-45c4-956d-5123ce50238f.jpg"
     },
     {
         "song_name": "Girls Like That Extended Mix",
-        "artist_name": "GREG 99"
+        "artist_name": "GREG 99",
+        "label_name": "Experts Only",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - G Major",
+        "album_art": "./basshouse_t100_files/4bd2025e-384a-416e-be9f-2ff2360357c3.jpg"
     },
     {
         "song_name": "Cocaine Inside My Blunts (Dave Summer Remix) Extended Mix",
-        "artist_name": "Dave Summer, Disco Lines"
+        "artist_name": "Dave Summer, Disco Lines",
+        "label_name": "Good Good Records",
+        "genre": "Bass House",
+        "bpm_key": "131 BPM - F Major",
+        "album_art": "./basshouse_t100_files/f057fd9d-8898-48da-940a-1c3154b42114.jpg"
     },
     {
         "song_name": "Strobe Lights Original Mix",
-        "artist_name": "Öwnboss"
+        "artist_name": "Öwnboss",
+        "label_name": "Confession",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Major",
+        "album_art": "./basshouse_t100_files/7d4b686d-df6f-4c35-bafd-31f78d8db2e4.jpg"
     },
     {
         "song_name": "The Days NOTION Remix",
-        "artist_name": "NOTION, Chrystal"
+        "artist_name": "NOTION, Chrystal",
+        "label_name": "Chaos",
+        "genre": "Bass House",
+        "bpm_key": "138 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/bf8879b6-a435-4bf4-8b3b-724a624c8521.jpg"
     },
     {
-        "song_name": "Shake That Extended Mix",
-        "artist_name": "Ship Wrek"
+        "song_name": "Shake That  Extended Mix",
+        "artist_name": "Ship Wrek",
+        "label_name": "Boom Records LLC",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/f2d86af1-5026-4746-bcfe-914461239b1d.jpg"
     },
     {
         "song_name": "The Days NOTION Extended Remix",
-        "artist_name": "NOTION, Chrystal"
+        "artist_name": "NOTION, Chrystal",
+        "label_name": "Polydor Records",
+        "genre": "Bass House",
+        "bpm_key": "138 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/3cc3e57b-5949-4363-950d-475768340cbb.jpg"
     },
     {
         "song_name": "Night Pulse Extended Mix",
-        "artist_name": "Chapter & Verse"
+        "artist_name": "Chapter & Verse",
+        "label_name": "Ultra",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/e0e46258-e7f8-4cb5-b3f6-8e35a95e1cc8.jpg"
     },
     {
         "song_name": "No Fakers Extended Mix",
-        "artist_name": "Blank Sense"
+        "artist_name": "Blank Sense",
+        "label_name": "THRIVE MUSIC",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - G Minor",
+        "album_art": "./basshouse_t100_files/e4884495-8a4a-4ba1-8814-09276db3012f.jpg"
     },
     {
         "song_name": "We Like It Raw Original Mix",
-        "artist_name": "GREG 99"
+        "artist_name": "GREG 99",
+        "label_name": "tszr",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - C Minor",
+        "album_art": "./basshouse_t100_files/8d01809c-0ef2-414d-8a5e-3c4a963b4881.jpg"
     },
     {
-        "song_name": "Louis V Original Mix",
-        "artist_name": "Chapter & Verse"
+        "song_name": "Louis V  Original Mix",
+        "artist_name": "Chapter & Verse",
+        "label_name": "ATOM.",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/274846dc-792f-4568-a828-23dc81607f28.jpg"
     },
     {
         "song_name": "SexyBack Extended Mix",
-        "artist_name": "TOYZZ"
+        "artist_name": "TOYZZ",
+        "label_name": "SPINNIN' DEEP",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - A Minor",
+        "album_art": "./basshouse_t100_files/c66012a4-546d-42b3-8385-7e1dcddca15a.jpg"
     },
     {
-        "song_name": "Back Extended Mix",
-        "artist_name": "Lahox"
+        "song_name": "Back  Extended Mix",
+        "artist_name": "Lahox",
+        "label_name": "dFunk Records",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/5a64a3d1-3141-42f9-8191-a09ee3e2026f.jpg"
     },
     {
         "song_name": "Ayer Extended",
-        "artist_name": "NIIKO X SWAE"
+        "artist_name": "NIIKO X SWAE",
+        "label_name": "Broke",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - G Major",
+        "album_art": "./basshouse_t100_files/58b59653-e20d-48d5-a0ba-2ddbac5f7fec.jpg"
     },
     {
         "song_name": "Disco Inferno Extended",
-        "artist_name": "NIIKO X SWAE"
+        "artist_name": "NIIKO X SWAE",
+        "label_name": "RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "131 BPM - D Major",
+        "album_art": "./basshouse_t100_files/6ea19b56-4c16-4909-ae87-a458d7915a18.jpg"
     },
     {
         "song_name": "Tom's Diner Original Mix",
-        "artist_name": "MARTEN HØRGER"
+        "artist_name": "MARTEN HØRGER",
+        "label_name": "Confession",
+        "genre": "Bass House",
+        "bpm_key": "131 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/2e5029a3-cd11-4a9d-8674-fdb29365d4d3.jpg"
     },
     {
         "song_name": "Fee Fi Fo Fum (feat. KAM-BU) Extended Mix",
-        "artist_name": "Walker & Royce, KAM-BU"
+        "artist_name": "Walker & Royce, KAM-BU",
+        "label_name": "Insomniac Records",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Bb Major",
+        "album_art": "./basshouse_t100_files/f0b8b14f-63a8-4aca-8906-8e6121bad0df.jpg"
     },
     {
         "song_name": "BOTA Extended Mix",
-        "artist_name": "Wax Motif, MC Lan"
+        "artist_name": "Wax Motif, MC Lan",
+        "label_name": "Divided Souls",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/ecf040bb-e902-4ff0-9fcf-1d31c1b606d0.jpg"
     },
     {
         "song_name": "Ooops Original Mix",
-        "artist_name": "ESSE (US)"
+        "artist_name": "ESSE (US)",
+        "label_name": "Confession",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/ccadbc90-3909-4b6c-a5fd-295e40f36ea7.jpg"
     },
     {
         "song_name": "Versatile Gorgon City Remix - Extended",
-        "artist_name": "L.P. Rhythm, Gorgon City"
+        "artist_name": "L.P. Rhythm, Gorgon City",
+        "label_name": "Disorder",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - D Major",
+        "album_art": "./basshouse_t100_files/6879275c-32f1-4438-8519-3029ff68b062.jpg"
     },
     {
         "song_name": "Candela Extended Mix",
-        "artist_name": "Juos"
+        "artist_name": "Juos",
+        "label_name": "THRIVE MUSIC",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/55c6e05e-76ef-4b2f-8f57-d014c63607dc.jpg"
     },
     {
         "song_name": "Hot Off the Press Extended Mix",
-        "artist_name": "WILL K"
+        "artist_name": "WILL K",
+        "label_name": "Sweat It Out",
+        "genre": "Bass House",
+        "bpm_key": "131 BPM - E Major",
+        "album_art": "./basshouse_t100_files/2902b9e0-2a21-4625-8f06-cb0cacad2a23.jpg"
     },
     {
         "song_name": "Everything You Have Done Meduza Edit Extended",
-        "artist_name": "GENESI (ITA), Meduza"
+        "artist_name": "GENESI (ITA), Meduza",
+        "label_name": "AETERNA Records",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - G Minor",
+        "album_art": "./basshouse_t100_files/003f992d-207c-4cab-9f13-a13aad6ff961.jpg"
     },
     {
         "song_name": "like me extended mix",
-        "artist_name": "J. Worra"
+        "artist_name": "J. Worra",
+        "label_name": "dialogxe",
+        "genre": "Bass House",
+        "bpm_key": "129 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/25132f0c-9ca4-46dd-8f92-06221386862d.jpg"
     },
     {
         "song_name": "Work Extended Mix",
-        "artist_name": "Proppa, Rich DietZ, Smith & Sorren"
+        "artist_name": "Proppa, Rich DietZ, Smith & Sorren",
+        "label_name": "Musical Freedom",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Minor",
+        "album_art": "./basshouse_t100_files/d9a43b51-1a0d-4ac6-8682-b513e7ab835e.jpg"
     },
     {
-        "song_name": "Over Here Extended Mix",
-        "artist_name": "Volac"
+        "song_name": "Over Here  Extended Mix",
+        "artist_name": "Volac",
+        "label_name": "The Myth of NYX",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/6d590d9f-ba6e-47e3-9592-a2c0c94b880d.jpg"
     },
     {
         "song_name": "Do You Original Mix",
-        "artist_name": "Vintage Culture"
+        "artist_name": "Vintage Culture",
+        "label_name": "Diynamic",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Major",
+        "album_art": "./basshouse_t100_files/bad1331c-49ca-4206-9c93-bc5a40ccca77.jpg"
     },
     {
         "song_name": "Cry (Just A Little) Just A Little",
-        "artist_name": "HILLS (US)"
+        "artist_name": "HILLS (US)",
+        "label_name": "SPINNIN' DEEP",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - E Minor",
+        "album_art": "./basshouse_t100_files/d9cd07f1-672f-40ec-ac51-d8bc6e0ed303.jpg"
     },
     {
         "song_name": "Generation Extended Mix",
-        "artist_name": "TOYZZ"
+        "artist_name": "TOYZZ",
+        "label_name": "SPINNIN' DEEP",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/a2705bdb-69ef-40f0-b7bf-edaf5f1268a5.jpg"
     },
     {
         "song_name": "Midnight Trip Extended Mix",
-        "artist_name": "TOYZZ"
+        "artist_name": "TOYZZ",
+        "label_name": "SPINNIN' DEEP",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/b659b1f3-8954-4b8b-bfdc-47182a070e89.jpg"
     },
     {
         "song_name": "Carnage Original Mix",
-        "artist_name": "Adam Sellouk, Doriann (IL)"
+        "artist_name": "Adam Sellouk, Doriann (IL)",
+        "label_name": "FUNKSHWAY",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - D Major",
+        "album_art": "./basshouse_t100_files/e3ef0742-5f5c-48b6-aa47-88cef4fad0be.jpg"
     },
     {
         "song_name": "Everyone's Your Friend Extended Mix",
-        "artist_name": "Marco Strous, OMNOM"
+        "artist_name": "Marco Strous, OMNOM",
+        "label_name": "Insomniac Records",
+        "genre": "Bass House",
+        "bpm_key": "134 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/983ea236-484a-4bce-be50-78dca3f5d026.jpg"
     },
     {
         "song_name": "Push The Tempo Odd Mob Extended Mix",
-        "artist_name": "Sub Focus, Katy B, Odd Mob"
+        "artist_name": "Sub Focus, Katy B, Odd Mob",
+        "label_name": "Positiva",
+        "genre": "Bass House",
+        "bpm_key": "136 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/5ca2d106-cac8-4509-a334-bf1a7401ae2c.jpg"
     },
     {
         "song_name": "MAMI Extended Mix",
-        "artist_name": "Chris Lorenzo, COBRAH"
+        "artist_name": "Chris Lorenzo, COBRAH",
+        "label_name": "Late Checkout",
+        "genre": "Bass House",
+        "bpm_key": "126 BPM - Bb Major",
+        "album_art": "./basshouse_t100_files/62688b0a-da40-47a7-b1b9-d3bdf862e3dd.jpg"
     },
     {
-        "song_name": "Club Rat Extended Mix",
-        "artist_name": "BARTS"
+        "song_name": "Club Rat  Extended Mix",
+        "artist_name": "BARTS",
+        "label_name": "TMRW Music",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - F Major",
+        "album_art": "./basshouse_t100_files/d23a1639-c014-41fd-9fff-e49526eb0b48.jpg"
     },
     {
         "song_name": "More Extended Mix",
-        "artist_name": "Boris Way, Zans"
+        "artist_name": "Boris Way, Zans",
+        "label_name": "Ultra",
+        "genre": "Bass House",
+        "bpm_key": "126 BPM - E Major",
+        "album_art": "./basshouse_t100_files/cf34dd06-cf44-4541-8f7e-dfedc1020f69.jpg"
     },
     {
         "song_name": "Beto's Horns fred remix",
-        "artist_name": "Fred again.., CA7RIEL & Paco Amoroso"
+        "artist_name": "Fred again.., CA7RIEL & Paco Amoroso",
+        "label_name": "Atlantic Records UK",
+        "genre": "Bass House",
+        "bpm_key": "127 BPM - E Minor",
+        "album_art": "./basshouse_t100_files/672ac13d-34cf-454d-b35f-196542fafcc8.jpg"
     },
     {
         "song_name": "Run It Up (feat. 24Hrs) Extended Mix",
-        "artist_name": "Wax Motif, 24hrs, Juos"
+        "artist_name": "Wax Motif, 24hrs, Juos",
+        "label_name": "Divided Souls",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Db Minor",
+        "album_art": "./basshouse_t100_files/d9830a4e-f438-4bcb-8cf1-7b18d5137bd5.jpg"
     },
     {
         "song_name": "Let Me Clear My Throat Original Mix",
-        "artist_name": "Devault"
+        "artist_name": "Devault",
+        "label_name": "Devault",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - E Major",
+        "album_art": "./basshouse_t100_files/f1c93401-2917-46db-aa02-f217b2931613.jpg"
     },
     {
         "song_name": "I JUS WAN 2 Original Mix",
-        "artist_name": "X CLUB."
+        "artist_name": "X CLUB.",
+        "label_name": "Steel City Dance Discs ",
+        "genre": "Bass House",
+        "bpm_key": "139 BPM - Bb Major",
+        "album_art": "./basshouse_t100_files/bf6f5fea-daee-4deb-8e9b-3cd2217c6974.jpg"
     },
     {
         "song_name": "feel U luv Me Original Mix",
-        "artist_name": "Knock2"
+        "artist_name": "Knock2",
+        "label_name": "88rising Music",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/92591b81-6182-4522-bcdd-d2da3fbb37a4.jpg"
     },
     {
         "song_name": "Primitive Love Ritual Original Mix",
-        "artist_name": "Remo Giugni, JOY RIVO & JTO"
+        "artist_name": "Remo Giugni, JOY RIVO & JTO",
+        "label_name": "Black Lizard Records",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/d66fdccf-a1e2-4e21-8483-c9a3a9386bf3.jpg"
     },
     {
         "song_name": "Not Normal Extended Mix",
-        "artist_name": "Unusual (DE)"
+        "artist_name": "Unusual (DE)",
+        "label_name": "WHATS POPPIN",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Ab Major",
+        "album_art": "./basshouse_t100_files/6224841b-8333-4ee4-8b90-fa89d2bbb5b7.jpg"
     },
     {
         "song_name": "The Block Extended Mix",
-        "artist_name": "Julian Jordan"
+        "artist_name": "Julian Jordan",
+        "label_name": "STMPD RCRDS",
+        "genre": "Bass House",
+        "bpm_key": "134 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/b17658c4-bc57-4f35-83ba-52bde469be3c.jpg"
     },
     {
         "song_name": "Overdrive Extended Mix",
-        "artist_name": "Cyril, Rome Fortune"
+        "artist_name": "Cyril, Rome Fortune",
+        "label_name": "SPINNIN' RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Major",
+        "album_art": "./basshouse_t100_files/3fc8439a-9c77-49d3-93ab-ef139454266b.jpg"
     },
     {
         "song_name": "Grove St. Party Extended",
-        "artist_name": "Waka Flocka Flame, Proppa"
+        "artist_name": "Waka Flocka Flame, Proppa",
+        "label_name": "Major Recordings/Warner Records",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Minor",
+        "album_art": "./basshouse_t100_files/50569358-c9f9-4359-9a73-7b173c15d7ae.jpg"
     },
     {
         "song_name": "WHO Tujamo's 2025 Club Mix,Extended Mix",
-        "artist_name": "Plastik Funk, Tujamo"
+        "artist_name": "Plastik Funk, Tujamo",
+        "label_name": "CITY STARS RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/be18cd07-1662-412d-bb38-a389a37e0a9f.jpg"
     },
     {
-        "song_name": "To The Rhythm Extended Mix",
-        "artist_name": "Matt Faulk"
+        "song_name": "To The Rhythm  Extended Mix",
+        "artist_name": "Matt Faulk",
+        "label_name": "PUBLIC DOMAIN™",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/1fc168f9-bafb-4e1f-acc4-e78f6aeaa19e.jpg"
     },
     {
         "song_name": "Freaky Time Original Mix",
-        "artist_name": "Westend"
+        "artist_name": "Westend",
+        "label_name": "Trace Amounts",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - G Major",
+        "album_art": "./basshouse_t100_files/586ce537-0341-4c0c-819f-c9360da4780c.jpg"
     },
     {
         "song_name": "HYPNOSIS Extended Mix",
-        "artist_name": "AYYBO, Ero808"
+        "artist_name": "AYYBO, Ero808",
+        "label_name": "FUNKSHWAY",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - Ab Minor",
+        "album_art": "./basshouse_t100_files/1c6e939a-eb2e-468d-aa7b-2c7792fa6a9e.jpg"
     },
     {
         "song_name": "Screamer Original Mix",
-        "artist_name": "MPH"
+        "artist_name": "MPH",
+        "label_name": "Night Bass Records",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Major",
+        "album_art": "./basshouse_t100_files/d9cafb0d-a093-46aa-8b0f-376bc61b3f48.jpg"
     },
     {
         "song_name": "On My Mind Original Mix",
-        "artist_name": "Diplo, SIDEPIECE"
+        "artist_name": "Diplo, SIDEPIECE",
+        "label_name": "Higher Ground",
+        "genre": "Bass House",
+        "bpm_key": "123 BPM - G Minor",
+        "album_art": "./basshouse_t100_files/fda2addd-4d4a-472f-a54c-f395ce362ce4.jpg"
     },
     {
         "song_name": "WET Original Mix",
-        "artist_name": "Wax Motif"
+        "artist_name": "Wax Motif",
+        "label_name": "Mad Decent",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - F Major",
+        "album_art": "./basshouse_t100_files/5dd844f3-6613-4ee3-8afa-e560f474be51.jpg"
     },
     {
         "song_name": "FAFO Extended Mix",
-        "artist_name": "Halogen"
+        "artist_name": "Halogen",
+        "label_name": "Ultra",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/30e16f41-7675-438e-b6e1-b6fbb3858ffe.jpg"
     },
     {
         "song_name": "Dreaming Extended Club Mix",
-        "artist_name": "A7S, Header"
+        "artist_name": "A7S, Header",
+        "label_name": "SPINNIN' RECORDS",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/03b29922-4863-49a6-bf02-9f6f09104f61.jpg"
     },
     {
-        "song_name": "Substance Original Mix",
-        "artist_name": "MPH, Ev, Sparkz"
+        "song_name": "Untouchable Extended Mix",
+        "artist_name": "MPH, Habstrakt",
+        "label_name": "MPH UK",
+        "genre": "Bass House",
+        "bpm_key": "136 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/a426b8bf-bf9c-45f9-815a-f74e43efc3a4.jpg"
     },
     {
         "song_name": "Grind It Extended Mix",
-        "artist_name": "Julian Jordan, EJ3000"
+        "artist_name": "Julian Jordan, EJ3000",
+        "label_name": "STMPD RCRDS",
+        "genre": "Bass House",
+        "bpm_key": "132 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/0a7a7f7a-b761-4943-a4c4-4e63749a0a0b.jpg"
     },
     {
         "song_name": "Vertigo feat. Ed Graves Extended Mix",
-        "artist_name": "Odd Mob, Ed Graves"
+        "artist_name": "Odd Mob, Ed Graves",
+        "label_name": "October Records",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Eb Minor",
+        "album_art": "./basshouse_t100_files/b11a7da4-179e-4b77-a8df-1aab5cb08181.jpg"
     },
     {
         "song_name": "Goodies Extended Mix",
-        "artist_name": "Dillon Hart Francis"
+        "artist_name": "Dillon Hart Francis",
+        "label_name": "Astralwerks",
+        "genre": "Bass House",
+        "bpm_key": "126 BPM - F Minor",
+        "album_art": "./basshouse_t100_files/9abfd3e6-89f4-4c6e-839b-6a98475c6948.jpg"
     },
     {
         "song_name": "JUST LIKE Original Mix",
-        "artist_name": "Jacknife, JPKy"
+        "artist_name": "Jacknife, JPKy",
+        "label_name": "MONTA",
+        "genre": "Bass House",
+        "bpm_key": "140 BPM - Eb Major",
+        "album_art": "./basshouse_t100_files/4b9dabf5-181d-41ed-96c7-e36879003174.jpg"
     },
     {
         "song_name": "White Horse Extended Mix",
-        "artist_name": "Stev Dive"
+        "artist_name": "Stev Dive",
+        "label_name": "Mukoko Groove",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - A Major",
+        "album_art": "./basshouse_t100_files/e23c5c5c-d914-488c-b8f4-b7f02eba8f36.jpg"
     },
     {
         "song_name": "808 Extended",
-        "artist_name": "Kapuzen"
+        "artist_name": "Kapuzen",
+        "label_name": "Music is blaah!",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/97e1a75f-a1e6-48e3-bcaa-1358c9486e9a.jpg"
     },
     {
         "song_name": "All I Need Is You feat. Myke Tyler Extended Mix",
-        "artist_name": "Megisto, Myke Tyler"
+        "artist_name": "Megisto, Myke Tyler",
+        "label_name": "STMPD RCRDS",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Gb Minor",
+        "album_art": "./basshouse_t100_files/1846a282-13ea-4ec1-b8c9-dff5af89aa11.jpg"
     },
     {
-        "song_name": "That Girl Extended Mix",
-        "artist_name": "Matt Faulk"
+        "song_name": "That Girl  Extended Mix",
+        "artist_name": "Matt Faulk",
+        "label_name": "PUBLIC DOMAIN™",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - C Minor",
+        "album_art": "./basshouse_t100_files/e9c4fda8-1ec2-4ce8-b66d-f642741f2ab5.jpg"
     },
     {
         "song_name": "B2U Original Mix",
-        "artist_name": "Dillon Francis, MARTEN HØRGER"
+        "artist_name": "Dillon Francis, MARTEN HØRGER",
+        "label_name": "1001 Recordings",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - E Major",
+        "album_art": "./basshouse_t100_files/61f5b48d-4873-4b30-9e9b-f0be48748ef6.jpg"
     },
     {
         "song_name": "JOKERS HOUSE Extended Mix",
-        "artist_name": "DONT BLINK"
+        "artist_name": "DONT BLINK",
+        "label_name": "LOW CEILING",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - F Major",
+        "album_art": "./basshouse_t100_files/519c794c-8cb1-4b3c-b418-bd3403b785b3.jpg"
     },
     {
         "song_name": "R 2 ME Extended Mix",
-        "artist_name": "Tchami, BL3SS"
+        "artist_name": "Tchami, BL3SS",
+        "label_name": "Atlantic Records UK",
+        "genre": "Bass House",
+        "bpm_key": "138 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/5e6cb1c6-d839-4c23-b23b-573c39628852.jpg"
     },
     {
         "song_name": "Move Your Body Extended Mix",
-        "artist_name": "Öwnboss, SEVEK"
+        "artist_name": "Öwnboss, SEVEK",
+        "label_name": "Musical Freedom",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - D Minor",
+        "album_art": "./basshouse_t100_files/e39eabbe-b2e9-4f29-bd5f-88c5a9fa994d.jpg"
     },
     {
         "song_name": "Up Fuck The Shut 2026 Vocal Mix",
-        "artist_name": "LJ MTX"
+        "artist_name": "LJ MTX",
+        "label_name": "Almost Famous Music",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - Ab Minor",
+        "album_art": "./basshouse_t100_files/5e969fbf-b3a0-46cb-84b1-7063b52f3fd6.jpg"
     },
     {
         "song_name": "Bump It Original Mix",
-        "artist_name": "Alex Cecil"
+        "artist_name": "Alex Cecil",
+        "label_name": "Black Lizard Records",
+        "genre": "Bass House",
+        "bpm_key": "125 BPM - C Major",
+        "album_art": "./basshouse_t100_files/ab10cb7c-ff40-4304-9c57-38caa1bf77d6.jpg"
     },
     {
         "song_name": "Cant Get Enough Original Mix",
-        "artist_name": "Gangs Type"
+        "artist_name": "Gangs Type",
+        "label_name": "Disturbed Records",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Db Major",
+        "album_art": "./basshouse_t100_files/b01b0c62-5375-4f3d-a0d2-e41cb61b83f6.jpg"
     },
     {
         "song_name": "Pushin On Extended Mix",
-        "artist_name": "Jus Ron"
+        "artist_name": "Jus Ron",
+        "label_name": "Rock Bottom Records",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/24358d8e-c420-48c0-98c5-9ed501441a6e.jpg"
     },
     {
         "song_name": "CSIRAC Effy Remix",
-        "artist_name": "Ninajirachi, Effy"
+        "artist_name": "Ninajirachi, Effy",
+        "label_name": "NLV Records",
+        "genre": "Bass House",
+        "bpm_key": "71 BPM - B Minor",
+        "album_art": "./basshouse_t100_files/d080326a-0237-4e5f-9d6b-c505f91b087d.jpg"
     },
     {
         "song_name": "304 Original Mix",
-        "artist_name": "Maxx Steele"
+        "artist_name": "Maxx Steele",
+        "label_name": "Broke",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - G Major",
+        "album_art": "./basshouse_t100_files/9f0af369-3a64-4705-88fd-72f62e695331.jpg"
     },
     {
         "song_name": "No Time To Talk Original Mix",
-        "artist_name": "Juntaro, LOOZBONE"
-    },
-    {
-        "song_name": "Back to the Roots Original Mix",
-        "artist_name": "Esse, Malaa"
+        "artist_name": "Juntaro, LOOZBONE",
+        "label_name": "DND RECS",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Major",
+        "album_art": "./basshouse_t100_files/25f1cb92-f53e-4eaf-80c3-ac5ae1557e5b.jpg"
     },
     {
         "song_name": "Strip (feat. Rich Rocka) Extended Mix",
-        "artist_name": "Malaa"
+        "artist_name": "Malaa",
+        "label_name": "Malaa Music LLC",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - D Major",
+        "album_art": "./basshouse_t100_files/c89909f5-61d3-4230-b1e4-0cacd9767184.jpg"
     },
     {
         "song_name": "Keep It Cool Original Mix",
-        "artist_name": "BRANDON (DE)"
+        "artist_name": "BRANDON (DE)",
+        "label_name": "Confession",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - E Major",
+        "album_art": "./basshouse_t100_files/d7f24f3f-a3a0-4a22-9330-2a5e5150dbae.jpg"
     },
     {
         "song_name": "At The Disco Extended Mix",
-        "artist_name": "Twin Diplomacy"
+        "artist_name": "Twin Diplomacy",
+        "label_name": "All Ways Dance",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - Ab Major",
+        "album_art": "./basshouse_t100_files/e6612028-f473-4f12-8f63-f9b0b94d7317.jpg"
     },
     {
         "song_name": "Un Grrr Original Mix",
-        "artist_name": "ESSE (US)"
+        "artist_name": "ESSE (US)",
+        "label_name": "ESSEntial.",
+        "genre": "Bass House",
+        "bpm_key": "130 BPM - Ab Minor",
+        "album_art": "./basshouse_t100_files/86cc6161-5675-452c-b568-c34f34fa0b18.jpg"
     },
     {
         "song_name": "ON ME Original Mix",
-        "artist_name": "Arya"
+        "artist_name": "Arya",
+        "label_name": "NIGHTMODE",
+        "genre": "Bass House",
+        "bpm_key": "140 BPM - D Minor",
+        "album_art": "./basshouse_t100_files/82be1a72-3656-4a4a-bd62-8dd1e81267b1.jpg"
     },
     {
         "song_name": "Work It Original Mix",
-        "artist_name": "ESSE (US)"
+        "artist_name": "ESSE (US)",
+        "label_name": "Confession",
+        "genre": "Bass House",
+        "bpm_key": "128 BPM - F Major",
+        "album_art": "./basshouse_t100_files/7cc8356f-0e58-4273-83f2-deeb34c55b07.jpg"
     }
 ]
