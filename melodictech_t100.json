@@ -1,720 +1,802 @@
 [
     {
-        "song_name": "Lost (Original Mix)",
-        "artists": [
-            "Vintage Culture",
-            "Gabss"
-        ]
+        "song_name": "Lost Original Mix",
+        "artist_name": "Vintage Culture, Gabss",
+        "label_name": "AFFAIRS",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - G Minor",
+        "album_art": "./melotech_t100_files/817e25bd-c35c-42db-bd35-53905b9aebfa(1).jpg"
     },
     {
-        "song_name": "Dreams (Extended Mix)",
-        "artists": [
-            "Anyma (ofc)",
-            "HILLS (US)"
-        ]
+        "song_name": "Dreams Extended Mix",
+        "artist_name": "Anyma (ofc), HILLS (US)",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - F Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
     },
     {
-        "song_name": "You & Me (Vintage Culture Extended Remix)",
-        "artists": [
-            "Vintage Culture",
-            "Max Styler"
-        ]
+        "song_name": "You & Me Vintage Culture Extended Remix",
+        "artist_name": "Vintage Culture, Max Styler",
+        "label_name": "Nu Moda",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - F Minor",
+        "album_art": "./melotech_t100_files/dbb950aa-8696-45b5-8834-5eaedd376f6f(1).jpg"
     },
     {
-        "song_name": "Love Parade (Extended Mix)",
-        "artists": [
-            "Da Hool",
-            "Cassian",
-            "YOTTO"
-        ]
+        "song_name": "Love Parade Extended Mix",
+        "artist_name": "Da Hool, Cassian, YOTTO",
+        "label_name": "Afterlife Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - D Major",
+        "album_art": "./melotech_t100_files/e2c33a54-dc5e-4b21-b2bf-69c4ae590b59(1).jpg"
     },
     {
-        "song_name": "For a Feeling (Adam Sellouk & Y do I Remix - Extended)",
-        "artists": [
-            "Rhodes",
-            "CamelPhat",
-            "ARTBAT",
-            "Y do I",
-            "Adam Sellouk"
-        ]
+        "song_name": "For a Feeling Adam Sellouk & Y do I Remix - Extended",
+        "artist_name": "Rhodes, CamelPhat, ARTBAT, Y do I, Adam Sellouk",
+        "label_name": "RCA Records Label",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - A Minor",
+        "album_art": "./melotech_t100_files/6f4bb7eb-8506-459e-86a1-393c5a209cb0.jpg"
     },
     {
-        "song_name": "Pump Up The Jam (Extended Mix)",
-        "artists": [
-            "Laherte"
-        ]
+        "song_name": "Pump Up The Jam Extended Mix",
+        "artist_name": "Laherte",
+        "label_name": "CIRCA Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - C Minor",
+        "album_art": "./melotech_t100_files/ee305f35-4abc-4267-b759-454651363fa5.jpg"
     },
     {
-        "song_name": "You Gonna Want Me (I Know) (Extended Mix)",
-        "artists": [
-            "Tiga",
-            "Meduza"
-        ]
+        "song_name": "You Gonna Want Me (I Know) Extended Mix",
+        "artist_name": "Tiga, Meduza",
+        "label_name": "Armada Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Bb Major",
+        "album_art": "./melotech_t100_files/8e4ce4e4-3bd2-4726-8bfd-1b5ab7f8a493.jpg"
     },
     {
-        "song_name": "Save Me (Ajna & Samm Extended Remix)",
-        "artists": [
-            "CamelPhat",
-            "Marten Lou",
-            "Ajna (BE)",
-            "Samm (BE)"
-        ]
+        "song_name": "Save Me Ajna & Samm Extended Remix",
+        "artist_name": "CamelPhat, Marten Lou, Ajna (BE), Samm (BE)",
+        "label_name": "SDM / Warner Music Central Europe",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - B Major",
+        "album_art": "./melotech_t100_files/dd1b1b34-73d0-4629-868b-5c940cbc87e1.jpg"
     },
     {
-        "song_name": "Neverland (From Japan) (HNTR Remix - Extended Mix)",
-        "artists": [
-            "Baset",
-            "Anyma (ofc)",
-            "HNTR"
-        ]
+        "song_name": "Neverland (From Japan) HNTR Remix - Extended Mix",
+        "artist_name": "Baset, Anyma (ofc), HNTR",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - D Major",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
     },
     {
-        "song_name": "Waitin' (Extended Mix)",
-        "artists": [
-            "HotLap"
-        ]
+        "song_name": "Waitin' Extended Mix",
+        "artist_name": "HotLap",
+        "label_name": "7CULT",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - Gb Major",
+        "album_art": "./melotech_t100_files/79618870-bb8e-4be0-b3c1-007af1500ecd.jpg"
     },
     {
-        "song_name": "Feels Like Us (Extended Mix)",
-        "artists": [
-            "Devault"
-        ]
+        "song_name": "Feels Like Us Extended Mix",
+        "artist_name": "Devault",
+        "label_name": "Experts Only",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - G Minor",
+        "album_art": "./melotech_t100_files/834e0e73-f8bf-440a-987d-ff38308d8c1d.jpg"
     },
     {
-        "song_name": "Never Alone (Extended Mix)",
-        "artists": [
-            "Adriatique",
-            "Vincent Vossen",
-            "Yubik"
-        ]
+        "song_name": "Never Alone Extended Mix",
+        "artist_name": "Adriatique, Vincent Vossen, Yubik",
+        "label_name": "Siamese",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - F Minor",
+        "album_art": "./melotech_t100_files/0932ddff-0028-4701-bc60-8ed305e9105b.jpg"
     },
     {
-        "song_name": "If Your Girl Only Knew (Extended Mix)",
-        "artists": [
-            "Fahlberg",
-            "Arodes"
-        ]
+        "song_name": "If Your Girl Only Knew Extended Mix",
+        "artist_name": "Fahlberg, Arodes",
+        "label_name": "One Seven Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - G Minor",
+        "album_art": "./melotech_t100_files/3e85115c-d9f5-4b3e-b4be-e0723f351843.jpg"
     },
     {
-        "song_name": "DISCOTEKA (Extended)",
-        "artists": [
-            "Benny Benassi",
-            "Tobias Gerard"
-        ]
+        "song_name": "DISCOTEKA Extended",
+        "artist_name": "Benny Benassi, Tobias Gerard",
+        "label_name": "AETERNA Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "129 BPM - Eb Major",
+        "album_art": "./melotech_t100_files/8e514dd2-914d-46f1-aa30-b98589f10e48.jpg"
     },
     {
-        "song_name": "The Rapture Pt.III (Original Mix)",
-        "artists": [
-            "&ME",
-            "Black Coffee",
-            "Keinemusik"
-        ]
+        "song_name": "The Rapture Pt.III Original Mix",
+        "artist_name": "&ME, Black Coffee, Keinemusik",
+        "label_name": "Keinemusik",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "120 BPM - E Minor",
+        "album_art": "./melotech_t100_files/d1ad9579-68f3-46d9-8c81-c3f16c908a84.jpg"
     },
     {
-        "song_name": "In the Moment (Adriatique Extended Remix)",
-        "artists": [
-            "RÜFÜS DU SOL",
-            "Adriatique"
-        ]
+        "song_name": "In the Moment Adriatique Extended Remix",
+        "artist_name": "RÜFÜS DU SOL, Adriatique",
+        "label_name": "Rose Avenue/Reprise",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - Bb Minor",
+        "album_art": "./melotech_t100_files/8bbbf6ea-eefc-48fc-8d6d-f6dca908be1d.jpg"
     },
     {
-        "song_name": "Malabaris (Extended Mix)",
-        "artists": [
-            "Vintage Culture",
-            "Mila Journée"
-        ]
+        "song_name": "Malabaris Extended Mix",
+        "artist_name": "Vintage Culture, Mila Journée",
+        "label_name": "Journeey Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - Gb Major",
+        "album_art": "./melotech_t100_files/8592bcb6-af7b-4334-ba2e-cf42243102ca.jpg"
     },
     {
-        "song_name": "Out Of My Body feat. EJAE (Extended Mix)",
-        "artists": [
-            "Anyma (ofc)",
-            "EJAE"
-        ]
+        "song_name": "Out Of My Body feat. EJAE Extended Mix",
+        "artist_name": "Anyma (ofc), EJAE",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Eb Minor",
+        "album_art": "./melotech_t100_files/5f875c85-ace5-463d-a6fb-eb0cf15685dd.jpg"
     },
     {
-        "song_name": "Control (Original Mix)",
-        "artists": [
-            "imallryt",
-            "Meyer (ofc)"
-        ]
+        "song_name": "Control Original Mix",
+        "artist_name": "imallryt, Meyer (ofc)",
+        "label_name": "mau5trap",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - F Minor",
+        "album_art": "./melotech_t100_files/1a721dc0-61b7-4b4d-be55-b2989f61bc30.jpg"
     },
     {
-        "song_name": "Simulation (SCRIPT Remix - Extended Mix)",
-        "artists": [
-            "Chris Avantgarde",
-            "Anyma (ofc)",
-            "SCRIPT"
-        ]
+        "song_name": "Simulation SCRIPT Remix - Extended Mix",
+        "artist_name": "Chris Avantgarde, Anyma (ofc), SCRIPT",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - E Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
     },
     {
-        "song_name": "If U Ever (Original Mix)",
-        "artists": [
-            "Meloko",
-            "Konvex (FR)",
-            "Garla"
-        ]
+        "song_name": "If U Ever Original Mix",
+        "artist_name": "Meloko, Konvex (FR), Garla",
+        "label_name": "Maccabi House",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - E Major",
+        "album_art": "./melotech_t100_files/761a47cc-3f7d-40c9-a461-c7e15594a808.jpg"
     },
     {
-        "song_name": "Dance (Original Mix)",
-        "artists": [
-            "ARTBAT"
-        ]
+        "song_name": "Dance Original Mix",
+        "artist_name": "ARTBAT",
+        "label_name": "UPPERGROUND",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - F Minor",
+        "album_art": "./melotech_t100_files/6f2ec448-6da0-457e-b98f-0029a33f96ab.jpg"
     },
     {
-        "song_name": "At Night (Anyma x Layton Giordani Extended Remix)",
-        "artists": [
-            "Shakedown",
-            "Layton Giordani",
-            "Anyma (ofc)"
-        ]
+        "song_name": "At Night Anyma x Layton Giordani Extended Remix",
+        "artist_name": "Shakedown, Layton Giordani, Anyma (ofc)",
+        "label_name": "Defected",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - F Major",
+        "album_art": "./melotech_t100_files/bb00e0c3-8f43-4a3e-9e7c-6a7cdad50ec2.jpg"
     },
     {
-        "song_name": "Borderline (Extended Mix)",
-        "artists": [
-            "Tujamo",
-            "Chester Young"
-        ]
+        "song_name": "Borderline Extended Mix",
+        "artist_name": "Tujamo, Chester Young",
+        "label_name": "CITY STARS RECORDS",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - F Major",
+        "album_art": "./melotech_t100_files/7a97d34e-b691-41f2-bf55-88870db2d5ec.jpg"
     },
     {
         "song_name": "Cloudy Eyes (Dance Tonight)",
-        "artists": [
-            "Keinemusik",
-            "Jesse Boykins III",
-            "Reznik (DE)"
-        ]
+        "artist_name": "Keinemusik, Jesse Boykins III, Reznik (DE)",
+        "label_name": "VOD",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - F Minor",
+        "album_art": "./melotech_t100_files/4b62da4f-d369-4004-ad52-fed0d36e6ea1.jpg"
+    },
+    {
+        "song_name": "Voices In My Head Extended Mix",
+        "artist_name": "Argy, Anyma (ofc), Son of Son",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - D Major",
+        "album_art": "./melotech_t100_files/f383c11f-1bb9-45e5-9ccc-0939dc2a06ca.jpg"
+    },
+    {
+        "song_name": "Rise Up Original Mix",
+        "artist_name": "Miss Evelina",
+        "label_name": "Dear Deer",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - B Major",
+        "album_art": "./melotech_t100_files/0e7c89fb-aea7-450d-8a60-480e24095464.jpg"
+    },
+    {
+        "song_name": "First Time Extended Mix",
+        "artist_name": "Kevin de Vries, Anyma (ofc)",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - A Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
+    },
+    {
+        "song_name": "Slow Down Extended Mix",
+        "artist_name": "Rafael Cerato, MORGANJ",
+        "label_name": "Captive Soul",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - E Major",
+        "album_art": "./melotech_t100_files/44706f1d-a787-471e-a10e-129162fd7c3b.jpg"
+    },
+    {
+        "song_name": "Sweet Disposition John Summit & Silver Panda Extended Remix",
+        "artist_name": "The Temper Trap, John Summit, Silver Panda",
+        "label_name": "Experts Only",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - B Minor",
+        "album_art": "./melotech_t100_files/c743f94b-19cb-4990-bee2-d1874ff37497.jpg"
+    },
+    {
+        "song_name": "Follow My Way Extended Mix",
+        "artist_name": "OUT OF MIND",
+        "label_name": "Harabe Black",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - C Major",
+        "album_art": "./melotech_t100_files/718323da-59f8-469d-ad10-bb259aed80e7.jpg"
+    },
+    {
+        "song_name": "Trippy Yeah Original Mix",
+        "artist_name": "Black Coffee, Jimi Jules",
+        "label_name": "Innervisions",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - A Major",
+        "album_art": "./melotech_t100_files/4b8bf880-5a1f-41a1-bcdd-c1a2b453effd.jpg"
+    },
+    {
+        "song_name": "Home Original Mix",
+        "artist_name": "Miss Evelina, Alexandra Oz.",
+        "label_name": "Dear Deer",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - E Minor",
+        "album_art": "./melotech_t100_files/0e7c89fb-aea7-450d-8a60-480e24095464.jpg"
+    },
+    {
+        "song_name": "Neo-Consciousness Original Mix",
+        "artist_name": "Chris Avantgarde, Anyma (ofc)",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - G Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
+    },
+    {
+        "song_name": "My Mind Extended Mix",
+        "artist_name": "Korolova, JOA (US)",
+        "label_name": "Experts Only",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Eb Major",
+        "album_art": "./melotech_t100_files/270edb6b-bfdb-4f5f-8fed-449f4d5cc03b.jpg"
+    },
+    {
+        "song_name": "Somebody's Watching Me Extended VIP Edit",
+        "artist_name": "MATTN, UUFO",
+        "label_name": "Smash The House Official",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - C Major",
+        "album_art": "./melotech_t100_files/3f7e1461-660c-41c8-9d0d-1c8d58914c08.jpg"
+    },
+    {
+        "song_name": "All Right Original Mix",
+        "artist_name": "Miss Evelina",
+        "label_name": "Dear Deer",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - E Major",
+        "album_art": "./melotech_t100_files/0e7c89fb-aea7-450d-8a60-480e24095464.jpg"
     },
     {
-        "song_name": "Voices In My Head (Extended Mix)",
-        "artists": [
-            "Argy",
-            "Anyma (ofc)",
-            "Son of Son"
-        ]
+        "song_name": "A Feeling I Miss Original Mix",
+        "artist_name": "Cassian, Matt Ryder",
+        "label_name": "tszr",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - B Major",
+        "album_art": "./melotech_t100_files/28c3a17e-955a-450f-8118-3ced88a59f90.jpg"
     },
     {
-        "song_name": "Rise Up (Original Mix)",
-        "artists": [
-            "Miss Evelina"
-        ]
+        "song_name": "Do It Again Massano Extended Remix",
+        "artist_name": "The Chemical Brothers, Massano",
+        "label_name": "UMC (Universal Music Catalogue)",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - E Minor",
+        "album_art": "./melotech_t100_files/d939d51a-91c2-4f71-9ef9-c4fc6db89816.jpg"
     },
     {
-        "song_name": "First Time (Extended Mix)",
-        "artists": [
-            "Kevin de Vries",
-            "Anyma (ofc)"
-        ]
+        "song_name": "Pas Original Mix",
+        "artist_name": "Mila Journée, Zafrir",
+        "label_name": "1001 Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Bb Major",
+        "album_art": "./melotech_t100_files/5d0fe415-20b1-4457-9710-9a0071b528cf.jpg"
     },
     {
-        "song_name": "Slow Down (Extended Mix)",
-        "artists": [
-            "Rafael Cerato",
-            "MORGANJ"
-        ]
+        "song_name": "Where I'm From Original Mix",
+        "artist_name": "Belladonna, Cassian, Script",
+        "label_name": "tszr",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - D Minor",
+        "album_art": "./melotech_t100_files/d11e4b8f-d25d-4265-9d03-cf9f0474a751.jpg"
     },
     {
-        "song_name": "Sweet Disposition (John Summit & Silver Panda Extended Remix)",
-        "artists": [
-            "The Temper Trap",
-            "John Summit",
-            "Silver Panda"
-        ]
+        "song_name": "That Feeling Shai T Extended Remix",
+        "artist_name": "DJ Chus, Shai T",
+        "label_name": "Stereo Productions",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - C Minor",
+        "album_art": "./melotech_t100_files/af304848-e33b-4fb6-a73c-82d9e5e14e7c.jpg"
     },
     {
-        "song_name": "Follow My Way (Extended Mix)",
-        "artists": [
-            "OUT OF MIND"
-        ]
+        "song_name": "The Spot Original Mix",
+        "artist_name": "ARTBAT, JOA (US)",
+        "label_name": "UPPERGROUND",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - C Minor",
+        "album_art": "./melotech_t100_files/4afd388e-6435-4004-b627-98ce1ab5ffbb.jpg"
     },
     {
-        "song_name": "Trippy Yeah (Original Mix)",
-        "artists": [
-            "Black Coffee",
-            "Jimi Jules"
-        ]
+        "song_name": "More Love Rampa &ME Remix",
+        "artist_name": "Moderat, &ME, Rampa, Keinemusik",
+        "label_name": "Keinemusik",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - B Minor",
+        "album_art": "./melotech_t100_files/27fb9531-a9a3-419d-b3bb-f49534eb05f0.jpg"
     },
     {
-        "song_name": "Home (Original Mix)",
-        "artists": [
-            "Miss Evelina",
-            "Alexandra Oz."
-        ]
+        "song_name": "Ratibor Numida Original Mix",
+        "artist_name": "Robag Wruhme",
+        "label_name": "Cocoon Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - A Minor",
+        "album_art": "./melotech_t100_files/85724760-fbf2-41f9-9e19-24a0a31b61ec.jpg"
     },
     {
-        "song_name": "Neo-Consciousness (Original Mix)",
-        "artists": [
-            "Chris Avantgarde",
-            "Anyma (ofc)"
-        ]
+        "song_name": "Crazy For It (feat. Vinson) feat. Vinson",
+        "artist_name": "Boys Noize, &ME, Rampa, Adam Port, Keinemusik, Vinson",
+        "label_name": "Keinemusik",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "120 BPM - Ab Minor",
+        "album_art": "./melotech_t100_files/c0227d70-f44f-4668-8b58-83ba91e6c8c5.jpg"
     },
     {
-        "song_name": "My Mind (Extended Mix)",
-        "artists": [
-            "Korolova",
-            "JOA (US)"
-        ]
+        "song_name": "Yosemite Extended",
+        "artist_name": "Interplanetary Criminal, Kettama",
+        "label_name": "Steel City Dance Discs",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "144 BPM - Ab Major",
+        "album_art": "./melotech_t100_files/2e64405a-feaa-41f4-a5f0-17337b01ec22.jpg"
     },
     {
-        "song_name": "Somebody's Watching Me (Extended VIP Edit)",
-        "artists": [
-            "MATTN",
-            "UUFO"
-        ]
+        "song_name": "Last Night Anyma x Layton Giordani Extended Remix",
+        "artist_name": "Layton Giordani, Anyma (ofc), Loofy",
+        "label_name": "Nervous Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "129 BPM - Eb Major",
+        "album_art": "./melotech_t100_files/193e3c82-abe9-4c88-aff8-07b9f1158b72.jpg"
     },
     {
-        "song_name": "All Right (Original Mix)",
-        "artists": [
-            "Miss Evelina"
-        ]
+        "song_name": "Insane Extended Mix",
+        "artist_name": "MaYnd",
+        "label_name": "Animarum Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - D Major",
+        "album_art": "./melotech_t100_files/58a09b4c-265f-4162-bf52-b86b07f05750.jpg"
     },
     {
-        "song_name": "A Feeling I Miss (Original Mix)",
-        "artists": [
-            "Cassian",
-            "Matt Ryder"
-        ]
+        "song_name": "Love Hurt feat. Bipolar Sunshine Extended Mix",
+        "artist_name": "Bipolar Sunshine, Anyma (ofc)",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Gb Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
     },
     {
-        "song_name": "Do It Again (Massano Extended Remix)",
-        "artists": [
-            "The Chemical Brothers",
-            "Massano"
-        ]
+        "song_name": "Magik Original Mix",
+        "artist_name": "LUCH, Ajna (BE), Orsay",
+        "label_name": "Magnifik Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - G Major",
+        "album_art": "./melotech_t100_files/5f9a0ad3-a69e-4890-b3da-51688d414b2d.jpg"
     },
     {
-        "song_name": "Pas (Original Mix)",
-        "artists": [
-            "Mila Journée",
-            "Zafrir"
-        ]
+        "song_name": "Focus feat. CLOVES Alok Extended Remix",
+        "artist_name": "John Summit, cloves, Alok",
+        "label_name": "Experts Only",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "134 BPM - Ab Major",
+        "album_art": "./melotech_t100_files/94cfe1c5-952b-4cbd-91d3-1e915c7459c5.jpg"
     },
     {
-        "song_name": "Where I'm From (Original Mix)",
-        "artists": [
-            "Belladonna",
-            "Cassian",
-            "Script"
-        ]
+        "song_name": "Turn On The Lights again.. (feat. Future & Fred again..) feat. Future & Fred again..",
+        "artist_name": "Future, Swedish House Mafia, Fred again.., Anyma (ofc)",
+        "label_name": "Atlantic Records UK",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - Gb Minor",
+        "album_art": "./melotech_t100_files/229eb329-fede-4a1e-82a1-522dfb85fa80.jpg"
     },
     {
-        "song_name": "That Feeling (Shai T Extended Remix)",
-        "artists": [
-            "DJ Chus",
-            "Shai T"
-        ]
+        "song_name": "Giza Extended Mix",
+        "artist_name": "Anyma (ofc), 19:26",
+        "label_name": "The End Of Genesys",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - G Minor",
+        "album_art": "./melotech_t100_files/dd8e22ba-85e1-4edd-b265-39399d52982b(1).jpg"
     },
     {
-        "song_name": "The Spot (Original Mix)",
-        "artists": [
-            "ARTBAT",
-            "JOA (US)"
-        ]
+        "song_name": "Your Mind Massano & Doriann Remix",
+        "artist_name": "Adam Beyer, Bart Skils, Massano, Doriann (IL)",
+        "label_name": "Drumcode",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - B Major",
+        "album_art": "./melotech_t100_files/9088c65a-3bae-4e87-8843-d55de370ce24.jpg"
     },
     {
-        "song_name": "More Love (Rampa &ME Remix)",
-        "artists": [
-            "Moderat",
-            "&ME",
-            "Rampa",
-            "Keinemusik"
-        ]
+        "song_name": "Till I Die Original Mix",
+        "artist_name": "Solomun, Anyma (ofc)",
+        "label_name": "Diynamic",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - A Minor",
+        "album_art": "./melotech_t100_files/4dc914af-5c98-42dc-a180-14eaff5df5da.jpg"
     },
     {
-        "song_name": "Ratibor Numida (Original Mix)",
-        "artists": [
-            "Robag Wruhme"
-        ]
+        "song_name": "Feel the Beat Original Mix",
+        "artist_name": "Ivory (IT)",
+        "label_name": "Siamese",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - F Major",
+        "album_art": "./melotech_t100_files/d9ee95ec-4021-4cd7-9f91-7b970dad04d1.jpg"
     },
     {
-        "song_name": "Crazy For It (feat. Vinson) (feat. Vinson)",
-        "artists": [
-            "Boys Noize",
-            "&ME",
-            "Rampa",
-            "Adam Port",
-            "Keinemusik",
-            "Vinson"
-        ]
+        "song_name": "Girls MIA feat. Carly Gibert Extended Mix",
+        "artist_name": "Adam Sellouk, Anyma (ofc), Carly Gibert",
+        "label_name": "Afterlife Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - D Major",
+        "album_art": "./melotech_t100_files/e2c33a54-dc5e-4b21-b2bf-69c4ae590b59(1).jpg"
     },
     {
-        "song_name": "Yosemite (Extended)",
-        "artists": [
-            "Interplanetary Criminal",
-            "Kettama"
-        ]
+        "song_name": "With You Original Mix",
+        "artist_name": "Mosoo, Sentin",
+        "label_name": "Magnifik Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "121 BPM - D Minor",
+        "album_art": "./melotech_t100_files/ae5a7480-6a12-4e57-93a3-a5d8f628a77e.jpg"
     },
     {
-        "song_name": "Last Night (Anyma x Layton Giordani Extended Remix)",
-        "artists": [
-            "Layton Giordani",
-            "Anyma (ofc)",
-            "Loofy"
-        ]
+        "song_name": "Spread Love Extended Mix",
+        "artist_name": "Fafaq, Neitan, DJ Kuba",
+        "label_name": "Future House Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - G Major",
+        "album_art": "./melotech_t100_files/f7984881-a8b3-4610-bc45-659b26eab12a.jpg"
     },
     {
-        "song_name": "Insane (Extended Mix)",
-        "artists": [
-            "MaYnd"
-        ]
+        "song_name": "Gangs Extended Mix",
+        "artist_name": "TH;EN, SLVR",
+        "label_name": "Future Rave",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - F Minor",
+        "album_art": "./melotech_t100_files/6686a0d8-3972-4fe5-ad21-6aa1457a8e41.jpg"
     },
     {
-        "song_name": "Love Hurt feat. Bipolar Sunshine (Extended Mix)",
-        "artists": [
-            "Bipolar Sunshine",
-            "Anyma (ofc)"
-        ]
+        "song_name": "So Strung Out Extended Mix",
+        "artist_name": "Cherry (UA), UNDERMOON, Kostyn",
+        "label_name": "SVET",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "125 BPM - A Major",
+        "album_art": "./melotech_t100_files/df6d4568-ec31-43ee-b20c-0edc0e336c75.jpg"
     },
     {
-        "song_name": "Magik (Original Mix)",
-        "artists": [
-            "LUCH",
-            "Ajna (BE)",
-            "Orsay"
-        ]
+        "song_name": "Save Me Extended",
+        "artist_name": "CamelPhat, Marten Lou",
+        "label_name": "Warner Music Central Europe",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - B Minor",
+        "album_art": "./melotech_t100_files/b52540ea-a435-4a29-b4a2-7f4f112126c2.jpg"
     },
     {
-        "song_name": "Focus feat. CLOVES (Alok Extended Remix)",
-        "artists": [
-            "John Summit",
-            "cloves",
-            "Alok"
-        ]
+        "song_name": "Melodia Extended",
+        "artist_name": "Argy, PollyAnna, Meduza",
+        "label_name": "AETERNA Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - Bb Minor",
+        "album_art": "./melotech_t100_files/ea855ed4-08b8-425e-87a2-927e31fea0ef.jpg"
     },
     {
-        "song_name": "Turn On The Lights again.. (feat. Future & Fred again..) (feat. Future & Fred again..)",
-        "artists": [
-            "Future",
-            "Swedish House Mafia",
-            "Fred again..",
-            "Anyma (ofc)"
-        ]
+        "song_name": "We Are The People ARTBAT Extended Remix",
+        "artist_name": "Empire Of The Sun, ARTBAT",
+        "label_name": "EMI Music Australia",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "125 BPM - E Minor",
+        "album_art": "./melotech_t100_files/a4942ff6-5b79-40c3-84cb-36b9f0ec10f9.jpg"
     },
     {
-        "song_name": "Giza (Extended Mix)",
-        "artists": [
-            "Anyma (ofc)",
-            "19:26"
-        ]
+        "song_name": "In My Place MAXI MERAKI Remix",
+        "artist_name": "Monolink, MAXI MERAKI",
+        "label_name": "Embassy One",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - A Minor",
+        "album_art": "./melotech_t100_files/4b453459-ddfb-4e18-a136-a9c627be942d.jpg"
     },
     {
-        "song_name": "Your Mind (Massano & Doriann Remix)",
-        "artists": [
-            "Adam Beyer",
-            "Bart Skils",
-            "Massano",
-            "Doriann (IL)"
-        ]
+        "song_name": "Imagination Original Mix",
+        "artist_name": "Samm (BE)",
+        "label_name": "Magnifik Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "120 BPM - A Minor",
+        "album_art": "./melotech_t100_files/4f030ea7-a66c-41f6-8388-19769b3c697b.jpg"
     },
     {
-        "song_name": "Till I Die (Original Mix)",
-        "artists": [
-            "Solomun",
-            "Anyma (ofc)"
-        ]
+        "song_name": "Born Like That Original Mix",
+        "artist_name": "Kevin de Vries, Jast",
+        "label_name": "Afterlife Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - A Major",
+        "album_art": "./melotech_t100_files/a068fdda-cbf6-4002-8b44-b9f49e02f079.jpg"
     },
     {
-        "song_name": "Feel the Beat (Original Mix)",
-        "artists": [
-            "Ivory (IT)"
-        ]
+        "song_name": "Do It Again Original Mix",
+        "artist_name": "Betical",
+        "label_name": "Tomorrowland Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - E Major",
+        "album_art": "./melotech_t100_files/6d9840b8-e585-449b-b0c9-f0d4de0f7a7c.jpg"
     },
     {
-        "song_name": "Girls MIA feat. Carly Gibert (Extended Mix)",
-        "artists": [
-            "Adam Sellouk",
-            "Anyma (ofc)",
-            "Carly Gibert"
-        ]
+        "song_name": "Waste Away Original Mix",
+        "artist_name": "HotLap",
+        "label_name": "Magnifik Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "120 BPM - C Major",
+        "album_art": "./melotech_t100_files/fe9fd67e-71e0-49e6-ab72-e46a597a4600.jpg"
     },
     {
-        "song_name": "With You (Original Mix)",
-        "artists": [
-            "Mosoo",
-            "Sentin"
-        ]
+        "song_name": "Night Sky on Mars feat. Lumiö Extended Mix",
+        "artist_name": "Poli-Poli, Lumiö",
+        "label_name": "Enormous Chills",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - A Minor",
+        "album_art": "./melotech_t100_files/99e00281-6506-4f8d-ab60-c2fca5c783d5.jpg"
     },
     {
-        "song_name": "Spread Love (Extended Mix)",
-        "artists": [
-            "Fafaq",
-            "Neitan",
-            "DJ Kuba"
-        ]
+        "song_name": "Feel Me Harry Diamond Remix",
+        "artist_name": "Christian Smith, Harry Diamond",
+        "label_name": "Tronic",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - B Minor",
+        "album_art": "./melotech_t100_files/98e2f539-0977-4ee7-9b24-e92e3568885b.jpg"
     },
     {
-        "song_name": "Gangs (Extended Mix)",
-        "artists": [
-            "TH;EN",
-            "SLVR"
-        ]
+        "song_name": "Act Of God feat. Linney feat. Sarah de Warren CamelPhat Extended Remix",
+        "artist_name": "Linney, Layton Giordani, Sarah De Warren, CamelPhat",
+        "label_name": "Experts Only",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - Gb Minor",
+        "album_art": "./melotech_t100_files/26d0437f-67a9-4dde-a46a-e6c40ee8fef2.jpg"
     },
     {
-        "song_name": "So Strung Out (Extended Mix)",
-        "artists": [
-            "Cherry (UA)",
-            "UNDERMOON",
-            "Kostyn"
-        ]
+        "song_name": "Timbo Extended Mix",
+        "artist_name": "Kashovski",
+        "label_name": "Monaberry",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - C Minor",
+        "album_art": "./melotech_t100_files/cd69d3a9-2ae5-4020-a1e2-b9a9f98d7044.jpg"
     },
     {
-        "song_name": "Save Me (Extended)",
-        "artists": [
-            "CamelPhat",
-            "Marten Lou"
-        ]
+        "song_name": "Don't Be Sad Extended Mix",
+        "artist_name": "Andrea Oliva",
+        "label_name": "All I Need (Armada Music)",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - E Minor",
+        "album_art": "./melotech_t100_files/f949f963-0dca-45df-a166-bcf18b8b0cee.jpg"
     },
     {
-        "song_name": "Melodia (Extended)",
-        "artists": [
-            "Argy",
-            "PollyAnna",
-            "Meduza"
-        ]
+        "song_name": "We Talk About Dreams Joris Voorn Extended Remix",
+        "artist_name": "Einmusik, Solee, Joris Voorn",
+        "label_name": "Einmusika Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - B Major",
+        "album_art": "./melotech_t100_files/50cdb6cc-5fba-4e42-9c19-b12a884d7f7a.jpg"
     },
     {
-        "song_name": "We Are The People (ARTBAT Extended Remix)",
-        "artists": [
-            "Empire Of The Sun",
-            "ARTBAT"
-        ]
+        "song_name": "The One Extended Mix",
+        "artist_name": "CamelPhat, Josh Gigante",
+        "label_name": "When Stars Align",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - Eb Minor",
+        "album_art": "./melotech_t100_files/4472c216-308c-4efd-8707-3142275facaf.jpg"
     },
     {
-        "song_name": "In My Place (MAXI MERAKI Remix)",
-        "artists": [
-            "Monolink",
-            "MAXI MERAKI"
-        ]
+        "song_name": "Wanna Make Love Original Mix",
+        "artist_name": "MAXI MERAKI",
+        "label_name": "Diynamic",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - A Minor",
+        "album_art": "./melotech_t100_files/bd4bb860-a581-4ff4-8dbf-9529a689bb23.jpg"
     },
     {
-        "song_name": "Imagination (Original Mix)",
-        "artists": [
-            "Samm (BE)"
-        ]
+        "song_name": "Dangerous Extended Mix",
+        "artist_name": "Alika, KREAM",
+        "label_name": "Liquid Lab",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - F Major",
+        "album_art": "./melotech_t100_files/b5f9341f-9bcc-4322-ab08-321a5b8ac608.jpg"
     },
     {
-        "song_name": "Born Like That (Original Mix)",
-        "artists": [
-            "Kevin de Vries",
-            "Jast"
-        ]
+        "song_name": "Spaces In Between Rodriguez Jr. Remix",
+        "artist_name": "Ursula Rucker, Qess, Rodriguez Jr.",
+        "label_name": "Mobilee Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "125 BPM - E Minor",
+        "album_art": "./melotech_t100_files/3d416766-4b66-4e59-990f-4f66cf504269.jpg"
     },
     {
-        "song_name": "Do It Again (Original Mix)",
-        "artists": [
-            "Betical"
-        ]
+        "song_name": "Late Night (Marten Lou x Foals) Marten Lou x Foals",
+        "artist_name": "Foals, Marten Lou",
+        "label_name": "Warner Music Central Europe",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - G Minor",
+        "album_art": "./melotech_t100_files/d6a4d1f4-b7ef-4841-8ae5-a0d32683b3a3.jpg"
     },
     {
-        "song_name": "Waste Away (Original Mix)",
-        "artists": [
-            "HotLap"
-        ]
+        "song_name": "Heat Original Mix",
+        "artist_name": "JUNO (DE)",
+        "label_name": "Magnifik Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "121 BPM - Db Major",
+        "album_art": "./melotech_t100_files/e483622c-72cd-4638-9e4c-ba2a15f7d4a9.jpg"
     },
     {
-        "song_name": "Night Sky on Mars feat. Lumiö (Extended Mix)",
-        "artists": [
-            "Poli-Poli",
-            "Lumiö"
-        ]
+        "song_name": "Pjanoo Club Mix",
+        "artist_name": "Eric Prydz",
+        "label_name": "Pryda Presents",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - G Minor",
+        "album_art": "./melotech_t100_files/95d19559-a614-4bde-803a-2448a7208b6b.jpg"
     },
     {
-        "song_name": "Feel Me (Harry Diamond Remix)",
-        "artists": [
-            "Christian Smith",
-            "Harry Diamond"
-        ]
+        "song_name": "Cash Is King Original Mix",
+        "artist_name": "Massano",
+        "label_name": "Diynamic",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "130 BPM - C Major",
+        "album_art": "./melotech_t100_files/db470783-9b47-4a15-abba-d11065086455.jpg"
     },
     {
-        "song_name": "Act Of God feat. Linney feat. Sarah de Warren (CamelPhat Extended Remix)",
-        "artists": [
-            "Linney",
-            "Layton Giordani",
-            "Sarah De Warren",
-            "CamelPhat"
-        ]
+        "song_name": "Rico Original Mix",
+        "artist_name": "Space Motion, REVOL(ofc)",
+        "label_name": "Space Motion Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - C Major",
+        "album_art": "./melotech_t100_files/45223668-7dde-4991-a681-9f84fa44308d.jpg"
     },
     {
-        "song_name": "Timbo (Extended Mix)",
-        "artists": [
-            "Kashovski"
-        ]
+        "song_name": "Alive Again Original Mix",
+        "artist_name": "Guy J",
+        "label_name": "Cocoon Recordings",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - D Major",
+        "album_art": "./melotech_t100_files/aa8c7dc7-ee39-43fc-8825-e9a249d94a1f.jpg"
     },
     {
-        "song_name": "Don't Be Sad (Extended Mix)",
-        "artists": [
-            "Andrea Oliva"
-        ]
+        "song_name": "Bad Boy GENESI Extended Remix",
+        "artist_name": "Linska, GENESI (ITA)",
+        "label_name": "REALM Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "128 BPM - F Minor",
+        "album_art": "./melotech_t100_files/8c5f9b8d-0a70-4ae9-b85f-f75827a40bea.jpg"
     },
     {
-        "song_name": "We Talk About Dreams (Joris Voorn Extended Remix)",
-        "artists": [
-            "Einmusik",
-            "Solee",
-            "Joris Voorn"
-        ]
-    },
-    {
-        "song_name": "The One (Extended Mix)",
-        "artists": [
-            "CamelPhat",
-            "Josh Gigante"
-        ]
-    },
-    {
-        "song_name": "Wanna Make Love (Original Mix)",
-        "artists": [
-            "MAXI MERAKI"
-        ]
-    },
-    {
-        "song_name": "Dangerous (Extended Mix)",
-        "artists": [
-            "Alika",
-            "KREAM"
-        ]
-    },
-    {
-        "song_name": "Spaces In Between (Rodriguez Jr. Remix)",
-        "artists": [
-            "Ursula Rucker",
-            "Qess",
-            "Rodriguez Jr."
-        ]
-    },
-    {
-        "song_name": "Late Night (Marten Lou x Foals) (Marten Lou x Foals)",
-        "artists": [
-            "Foals",
-            "Marten Lou"
-        ]
-    },
-    {
-        "song_name": "Heat (Original Mix)",
-        "artists": [
-            "JUNO (DE)"
-        ]
-    },
-    {
-        "song_name": "Pjanoo (Club Mix)",
-        "artists": [
-            "Eric Prydz"
-        ]
-    },
-    {
-        "song_name": "Cash Is King (Original Mix)",
-        "artists": [
-            "Massano"
-        ]
-    },
-    {
-        "song_name": "Rico (Original Mix)",
-        "artists": [
-            "Space Motion",
-            "REVOL(ofc)"
-        ]
-    },
-    {
-        "song_name": "Alive Again (Original Mix)",
-        "artists": [
-            "Guy J"
-        ]
-    },
-    {
-        "song_name": "Bad Boy (GENESI Extended Remix)",
-        "artists": [
-            "Linska",
-            "GENESI (ITA)"
-        ]
-    },
-    {
-        "song_name": "Tell Me Why (MEDUZA Extended Remix)",
-        "artists": [
-            "Supermode",
-            "Meduza"
-        ]
-    },
-    {
-        "song_name": "What To Do (&ME Remix)",
-        "artists": [
-            "Guy Gerber",
-            "&ME"
-        ]
-    },
-    {
-        "song_name": "In My Blood (Original Mix)",
-        "artists": [
-            "TH;EN",
-            "Glowal"
-        ]
-    },
-    {
-        "song_name": "Vogue (Extended Mix)",
-        "artists": [
-            "Chambord"
-        ]
-    },
-    {
-        "song_name": "She The Last One (Original Mix)",
-        "artists": [
-            "Vintage Culture",
-            "ARTBAT"
-        ]
-    },
-    {
-        "song_name": "Nomacita (Extended)",
-        "artists": [
-            "Carl Bee",
-            "Miss Monique",
-            "GENESI (ITA)"
-        ]
-    },
-    {
-        "song_name": "Iguana (Extended Mix)",
-        "artists": [
-            "Mauro Picotto",
-            "Cafius"
-        ]
-    },
-    {
-        "song_name": "Make U (Original Mix)",
-        "artists": [
-            "SPACHO & LAMOR"
-        ]
-    },
-    {
-        "song_name": "RACER (Extended Mix)",
-        "artists": [
-            "Argy",
-            "Adriatique"
-        ]
-    },
-    {
-        "song_name": "See You Again (Original Mix)",
-        "artists": [
-            "&ME",
-            "Rampa",
-            "Adam Port",
-            "Keinemusik",
-            "Sevdaliza"
-        ]
-    },
-    {
-        "song_name": "Galaxy (Extended Mix)",
-        "artists": [
-            "ARTBAT"
-        ]
-    },
-    {
-        "song_name": "WIND (Original Mix)",
-        "artists": [
-            "Argy",
-            "Omiki"
-        ]
-    },
-    {
-        "song_name": "Make It Work (Extended Mix)",
-        "artists": [
-            "TyriqueOrDie",
-            "bradeazy"
-        ]
+        "song_name": "Tell Me Why MEDUZA Extended Remix",
+        "artist_name": "Supermode, Meduza",
+        "label_name": "Axtone Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - B Major",
+        "album_art": "./melotech_t100_files/a294ed90-f04b-4ddd-878c-f82dd21c09d3.jpg"
+    },
+    {
+        "song_name": "What To Do &ME Remix",
+        "artist_name": "Guy Gerber, &ME",
+        "label_name": "Rumors",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - C Minor",
+        "album_art": "./melotech_t100_files/90fb0a27-11e8-433e-a372-4396fa206d80.jpg"
+    },
+    {
+        "song_name": "In My Blood Original Mix",
+        "artist_name": "TH;EN, Glowal",
+        "label_name": "NOW",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "126 BPM - C Minor",
+        "album_art": "./melotech_t100_files/1d05d3a2-3f0c-4451-aeb8-16f745334373.jpg"
+    },
+    {
+        "song_name": "Vogue Extended Mix",
+        "artist_name": "Chambord",
+        "label_name": "One Seven Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "123 BPM - F Major",
+        "album_art": "./melotech_t100_files/113251f9-5507-417a-856f-b456465364e6.jpg"
+    },
+    {
+        "song_name": "She The Last One Original Mix",
+        "artist_name": "Vintage Culture, ARTBAT",
+        "label_name": "UPPERGROUND",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - F Major",
+        "album_art": "./melotech_t100_files/3c98a65e-ea77-46d5-bece-3ad3815734a0.jpg"
+    },
+    {
+        "song_name": "Nomacita Extended",
+        "artist_name": "Carl Bee, Miss Monique, GENESI (ITA)",
+        "label_name": "AETERNA Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "124 BPM - G Major",
+        "album_art": "./melotech_t100_files/649a627f-0083-4f7a-9635-2ba927e8ce61.jpg"
+    },
+    {
+        "song_name": "Iguana Extended Mix",
+        "artist_name": "Mauro Picotto, Cafius",
+        "label_name": "Armada Music",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "132 BPM - C Major",
+        "album_art": "./melotech_t100_files/da781bb4-c547-419f-9fc4-49524d3f6d22.jpg"
+    },
+    {
+        "song_name": "Reverse Original Mix",
+        "artist_name": "JUNO (DE)",
+        "label_name": "Go Deeva Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "122 BPM - B Major",
+        "album_art": "./melotech_t100_files/239fe44e-003e-4503-b096-1113559ebe1c.jpg"
+    },
+    {
+        "song_name": "Make U Original Mix",
+        "artist_name": "SPACHO & LAMOR",
+        "label_name": "Radiate Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "125 BPM - Eb Major",
+        "album_art": "./melotech_t100_files/db1bf1d8-bfce-4957-8e05-f595d47c4ad7.jpg"
+    },
+    {
+        "song_name": "RACER Extended Mix",
+        "artist_name": "Argy, Adriatique",
+        "label_name": "Afterlife Records",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "125 BPM - F Major",
+        "album_art": "./melotech_t100_files/e2c33a54-dc5e-4b21-b2bf-69c4ae590b59(1).jpg"
+    },
+    {
+        "song_name": "See You Again Original Mix",
+        "artist_name": "&ME, Rampa, Adam Port, Keinemusik, Sevdaliza",
+        "label_name": "Keinemusik",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "120 BPM - Bb Minor",
+        "album_art": "./melotech_t100_files/7e2d6b87-1357-46fc-9229-ee12766d883e.jpg"
+    },
+    {
+        "song_name": "Galaxy Extended Mix",
+        "artist_name": "ARTBAT",
+        "label_name": "MAHOOL",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - A Major",
+        "album_art": "./melotech_t100_files/73cf4d0f-8a5b-4316-8852-6766a5b19f92.jpg"
+    },
+    {
+        "song_name": "WIND Original Mix",
+        "artist_name": "Argy, Omiki",
+        "label_name": "NEWORLD",
+        "genre": "Melodic House & Techno",
+        "bpm_key": "127 BPM - D Major",
+        "album_art": "./melotech_t100_files/7b616f4f-5265-452e-8076-d1109e2eb152.jpg"
     }
 ]
