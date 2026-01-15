@@ -3,31 +3,41 @@ Beatport playlist scraper module.
 Handles scraping track information from Beatport URLs.
 """
 
-import requests
+import time
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class BeatportScraper:
     """Scrapes track information from Beatport playlists."""
 
     def __init__(self):
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Cache-Control': 'max-age=0'
-        }
+        self.driver = None
+
+    def _setup_driver(self):
+        """Set up headless Chrome WebDriver with webdriver_manager."""
+        if self.driver is None:
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_argument('--disable-gpu')
+            chrome_options.add_argument('--window-size=1920,1080')
+            chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+
+            service = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
     def fetch_html(self, url: str) -> Optional[str]:
         """
-        Fetch HTML content from Beatport URL.
+        Fetch HTML content from Beatport URL using Selenium.
 
         Args:
             url: Beatport playlist URL
@@ -36,13 +46,35 @@ class BeatportScraper:
             HTML content as string, or None if request fails
         """
         try:
-            print(f"Fetching URL: {url}")
-            response = requests.get(url, headers=self.headers, timeout=30)
-            response.raise_for_status()
-            return response.text
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching URL: {e}")
+            print(f"Fetching URL with Selenium: {url}")
+            self._setup_driver()
+
+            self.driver.get(url)
+
+            try:
+                print("Waiting for track list to load...")
+                wait = WebDriverWait(self.driver, 10)
+                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.bucket-item, li.bucket-item, div.track')))
+                print("Track list loaded!")
+            except Exception as e:
+                print(f"Warning: Timeout waiting for tracks, proceeding anyway: {e}")
+                time.sleep(5)
+
+            time.sleep(2)
+
+            html = self.driver.page_source
+            return html
+        except Exception as e:
+            print(f"Error fetching URL with Selenium: {e}")
             return None
+
+    def __del__(self):
+        """Clean up WebDriver on deletion."""
+        if self.driver:
+            try:
+                self.driver.quit()
+            except Exception:
+                pass
 
     def load_local_html(self, file_path: str) -> Optional[str]:
         """
@@ -70,20 +102,20 @@ class BeatportScraper:
             html: HTML content
 
         Returns:
-            List of track dictionaries with 'artist', 'track', and 'remix' keys
+            List of track dictionaries with 'artist', 'track', 'remix', and 'label' keys
         """
         soup = BeautifulSoup(html, 'lxml')
         tracks = []
 
-        # Try multiple selectors as Beatport's structure may vary
-        track_elements = soup.find_all('li', class_='bucket-item')
+        track_elements = soup.find_all('div', class_=lambda x: x and 'bucket-item' in x and 'track' in x)
 
         if not track_elements:
-            # Alternative selector
+            track_elements = soup.find_all('li', class_='bucket-item')
+
+        if not track_elements:
             track_elements = soup.find_all('div', class_='track')
 
         if not track_elements:
-            # Try finding tracks in a table structure
             track_elements = soup.find_all('tr', class_='track-row')
 
         print(f"Found {len(track_elements)} track elements")
@@ -106,9 +138,10 @@ class BeatportScraper:
             Dictionary with track info or None if extraction fails
         """
         try:
-            # Try to find artist
             artist = ''
-            artist_elem = element.find('p', class_='buk-track-artists')
+            artist_elem = element.find('span', class_='track-artists')
+            if not artist_elem:
+                artist_elem = element.find('p', class_='buk-track-artists')
             if not artist_elem:
                 artist_elem = element.find('a', class_='artist')
             if not artist_elem:
@@ -116,19 +149,17 @@ class BeatportScraper:
             if artist_elem:
                 artist = artist_elem.get_text(strip=True)
 
-            # Try to find track name
             track = ''
-            track_elem = element.find('p', class_='buk-track-primary-title')
+            track_elem = element.find('span', class_='track-title')
+            if not track_elem:
+                track_elem = element.find('p', class_='buk-track-primary-title')
             if not track_elem:
                 track_elem = element.find('a', class_='track-title')
-            if not track_elem:
-                track_elem = element.find('span', class_='track-title')
             if not track_elem:
                 track_elem = element.find('a', class_='buk-track-title')
             if track_elem:
                 track = track_elem.get_text(strip=True)
 
-            # Try to find remix name
             remix = ''
             remix_elem = element.find('p', class_='buk-track-remixed')
             if not remix_elem:
@@ -138,12 +169,21 @@ class BeatportScraper:
             if remix_elem:
                 remix = remix_elem.get_text(strip=True)
 
-            # Only return if we have at least artist and track
+            label = ''
+            label_elem = element.find('span', class_='track-labels')
+            if not label_elem:
+                label_elem = element.find('p', class_='buk-track-labels')
+            if not label_elem:
+                label_elem = element.find('a', class_='label')
+            if label_elem:
+                label = label_elem.get_text(strip=True)
+
             if artist and track:
                 return {
                     'artist': artist,
                     'track': track,
-                    'remix': remix
+                    'remix': remix,
+                    'label': label
                 }
 
             return None

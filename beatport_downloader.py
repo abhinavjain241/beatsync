@@ -113,7 +113,8 @@ class BeatportPlaylistDownloader:
         print("-" * 60)
         for i, track in enumerate(tracks, 1):
             search_string = self.scraper.create_search_string(track)
-            print(f"{i}. {search_string}")
+            label_info = f" [{track['label']}]" if track.get('label') else ""
+            print(f"{i}. {search_string}{label_info}")
 
     def _download_tracks(self, tracks: List[Dict[str, str]]):
         """Download all tracks."""
