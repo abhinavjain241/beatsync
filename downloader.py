@@ -7,6 +7,7 @@ Automatically selects the longer version when searching both sources.
 import os
 import subprocess
 import json
+import re
 from typing import Dict, Optional, Tuple
 
 
@@ -49,7 +50,62 @@ class AudioDownloader:
         invalid_chars = '<>:"/\\|?*'
         for char in invalid_chars:
             filename = filename.replace(char, '_')
-        return filename
+        return filename.strip()
+
+    def normalize_text(self, text: str) -> str:
+        """
+        Normalize text for comparison by removing special characters and converting to lowercase.
+
+        Args:
+            text: Text to normalize
+
+        Returns:
+            Normalized text
+        """
+        text = text.lower()
+        text = re.sub(r'[^\w\s]', '', text)
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip()
+
+    def calculate_match_score(self, requested_query: str, found_title: str) -> float:
+        """
+        Calculate how well a found track matches the requested query.
+
+        Args:
+            requested_query: The search query (e.g., "Artist - Track Name Extended Mix")
+            found_title: The title from SoundCloud/YouTube
+
+        Returns:
+            Match score between 0.0 and 1.0 (higher is better)
+        """
+        req_norm = self.normalize_text(requested_query)
+        found_norm = self.normalize_text(found_title)
+
+        req_words = set(req_norm.split())
+        found_words = set(found_norm.split())
+
+        if not req_words or not found_words:
+            return 0.0
+
+        common_words = req_words.intersection(found_words)
+        score = len(common_words) / max(len(req_words), len(found_words))
+
+        return score
+
+    def is_valid_match(self, requested_query: str, found_title: str, threshold: float = 0.5) -> bool:
+        """
+        Check if a found track is a valid match for the requested query.
+
+        Args:
+            requested_query: The search query
+            found_title: The title from SoundCloud/YouTube
+            threshold: Minimum match score required (default 0.5 = 50%)
+
+        Returns:
+            True if the match is valid, False otherwise
+        """
+        score = self.calculate_match_score(requested_query, found_title)
+        return score >= threshold
 
     def create_filename(self, track_info: Dict[str, str]) -> str:
         """
@@ -104,12 +160,13 @@ class AudioDownloader:
         except (subprocess.TimeoutExpired, json.JSONDecodeError, Exception):
             return None
 
-    def search_both_sources(self, search_query: str) -> Tuple[Optional[Dict], Optional[Dict]]:
+    def search_both_sources(self, search_query: str, validate_match: bool = True) -> Tuple[Optional[Dict], Optional[Dict]]:
         """
         Search both SoundCloud and YouTube for a track.
 
         Args:
             search_query: Search string for the track
+            validate_match: Whether to validate that results match the query
 
         Returns:
             Tuple of (soundcloud_info, youtube_info), each can be None if not found
@@ -122,9 +179,18 @@ class AudioDownloader:
         sc_info = self.get_track_info(sc_url)
         yt_info = self.get_track_info(yt_url)
 
+        if validate_match:
+            if sc_info and not self.is_valid_match(search_query, sc_info['title']):
+                print(f"  ⚠ SoundCloud result doesn't match query: {sc_info['title']}")
+                sc_info = None
+
+            if yt_info and not self.is_valid_match(search_query, yt_info['title']):
+                print(f"  ⚠ YouTube result doesn't match query: {yt_info['title']}")
+                yt_info = None
+
         return sc_info, yt_info
 
-    def select_best_source(self, sc_info: Optional[Dict], yt_info: Optional[Dict]) -> Optional[Dict]:
+    def select_best_source(self, sc_info: Optional[Dict], yt_info: Optional[Dict], search_query: str = "") -> Optional[Dict]:
         """
         Select the best source based on duration (longer is better).
         Filters out tracks longer than MAX_DURATION to avoid DJ sets.
@@ -132,6 +198,7 @@ class AudioDownloader:
         Args:
             sc_info: SoundCloud track info
             yt_info: YouTube track info
+            search_query: Original search query for match scoring
 
         Returns:
             Selected track info or None if both failed or are too long
@@ -146,22 +213,27 @@ class AudioDownloader:
             yt_info = None
 
         if not sc_info and not yt_info:
-            print(f"  ✗ No valid tracks found (all results exceed {self.MAX_DURATION // 60} minute limit)")
+            print(f"  ✗ No valid tracks found")
             return None
 
         if not sc_info:
-            print(f"  YouTube only: {yt_info['title']} ({self._format_duration(yt_info['duration'])})")
+            match_score = self.calculate_match_score(search_query, yt_info['title']) if search_query else 1.0
+            print(f"  YouTube only: {yt_info['title']} ({self._format_duration(yt_info['duration'])}) [match: {match_score:.0%}]")
             return yt_info
 
         if not yt_info:
-            print(f"  SoundCloud only: {sc_info['title']} ({self._format_duration(sc_info['duration'])})")
+            match_score = self.calculate_match_score(search_query, sc_info['title']) if search_query else 1.0
+            print(f"  SoundCloud only: {sc_info['title']} ({self._format_duration(sc_info['duration'])}) [match: {match_score:.0%}]")
             return sc_info
 
         sc_duration = sc_info['duration']
         yt_duration = yt_info['duration']
 
-        print(f"  SoundCloud: {sc_info['title']} ({self._format_duration(sc_duration)})")
-        print(f"  YouTube: {yt_info['title']} ({self._format_duration(yt_duration)})")
+        sc_match = self.calculate_match_score(search_query, sc_info['title']) if search_query else 1.0
+        yt_match = self.calculate_match_score(search_query, yt_info['title']) if search_query else 1.0
+
+        print(f"  SoundCloud: {sc_info['title']} ({self._format_duration(sc_duration)}) [match: {sc_match:.0%}]")
+        print(f"  YouTube: {yt_info['title']} ({self._format_duration(yt_duration)}) [match: {yt_match:.0%}]")
 
         if sc_duration >= yt_duration:
             print(f"  ✓ Selected SoundCloud (longer version)")
@@ -178,36 +250,52 @@ class AudioDownloader:
         secs = int(seconds % 60)
         return f"{mins}:{secs:02d}"
 
-    def download_track(self, search_query: str, output_filename: str) -> bool:
+    def check_existing_file(self, track_title: str) -> Optional[str]:
+        """
+        Check if a track already exists in the output directory.
+
+        Args:
+            track_title: The track title to search for
+
+        Returns:
+            Filename if exists, None otherwise
+        """
+        if not os.path.exists(self.output_dir):
+            return None
+
+        normalized_search = self.normalize_text(track_title)
+
+        for filename in os.listdir(self.output_dir):
+            if filename.endswith('.mp3'):
+                normalized_filename = self.normalize_text(filename.replace('.mp3', ''))
+                if self.calculate_match_score(normalized_search, normalized_filename) >= 0.8:
+                    return filename
+
+        return None
+
+    def download_track(self, search_query: str, requested_track_info: Optional[Dict[str, str]] = None) -> Tuple[bool, Optional[str], bool]:
         """
         Download a track from SoundCloud, YouTube, or automatically select the longer version.
 
         Args:
             search_query: Search string for the track
-            output_filename: Output filename for the downloaded track
+            requested_track_info: Original track info from JSON (for reference only)
 
         Returns:
-            True if download successful, False otherwise
+            Tuple of (success: bool, actual_filename: str or None, was_already_downloaded: bool)
         """
-        output_path = os.path.join(self.output_dir, output_filename)
-
-        # Skip if file already exists
-        if os.path.exists(output_path):
-            print(f"  ✓ Already exists: {output_filename}")
-            return True
+        selected = None
 
         # Determine which source(s) to search
         if self.source == 'auto':
             # Search both sources and select the longer one
             sc_info, yt_info = self.search_both_sources(search_query)
-            selected = self.select_best_source(sc_info, yt_info)
+            selected = self.select_best_source(sc_info, yt_info, search_query)
 
             if not selected:
                 print(f"  ✗ Not found on either SoundCloud or YouTube")
-                return False
+                return False, None, False
 
-            # Use the URL directly instead of search
-            download_url = selected['url']
         else:
             # Single source search - check duration before downloading
             if self.source == 'soundcloud':
@@ -221,26 +309,44 @@ class AudioDownloader:
             track_info = self.get_track_info(search_url)
             if not track_info:
                 print(f"  ✗ Track not found")
-                return False
+                return False, None, False
+
+            # Validate match
+            if not self.is_valid_match(search_query, track_info['title']):
+                print(f"  ⚠ Result doesn't match query: {track_info['title']}")
+                return False, None, False
 
             if track_info['duration'] > self.MAX_DURATION:
                 print(f"  ✗ Track too long: {self._format_duration(track_info['duration'])} (max {self.MAX_DURATION // 60} minutes)")
-                return False
+                return False, None, False
 
-            print(f"  Found: {track_info['title']} ({self._format_duration(track_info['duration'])})")
-            download_url = track_info['url']
+            match_score = self.calculate_match_score(search_query, track_info['title'])
+            print(f"  Found: {track_info['title']} ({self._format_duration(track_info['duration'])}) [match: {match_score:.0%}]")
+            selected = track_info
+
+        # Create filename from actual track metadata
+        actual_filename = self.sanitize_filename(selected['title']) + '.mp3'
+
+        # Check if track already exists
+        existing_file = self.check_existing_file(selected['title'])
+        if existing_file:
+            print(f"  ✓ Already exists: {existing_file}")
+            return True, existing_file, True
+
+        output_path = os.path.join(self.output_dir, actual_filename)
+        download_url = selected['url']
 
         # Output template without extension (yt-dlp will add .mp3)
         output_template = os.path.join(
             self.output_dir,
-            output_filename.replace('.mp3', '')
+            actual_filename.replace('.mp3', '')
         )
 
         command = [
             'yt-dlp',
             '--extract-audio',
             '--audio-format', 'mp3',
-            '--audio-quality', '0',  # Best quality
+            '--audio-quality', '0',
             '--output', output_template + '.%(ext)s',
             '--no-playlist',
             '--quiet',
@@ -249,37 +355,36 @@ class AudioDownloader:
         ]
 
         try:
-            print(f"  Downloading: {output_filename}")
+            print(f"  Downloading: {actual_filename}")
             result = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minute timeout
+                timeout=300
             )
 
             if result.returncode == 0:
-                # Check if file was created
                 if os.path.exists(output_path):
-                    print(f"  ✓ Downloaded: {output_filename}")
-                    return True
+                    print(f"  ✓ Downloaded: {actual_filename}")
+                    return True, actual_filename, False
                 else:
-                    print(f"  ✗ File not found after download: {output_filename}")
-                    return False
+                    print(f"  ✗ File not found after download")
+                    return False, None, False
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
                 print(f"  ✗ Download failed: {error_msg}")
-                return False
+                return False, None, False
 
         except subprocess.TimeoutExpired:
-            print(f"  ✗ Download timeout: {output_filename}")
-            return False
+            print(f"  ✗ Download timeout")
+            return False, None, False
         except FileNotFoundError:
             print("  ✗ Error: yt-dlp not found. Please install it:")
             print("     pip install yt-dlp")
-            return False
+            return False, None, False
         except Exception as e:
             print(f"  ✗ Download error: {e}")
-            return False
+            return False, None, False
 
     def get_existing_files(self) -> set:
         """

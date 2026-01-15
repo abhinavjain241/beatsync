@@ -185,21 +185,14 @@ class BeatportPlaylistDownloader:
             # Create search query
             search_query = self.scraper.create_search_string(track)
 
-            # Create output filename
-            output_filename = self.downloader.create_filename(track)
-
-            # Check if already exists
-            output_path = os.path.join(self.downloader.output_dir, output_filename)
-            if os.path.exists(output_path):
-                print(f"  ✓ Already exists, skipping")
-                self.stats['skipped'] += 1
-                continue
-
-            # Download
-            success = self.downloader.download_track(search_query, output_filename)
+            # Download (the downloader will check for existing files and use actual metadata)
+            success, actual_filename, already_existed = self.downloader.download_track(search_query, track)
 
             if success:
-                self.stats['downloaded'] += 1
+                if already_existed:
+                    self.stats['skipped'] += 1
+                else:
+                    self.stats['downloaded'] += 1
             else:
                 self.stats['failed'] += 1
 

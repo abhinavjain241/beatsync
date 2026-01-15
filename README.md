@@ -5,6 +5,9 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
+- **NEW: Smart track matching - Validates search results to ensure correct tracks (50% minimum match)**
+- **NEW: Uses actual track metadata from SoundCloud/YouTube for accurate filenames**
+- **NEW: Intelligent duplicate detection - Recognizes similar filenames (80% similarity threshold)**
 - **NEW: AUTO mode - Searches BOTH SoundCloud AND YouTube, downloads the longer version**
 - **NEW: JSON file input for fastest and most reliable track loading**
 - **NEW: YouTube download support alongside SoundCloud**
@@ -12,7 +15,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 - Scrapes Beatport playlist URLs to extract track information
 - Intelligent duration comparison to get extended mixes
 - Downloads as high-quality MP3 files
-- Real-time progress tracking and updates
+- Real-time progress tracking with match score percentages
 - Fallback to local HTML file if URL scraping fails
 - Skip already downloaded tracks
 - Detailed download summary
@@ -166,11 +169,13 @@ python beatport_downloader.py --help
 1. **Input**: Accepts JSON file (recommended), Beatport URL, or local HTML file
 2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
 3. **Search**: In AUTO mode (default), searches BOTH SoundCloud AND YouTube simultaneously
-4. **Compare**: Gets duration information from both sources without downloading
-5. **Filter**: Automatically filters out tracks longer than 15 minutes (likely DJ sets)
-6. **Select**: Chooses the longer version (usually the extended mix)
-7. **Download**: Downloads the selected audio and converts it to MP3 format
-8. **Save**: Saves files as `Artist - Track.mp3` in the output folder
+4. **Validate**: Verifies search results match the requested track (50% minimum match score)
+5. **Compare**: Gets duration information from both sources without downloading
+6. **Filter**: Automatically filters out tracks longer than 15 minutes (likely DJ sets)
+7. **Select**: Chooses the longer version (usually the extended mix) with match score display
+8. **Check Duplicates**: Intelligently detects if track already exists (80% similarity)
+9. **Download**: Downloads the selected audio and converts it to MP3 format
+10. **Save**: Saves files using the actual track title from SoundCloud/YouTube metadata
 
 ### Download Modes
 
@@ -201,13 +206,13 @@ python beatport_downloader.py --help
 Files are automatically organized by playlist:
 - **Location**: `/Users/srinidhi/Music/{json_filename}/`
 - **Example**: `basshouse_t100.json` → `/Users/srinidhi/Music/basshouse_t100/`
-- **Naming**: `Artist - Track.mp3`
+- **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Extended Mix).mp3`)
 
 ### When Using URLs or HTML Files
 
 Downloaded files are saved in the `downloads` folder (or specified output directory):
 - **Location**: `./downloads/` (or custom via `--output-dir`)
-- **Naming**: `Artist - Track.mp3`
+- **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Official Audio).mp3`)
 
 ## Example
 
@@ -239,19 +244,31 @@ Starting downloads...
 
 [1/20] Processing: Artist Name - Track Name
   Searching both SoundCloud and YouTube...
-  SoundCloud: Artist Name - Track Name (Extended Mix) (6:45)
-  YouTube: Artist Name - Track Name (Radio Edit) (3:30)
+  SoundCloud: Artist Name - Track Name (Extended Mix) (6:45) [match: 95%]
+  YouTube: Artist Name - Track Name (Radio Edit) (3:30) [match: 90%]
   ✓ Selected SoundCloud (longer version)
-  Downloading: Artist Name - Track Name.mp3
-  ✓ Downloaded: Artist Name - Track Name.mp3
+  Downloading: Artist Name - Track Name (Extended Mix).mp3
+  ✓ Downloaded: Artist Name - Track Name (Extended Mix).mp3
 
 [2/20] Processing: Another Artist - Another Track
   Searching both SoundCloud and YouTube...
-  SoundCloud: Another Artist - Another Track (4:12)
-  YouTube: Another Artist - Another Track (Extended Mix) (7:20)
-  ✓ Selected YouTube (longer version)
-  Downloading: Another Artist - Another Track.mp3
-  ✓ Downloaded: Another Artist - Another Track.mp3
+  ⚠ SoundCloud result doesn't match query: Different Artist - Different Song
+  YouTube only: Another Artist - Another Track (Extended Mix) (7:20) [match: 88%]
+  Downloading: Another Artist - Another Track (Extended Mix).mp3
+  ✓ Downloaded: Another Artist - Another Track (Extended Mix).mp3
+
+[3/20] Processing: Previously Downloaded - Track Name
+  Searching both SoundCloud and YouTube...
+  SoundCloud: Previously Downloaded - Track Name (Official Audio) (5:15) [match: 92%]
+  YouTube: Previously Downloaded - Track Name (4:50) [match: 88%]
+  ✓ Selected SoundCloud (longer version)
+  ✓ Already exists: Previously Downloaded - Track Name (Official Audio).mp3
+
+[4/20] Processing: DJ Name - Live Set
+  Searching both SoundCloud and YouTube...
+  SoundCloud: DJ Name - Full Live Set (125:30) - TOO LONG, skipping
+  YouTube: DJ Name - Live Set Recording (90:45) - TOO LONG, skipping
+  ✗ No valid tracks found
 
 ...
 
