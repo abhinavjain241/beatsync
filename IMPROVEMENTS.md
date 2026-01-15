@@ -124,11 +124,77 @@ audio.save(v2_version=3)  # ID3v2.3 for maximum compatibility
 - Better balance between relevance and duration
 - Reduces chance of downloading wrong version
 
+## 3. Album Art URL Support
+
+### What Changed
+Album art can now be specified as either a URL or a local file path in JSON files.
+
+### Key Features
+
+#### Automatic URL Detection
+- Detects URLs (http:// or https://) vs local file paths
+- Downloads images from URLs automatically
+- Handles network errors gracefully with fallback
+
+#### Smart MIME Type Detection
+- Detects image format from file signature (not just extension)
+- Supports JPEG, PNG, and WebP formats
+- Ensures correct MIME type for Rekordbox compatibility
+
+#### Error Handling
+- User-agent headers to avoid blocks from image servers
+- 30-second timeout for downloads
+- Clear error messages for failed downloads
+- Falls back gracefully if URL fails
+
+### Example Usage
+
+You can now use URLs directly in your JSON files:
+
+```json
+[
+  {
+    "song_name": "Track Name Extended Mix",
+    "artist_name": "Artist Name",
+    "label_name": "Label Name",
+    "genre": "House",
+    "bpm_key": "128 BPM - A Minor",
+    "album_art": "https://example.com/artwork.jpg"
+  }
+]
+```
+
+Or continue using local paths:
+
+```json
+[
+  {
+    "song_name": "Track Name Extended Mix",
+    "artist_name": "Artist Name",
+    "label_name": "Label Name",
+    "genre": "House",
+    "bpm_key": "128 BPM - A Minor",
+    "album_art": "./local_images/artwork.jpg"
+  }
+]
+```
+
+### Benefits
+- No need to manually download album art
+- Works with direct image URLs from Beatport or other sources
+- Simplifies JSON file creation
+- Reduces storage requirements for JSON files
+
 ## Testing the Improvements
 
 ### Test Matching Algorithm
 ```bash
 python3 test_improvements.py
+```
+
+### Test Album Art URL Support
+```bash
+python3 test_album_art_url.py
 ```
 
 ### Test Full Download

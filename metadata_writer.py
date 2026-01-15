@@ -3,11 +3,14 @@ MP3 Metadata Writer Module
 
 Handles writing ID3 tags and embedding album art into MP3 files.
 Optimized for Rekordbox compatibility.
+Supports both local file paths and URLs for album art.
 """
 
 import os
 import re
 from typing import Dict, Optional
+from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TPE1, TPE2, TALB, TCON, TBPM, TKEY, TYER, COMM, APIC, error
 
@@ -18,6 +21,75 @@ class MetadataWriter:
     def __init__(self):
         """Initialize metadata writer."""
         pass
+
+    def _is_url(self, path: str) -> bool:
+        """
+        Check if a path is a URL.
+
+        Args:
+            path: Path or URL string
+
+        Returns:
+            True if the path is a URL, False otherwise
+        """
+        return path.startswith('http://') or path.startswith('https://')
+
+    def _download_image_from_url(self, url: str) -> Optional[bytes]:
+        """
+        Download image data from a URL.
+
+        Args:
+            url: URL of the image
+
+        Returns:
+            Image data as bytes, or None if download fails
+        """
+        try:
+            # Create request with a user agent to avoid blocks
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            request = Request(url, headers=headers)
+
+            with urlopen(request, timeout=30) as response:
+                if response.status == 200:
+                    image_data = response.read()
+                    return image_data
+                else:
+                    print(f"  ⚠ Album art download failed: HTTP {response.status}")
+                    return None
+        except HTTPError as e:
+            print(f"  ⚠ Album art HTTP error: {e.code} - {e.reason}")
+            return None
+        except URLError as e:
+            print(f"  ⚠ Album art URL error: {e.reason}")
+            return None
+        except Exception as e:
+            print(f"  ⚠ Album art download error: {e}")
+            return None
+
+    def _get_mime_type_from_data(self, image_data: bytes) -> str:
+        """
+        Detect MIME type from image data by checking file signature.
+
+        Args:
+            image_data: Image data bytes
+
+        Returns:
+            MIME type string
+        """
+        # Check for JPEG signature
+        if image_data.startswith(b'\xff\xd8\xff'):
+            return 'image/jpeg'
+        # Check for PNG signature
+        elif image_data.startswith(b'\x89PNG\r\n\x1a\n'):
+            return 'image/png'
+        # Check for WebP signature
+        elif image_data[8:12] == b'WEBP':
+            return 'image/webp'
+        # Default to JPEG
+        else:
+            return 'image/jpeg'
 
     def parse_bpm_key(self, bpm_key_str: str) -> tuple[Optional[str], Optional[str]]:
         """
@@ -127,17 +199,38 @@ class MetadataWriter:
 
             # Embed album art - CRITICAL for Rekordbox
             if metadata.get('album_art'):
-                album_art_path = metadata['album_art']
+                album_art_source = metadata['album_art']
+                image_data = None
+                mime_type = None
 
-                if os.path.exists(album_art_path):
+                # Check if album art is a URL or local file
+                if self._is_url(album_art_source):
+                    # Download image from URL
+                    print(f"  Downloading album art from URL...")
+                    image_data = self._download_image_from_url(album_art_source)
+                    if image_data:
+                        # Detect MIME type from image data
+                        mime_type = self._get_mime_type_from_data(image_data)
+                        print(f"  ✓ Downloaded album art ({len(image_data)} bytes, {mime_type})")
+                else:
+                    # Load image from local file
+                    if os.path.exists(album_art_source):
+                        try:
+                            with open(album_art_source, 'rb') as img_file:
+                                image_data = img_file.read()
+
+                            # Determine MIME type from file extension
+                            ext = os.path.splitext(album_art_source)[1].lower()
+                            mime_type = 'image/jpeg' if ext in ['.jpg', '.jpeg'] else 'image/png'
+                            print(f"  ✓ Loaded album art from: {os.path.basename(album_art_source)}")
+                        except Exception as e:
+                            print(f"  ⚠ Album art file error: {e}")
+                    else:
+                        print(f"  ⚠ Album art not found: {album_art_source}")
+
+                # Embed the album art if we have the data
+                if image_data and mime_type:
                     try:
-                        with open(album_art_path, 'rb') as img_file:
-                            image_data = img_file.read()
-
-                        # Determine MIME type from file extension
-                        ext = os.path.splitext(album_art_path)[1].lower()
-                        mime_type = 'image/jpeg' if ext in ['.jpg', '.jpeg'] else 'image/png'
-
                         # Add album art with Rekordbox-compatible settings
                         # encoding=0 for binary data (not text)
                         # type=3 is front cover (standard for album art)
@@ -148,11 +241,9 @@ class MetadataWriter:
                             desc='Cover',
                             data=image_data
                         ))
-                        print(f"  ✓ Embedded album art from: {os.path.basename(album_art_path)}")
+                        print(f"  ✓ Embedded album art into MP3")
                     except Exception as e:
-                        print(f"  ⚠ Album art error: {e}")
-                else:
-                    print(f"  ⚠ Album art not found: {album_art_path}")
+                        print(f"  ⚠ Album art embedding error: {e}")
 
             # Save with ID3v2.3 for maximum Rekordbox compatibility
             # v2.3 is better supported by Rekordbox than v2.4

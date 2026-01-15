@@ -5,7 +5,12 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
+- **NEW: Album art URL support - Use direct image URLs or local paths in JSON files**
+- **NEW: Enhanced track matching - Intelligently parses artists, track names, and mix types (Extended Mix, Remix, etc.)**
+- **NEW: Advanced source selection - Compares top 5 results from each platform for best match**
+- **NEW: Smart relevance scoring - Balances track name accuracy with duration (10% threshold)**
 - **NEW: Automatic MP3 metadata tagging - Embeds artist, title, label, genre, BPM, key, and album art**
+- **NEW: Rekordbox-optimized metadata - ID3v2.3 tags with proper encoding for DJ software**
 - **NEW: Smart track matching - Validates search results to ensure correct tracks (50% minimum match)**
 - **NEW: Uses actual track metadata from SoundCloud/YouTube for accurate filenames**
 - **NEW: Intelligent duplicate detection - Recognizes similar filenames (80% similarity threshold)**
