@@ -196,11 +196,22 @@ class BeatportPlaylistDownloader:
         Args:
             tracks: List of track dictionaries
         """
-        for track in tracks:
+        print("\n[DEBUG] Storing track metadata...")
+        for i, track in enumerate(tracks, 1):
             # Create a normalized key for matching
             search_query = self.scraper.create_search_string(track)
             normalized_key = self._normalize_text(search_query)
             self.track_metadata_map[normalized_key] = track
+
+            # Debug: Show what metadata fields are stored for first track
+            if i == 1:
+                print(f"[DEBUG] Sample track metadata fields stored: {list(track.keys())}")
+                print(f"[DEBUG] Sample has artist_name: {'artist_name' in track}")
+                print(f"[DEBUG] Sample has song_name: {'song_name' in track}")
+                print(f"[DEBUG] Sample has genre: {'genre' in track}")
+                print(f"[DEBUG] Sample has bpm_key: {'bpm_key' in track}")
+
+        print(f"[DEBUG] Stored metadata for {len(tracks)} tracks\n")
 
     def _normalize_text(self, text: str) -> str:
         """
@@ -254,6 +265,14 @@ class BeatportPlaylistDownloader:
                     metadata = self._get_metadata_for_track(track)
                     if metadata:
                         print(f"  Applying metadata to: {actual_filename}")
+
+                        # Debug: Show what metadata we retrieved
+                        print(f"  [DEBUG] Retrieved metadata fields: {list(metadata.keys())}")
+                        print(f"  [DEBUG] Artist: {metadata.get('artist_name', 'N/A')}")
+                        print(f"  [DEBUG] Song: {metadata.get('song_name', 'N/A')}")
+                        print(f"  [DEBUG] Genre: {metadata.get('genre', 'N/A')}")
+                        print(f"  [DEBUG] BPM/Key: {metadata.get('bpm_key', 'N/A')}")
+                        print(f"  [DEBUG] Label: {metadata.get('label_name', 'N/A')}")
 
                         # Resolve album art path relative to JSON file directory (only for non-URLs)
                         if metadata.get('album_art') and self.json_file_dir:

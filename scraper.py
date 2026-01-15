@@ -161,7 +161,8 @@ class BeatportScraper:
             file_path: Path to JSON file containing track data
 
         Returns:
-            List of track dictionaries with 'artist', 'track', 'remix', and 'label' keys
+            List of track dictionaries with 'artist', 'track', 'remix', 'label' keys
+            and ALL original metadata fields preserved
         """
         import json
 
@@ -206,12 +207,21 @@ class BeatportScraper:
                     label = item.get('label', item.get('label_name', ''))
 
                     if artist and track:
-                        tracks.append({
+                        # Create track dict with search fields
+                        track_dict = {
                             'artist': artist,
                             'track': track,
                             'remix': remix,
                             'label': label
-                        })
+                        }
+
+                        # PRESERVE ALL ORIGINAL METADATA FIELDS for later use
+                        # This ensures we can write proper ID3 tags with all metadata
+                        for key, value in item.items():
+                            if key not in track_dict and value:
+                                track_dict[key] = value
+
+                        tracks.append(track_dict)
 
                 print(f"Successfully parsed {len(tracks)} tracks from JSON")
                 return tracks
