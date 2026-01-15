@@ -160,9 +160,94 @@ class AudioDownloader:
         except (subprocess.TimeoutExpired, json.JSONDecodeError, Exception):
             return None
 
+    def get_multiple_tracks(self, search_url: str, count: int = 5) -> list:
+        """
+        Get multiple track results from a search.
+
+        Args:
+            search_url: yt-dlp search URL (e.g., 'scsearch5:query' or 'ytsearch5:query')
+            count: Number of results to fetch (default 5)
+
+        Returns:
+            List of dictionaries with track info
+        """
+        command = [
+            'yt-dlp',
+            '--dump-json',
+            '--no-playlist',
+            '--quiet',
+            '--no-warnings',
+            search_url
+        ]
+
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+
+            if result.returncode == 0 and result.stdout:
+                tracks = []
+                source = 'soundcloud' if 'soundcloud' in search_url else 'youtube'
+
+                for line in result.stdout.strip().split('\n'):
+                    if line.strip():
+                        try:
+                            info = json.loads(line)
+                            tracks.append({
+                                'title': info.get('title', 'Unknown'),
+                                'duration': info.get('duration', 0),
+                                'url': info.get('webpage_url', ''),
+                                'source': source
+                            })
+                        except json.JSONDecodeError:
+                            continue
+
+                return tracks
+            return []
+
+        except (subprocess.TimeoutExpired, Exception):
+            return []
+
+    def find_best_match(self, tracks: list, search_query: str, threshold: float = 0.5) -> Optional[Dict]:
+        """
+        Find the best matching track from a list based on relevance score.
+
+        Args:
+            tracks: List of track dictionaries
+            search_query: Original search query
+            threshold: Minimum match score required
+
+        Returns:
+            Best matching track or None if no good match found
+        """
+        if not tracks:
+            return None
+
+        best_track = None
+        best_score = 0.0
+
+        for track in tracks:
+            if track['duration'] > self.MAX_DURATION:
+                continue
+
+            score = self.calculate_match_score(search_query, track['title'])
+
+            if score >= threshold and score > best_score:
+                best_score = score
+                best_track = track
+
+        if best_track:
+            best_track['match_score'] = best_score
+
+        return best_track
+
     def search_both_sources(self, search_query: str, validate_match: bool = True) -> Tuple[Optional[Dict], Optional[Dict]]:
         """
         Search both SoundCloud and YouTube for a track.
+        Gets top 5 results from each source and selects the most relevant match.
 
         Args:
             search_query: Search string for the track
@@ -171,66 +256,68 @@ class AudioDownloader:
         Returns:
             Tuple of (soundcloud_info, youtube_info), each can be None if not found
         """
-        print(f"  Searching both SoundCloud and YouTube...")
+        print(f"  Searching top 5 results from SoundCloud and YouTube...")
 
-        sc_url = f"scsearch1:{search_query}"
-        yt_url = f"ytsearch1:{search_query}"
+        sc_url = f"scsearch5:{search_query}"
+        yt_url = f"ytsearch5:{search_query}"
 
-        sc_info = self.get_track_info(sc_url)
-        yt_info = self.get_track_info(yt_url)
+        sc_tracks = self.get_multiple_tracks(sc_url, count=5)
+        yt_tracks = self.get_multiple_tracks(yt_url, count=5)
+
+        sc_info = None
+        yt_info = None
 
         if validate_match:
-            if sc_info and not self.is_valid_match(search_query, sc_info['title']):
-                print(f"  ⚠ SoundCloud result doesn't match query: {sc_info['title']}")
-                sc_info = None
+            sc_info = self.find_best_match(sc_tracks, search_query, threshold=0.5)
+            yt_info = self.find_best_match(yt_tracks, search_query, threshold=0.5)
 
-            if yt_info and not self.is_valid_match(search_query, yt_info['title']):
-                print(f"  ⚠ YouTube result doesn't match query: {yt_info['title']}")
-                yt_info = None
+            if not sc_info and sc_tracks:
+                print(f"  ⚠ No SoundCloud results matched query well enough")
+
+            if not yt_info and yt_tracks:
+                print(f"  ⚠ No YouTube results matched query well enough")
+        else:
+            if sc_tracks:
+                sc_info = sc_tracks[0]
+                sc_info['match_score'] = 1.0
+            if yt_tracks:
+                yt_info = yt_tracks[0]
+                yt_info['match_score'] = 1.0
 
         return sc_info, yt_info
 
     def select_best_source(self, sc_info: Optional[Dict], yt_info: Optional[Dict], search_query: str = "") -> Optional[Dict]:
         """
-        Select the best source based on duration (longer is better).
-        Filters out tracks longer than MAX_DURATION to avoid DJ sets.
+        Select the best source based on relevance and duration.
+        First filters by relevance, then selects longer version.
 
         Args:
-            sc_info: SoundCloud track info
-            yt_info: YouTube track info
+            sc_info: SoundCloud track info (already filtered for relevance)
+            yt_info: YouTube track info (already filtered for relevance)
             search_query: Original search query for match scoring
 
         Returns:
-            Selected track info or None if both failed or are too long
+            Selected track info or None if both failed
         """
-        # Filter out tracks that are too long (likely DJ sets)
-        if sc_info and sc_info['duration'] > self.MAX_DURATION:
-            print(f"  SoundCloud: {sc_info['title']} ({self._format_duration(sc_info['duration'])}) - TOO LONG, skipping")
-            sc_info = None
-
-        if yt_info and yt_info['duration'] > self.MAX_DURATION:
-            print(f"  YouTube: {yt_info['title']} ({self._format_duration(yt_info['duration'])}) - TOO LONG, skipping")
-            yt_info = None
-
         if not sc_info and not yt_info:
             print(f"  ✗ No valid tracks found")
             return None
 
         if not sc_info:
-            match_score = self.calculate_match_score(search_query, yt_info['title']) if search_query else 1.0
+            match_score = yt_info.get('match_score', 1.0)
             print(f"  YouTube only: {yt_info['title']} ({self._format_duration(yt_info['duration'])}) [match: {match_score:.0%}]")
             return yt_info
 
         if not yt_info:
-            match_score = self.calculate_match_score(search_query, sc_info['title']) if search_query else 1.0
+            match_score = sc_info.get('match_score', 1.0)
             print(f"  SoundCloud only: {sc_info['title']} ({self._format_duration(sc_info['duration'])}) [match: {match_score:.0%}]")
             return sc_info
 
         sc_duration = sc_info['duration']
         yt_duration = yt_info['duration']
 
-        sc_match = self.calculate_match_score(search_query, sc_info['title']) if search_query else 1.0
-        yt_match = self.calculate_match_score(search_query, yt_info['title']) if search_query else 1.0
+        sc_match = sc_info.get('match_score', 1.0)
+        yt_match = yt_info.get('match_score', 1.0)
 
         print(f"  SoundCloud: {sc_info['title']} ({self._format_duration(sc_duration)}) [match: {sc_match:.0%}]")
         print(f"  YouTube: {yt_info['title']} ({self._format_duration(yt_duration)}) [match: {yt_match:.0%}]")
