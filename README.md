@@ -5,6 +5,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
+- **NEW: JSON file input for fastest and most reliable track loading**
 - Scrapes Beatport playlist URLs to extract track information
 - Searches and downloads audio from SoundCloud using yt-dlp
 - Downloads as high-quality MP3 files
@@ -77,32 +78,72 @@ Then open `http://localhost:3000`
 
 ### Command Line
 
+#### Using JSON File (Recommended)
+
+The fastest and most reliable method is to use a JSON file with track data:
+
 ```bash
-python beatport_downloader.py <beatport_playlist_url>
+python beatport_downloader.py --json-file tracks.json
 ```
 
-### Interactive Mode
+**JSON Format:**
+```json
+[
+  {
+    "artist_name": "Artist Name",
+    "song_name": "Track Name Extended Mix"
+  },
+  {
+    "artist_name": "Another Artist",
+    "song_name": "Another Track Original Mix"
+  }
+]
+```
+
+#### Using Beatport URL
+
+```bash
+python beatport_downloader.py --url "https://www.beatport.com/chart/..."
+```
+
+#### Using Local HTML File
+
+```bash
+python beatport_downloader.py --local-html playlist.html
+```
+
+#### Interactive Mode
 
 ```bash
 python beatport_downloader.py
 ```
 
-Then enter the Beatport playlist URL when prompted.
+Select from multiple input options when prompted.
 
-### Local HTML File
+#### Additional Options
 
-If the URL scraping fails (403 error), you can save the Beatport playlist page as HTML and provide the local file path:
+```bash
+# Specify custom output directory
+python beatport_downloader.py --json-file tracks.json --output-dir "my_music"
 
-1. Open the Beatport playlist in your browser
-2. Save the page as HTML (Ctrl+S or Cmd+S)
-3. Run the script and provide the path to the saved HTML file when prompted
+# Show help
+python beatport_downloader.py --help
+```
 
 ## How It Works
 
-1. **Scraping**: Fetches the Beatport playlist page and extracts Artist, Track Name, and Remix Name for each track
-2. **Search**: Creates a search query and uses yt-dlp to find the top result on SoundCloud
-3. **Download**: Downloads the audio and converts it to MP3 format
-4. **Save**: Saves files as `Artist - Track.mp3` in the `downloads` folder
+1. **Input**: Accepts JSON file (recommended), Beatport URL, or local HTML file
+2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
+3. **Search**: Creates a search query and uses yt-dlp to find the top result on SoundCloud
+4. **Download**: Downloads the audio and converts it to MP3 format
+5. **Save**: Saves files as `Artist - Track.mp3` in the `downloads` folder
+
+### Why Use JSON Files?
+
+- **Fastest**: No need to wait for page loading or scrolling
+- **Most Reliable**: No issues with authentication or dynamic content
+- **Portable**: Easy to share, backup, and reuse
+- **Flexible**: Works with any source (Beatport, Spotify, manual lists, etc.)
 
 ## Output
 
@@ -113,17 +154,18 @@ Artist - Track.mp3
 
 ## Example
 
+### Using JSON File
+
 ```bash
-$ python beatport_downloader.py "https://www.beatport.com/chart/..."
+$ python beatport_downloader.py --json-file basshouse_t100.json
 
 ============================================================
 Beatport Playlist Downloader
 ============================================================
 
-Fetching URL: https://www.beatport.com/chart/...
-Found 20 track elements
-Parsing track information...
-Found 20 tracks
+Reading JSON file: basshouse_t100.json
+Found 100 tracks in JSON file
+✓ Successfully parsed 100 tracks
 
 Tracks to download:
 ------------------------------------------------------------

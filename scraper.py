@@ -153,6 +153,80 @@ class BeatportScraper:
             print(f"Error reading local file: {e}")
             return None
 
+    def load_json_file(self, file_path: str) -> List[Dict[str, str]]:
+        """
+        Load track information directly from a JSON file.
+
+        Args:
+            file_path: Path to JSON file containing track data
+
+        Returns:
+            List of track dictionaries with 'artist', 'track', 'remix', and 'label' keys
+        """
+        import json
+
+        try:
+            print(f"Reading JSON file: {file_path}")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            tracks = []
+
+            if isinstance(data, list):
+                print(f"Found {len(data)} tracks in JSON file")
+
+                for item in data:
+                    # Parse the track based on the JSON structure
+                    artist = item.get('artist_name', item.get('artist', ''))
+                    song_name = item.get('song_name', item.get('track', item.get('name', '')))
+
+                    # Try to separate remix info from song name
+                    remix = ''
+                    track = song_name
+
+                    # Check if remix info is in the song name
+                    remix_patterns = [
+                        'Extended Mix', 'Original Mix', 'Remix', 'Edit', 'VIP',
+                        'Club Mix', 'Radio Edit', 'Dub Mix'
+                    ]
+
+                    for pattern in remix_patterns:
+                        if pattern.lower() in song_name.lower():
+                            # Extract remix info
+                            parts = song_name.rsplit(maxsplit=2)
+                            if len(parts) >= 2:
+                                # Check if last parts contain remix pattern
+                                potential_remix = ' '.join(parts[-2:])
+                                if any(p.lower() in potential_remix.lower() for p in remix_patterns):
+                                    remix = potential_remix
+                                    track = ' '.join(parts[:-2])
+                                    break
+
+                    # Get label if available
+                    label = item.get('label', item.get('label_name', ''))
+
+                    if artist and track:
+                        tracks.append({
+                            'artist': artist,
+                            'track': track,
+                            'remix': remix,
+                            'label': label
+                        })
+
+                print(f"Successfully parsed {len(tracks)} tracks from JSON")
+                return tracks
+
+            else:
+                print("Error: JSON file should contain an array of track objects")
+                return []
+
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON file: {e}")
+            return []
+        except Exception as e:
+            print(f"Error reading JSON file: {e}")
+            return []
+
     def parse_tracks(self, html: str) -> List[Dict[str, str]]:
         """
         Parse track information from Beatport HTML.

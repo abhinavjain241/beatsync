@@ -3,18 +3,21 @@
 Beatport Playlist Downloader
 
 Downloads music from Beatport playlists by:
-1. Scraping track information from Beatport
+1. Scraping track information from Beatport (URL or JSON file)
 2. Searching for tracks on SoundCloud
 3. Downloading audio as MP3 files
 
 Usage:
-    python beatport_downloader.py <beatport_url>
+    python beatport_downloader.py --url <beatport_url>
+    python beatport_downloader.py --json-file <path_to_json>
+    python beatport_downloader.py --local-html <path_to_html>
     python beatport_downloader.py  # Interactive mode
 """
 
 import sys
 import os
-from typing import List, Dict
+import argparse
+from typing import List, Dict, Optional
 from scraper import BeatportScraper
 from downloader import AudioDownloader
 
@@ -32,56 +35,87 @@ class BeatportPlaylistDownloader:
             'skipped': 0
         }
 
-    def run(self, url: str = None):
+    def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
+            local_html: Optional[str] = None):
         """
         Run the complete download process.
 
         Args:
-            url: Beatport playlist URL (optional, will prompt if not provided)
+            url: Beatport playlist URL (optional)
+            json_file: Path to JSON file with track data (optional)
+            local_html: Path to local HTML file (optional)
         """
         print("=" * 60)
         print("Beatport Playlist Downloader")
         print("=" * 60)
         print()
 
-        # Get URL if not provided
-        if not url:
-            url = input("Enter Beatport playlist URL: ").strip()
+        tracks = []
 
-        if not url:
-            print("Error: No URL provided")
-            return
+        # Priority 1: JSON file (fastest and most reliable)
+        if json_file:
+            print(f"Loading tracks from JSON file: {json_file}")
+            tracks = self.scraper.load_json_file(json_file)
 
-        # Fetch HTML content
-        html = self.scraper.fetch_html(url)
-
-        # If fetching fails, offer local file option
-        if not html:
-            print()
-            print("Failed to fetch URL. You can provide a local HTML file instead.")
-            file_path = input("Enter path to local HTML file (or press Enter to exit): ").strip()
-
-            if not file_path:
-                print("Exiting...")
+        # Priority 2: Local HTML file
+        elif local_html:
+            print(f"Loading tracks from local HTML: {local_html}")
+            html = self.scraper.load_local_html(local_html)
+            if html:
+                print("Parsing track information...")
+                tracks = self.scraper.parse_tracks(html)
+            else:
+                print("Failed to load HTML content.")
                 return
 
-            html = self.scraper.load_local_html(file_path)
+        # Priority 3: URL scraping
+        elif url:
+            print(f"Fetching tracks from URL: {url}")
+            html = self.scraper.fetch_html(url)
 
             if not html:
-                print("Failed to load HTML content. Exiting...")
+                print("Failed to fetch URL. Exiting...")
                 return
 
-        # Parse tracks
-        print()
-        print("Parsing track information...")
-        tracks = self.scraper.parse_tracks(html)
+            print("Parsing track information...")
+            tracks = self.scraper.parse_tracks(html)
+
+        # Interactive mode: prompt user for input
+        else:
+            print("Select input method:")
+            print("1. JSON file (recommended)")
+            print("2. Beatport playlist URL")
+            print("3. Local HTML file")
+            print()
+            choice = input("Enter choice (1-3): ").strip()
+
+            if choice == '1':
+                json_file = input("Enter path to JSON file: ").strip()
+                if json_file:
+                    tracks = self.scraper.load_json_file(json_file)
+            elif choice == '2':
+                url = input("Enter Beatport playlist URL: ").strip()
+                if url:
+                    html = self.scraper.fetch_html(url)
+                    if html:
+                        print("Parsing track information...")
+                        tracks = self.scraper.parse_tracks(html)
+            elif choice == '3':
+                local_html = input("Enter path to local HTML file: ").strip()
+                if local_html:
+                    html = self.scraper.load_local_html(local_html)
+                    if html:
+                        print("Parsing track information...")
+                        tracks = self.scraper.parse_tracks(html)
 
         if not tracks:
-            print("No tracks found. Please check the URL or HTML content.")
+            print()
+            print("No tracks found. Please check your input.")
             print()
             print("Tips:")
-            print("- Make sure the URL points to a valid Beatport playlist")
-            print("- Try saving the page as HTML and using the local file option")
+            print("- For JSON files: Ensure the format is correct (see example)")
+            print("- For URLs: Make sure the URL points to a valid Beatport playlist")
+            print("- For HTML: Save the page after tracks have loaded")
             return
 
         self.stats['total'] = len(tracks)
@@ -167,14 +201,72 @@ class BeatportPlaylistDownloader:
 
 def main():
     """Main entry point."""
-    # Check if URL provided as argument
-    url = None
-    if len(sys.argv) > 1:
-        url = sys.argv[1]
+    parser = argparse.ArgumentParser(
+        description='Download music from Beatport playlists',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Use JSON file (recommended)
+  python beatport_downloader.py --json-file tracks.json
+
+  # Use Beatport URL
+  python beatport_downloader.py --url https://www.beatport.com/library/playlists/12345
+
+  # Use local HTML file
+  python beatport_downloader.py --local-html playlist.html
+
+  # Interactive mode
+  python beatport_downloader.py
+
+JSON Format:
+  [
+    {
+      "artist_name": "Artist Name",
+      "song_name": "Track Name Extended Mix"
+    },
+    ...
+  ]
+        """
+    )
+
+    parser.add_argument(
+        '--json-file',
+        '-j',
+        type=str,
+        help='Path to JSON file containing track data'
+    )
+
+    parser.add_argument(
+        '--url',
+        '-u',
+        type=str,
+        help='Beatport playlist URL'
+    )
+
+    parser.add_argument(
+        '--local-html',
+        '-l',
+        type=str,
+        help='Path to local HTML file'
+    )
+
+    parser.add_argument(
+        '--output-dir',
+        '-o',
+        type=str,
+        default='downloads',
+        help='Output directory for downloaded files (default: downloads)'
+    )
+
+    args = parser.parse_args()
 
     # Create and run downloader
-    downloader = BeatportPlaylistDownloader()
-    downloader.run(url)
+    downloader = BeatportPlaylistDownloader(output_dir=args.output_dir)
+    downloader.run(
+        url=args.url,
+        json_file=args.json_file,
+        local_html=args.local_html
+    )
 
 
 if __name__ == '__main__':

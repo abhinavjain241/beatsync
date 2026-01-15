@@ -1,71 +1,37 @@
 # Quick Start Guide
 
-Get started with the Beatport Playlist Downloader in 3 simple steps.
+## Using JSON Files (Recommended Method)
 
-## Step 1: Install Dependencies
+The fastest way to download tracks is using a JSON file.
 
-```bash
-pip install -r requirements.txt
+### Step 1: Create Your JSON File
+
+Create a file named `tracks.json` with your track list:
+
+```json
+[
+  {
+    "artist_name": "Westend, SIDEPIECE",
+    "song_name": "Take Your Places Extended Mix"
+  },
+  {
+    "artist_name": "bradeazy",
+    "song_name": "Up Down Extended Mix"
+  },
+  {
+    "artist_name": "Sean Paul, Odd Mob",
+    "song_name": "Get Busy Odd Mob Extended Club Mix"
+  }
+]
 ```
 
-Also install ffmpeg (required for audio conversion):
-
-**macOS:**
-```bash
-brew install ffmpeg
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt install ffmpeg
-```
-
-**Windows:**
-Download from https://ffmpeg.org/download.html and add to PATH
-
-## Step 2: Verify Installation
-
-Run the dependency checker to make sure everything is installed:
+### Step 2: Run the Downloader
 
 ```bash
-python check_dependencies.py
+python beatport_downloader.py --json-file tracks.json
 ```
 
-You should see checkmarks for all dependencies.
-
-## Step 3: Run the Downloader
-
-### Option A: Command Line
-
-```bash
-python beatport_downloader.py "https://www.beatport.com/chart/your-playlist-url"
-```
-
-### Option B: Interactive Mode
-
-```bash
-python beatport_downloader.py
-```
-
-Then paste your Beatport playlist URL when prompted.
-
-## That's It!
-
-Your tracks will be downloaded to the `downloads/` folder as MP3 files.
-
-## Troubleshooting
-
-### Getting 403 Errors?
-
-If the script can't access Beatport directly:
-
-1. Open the playlist in your browser
-2. Save the page as HTML (Ctrl+S or Cmd+S)
-3. Run the script and provide the path to the HTML file when prompted
-
-### Still Having Issues?
-
-Check the full README.md for detailed troubleshooting steps.
+That's it! The tracks will be downloaded to the `downloads/` folder.
 
 ## Example Output
 
@@ -74,36 +40,111 @@ Check the full README.md for detailed troubleshooting steps.
 Beatport Playlist Downloader
 ============================================================
 
-Fetching URL: https://www.beatport.com/chart/...
-Found 20 tracks
+Reading JSON file: tracks.json
+Found 3 tracks in JSON file
+✓ Successfully parsed 3 tracks
 
 Tracks to download:
 ------------------------------------------------------------
-1. Artist Name - Track Title (Remix)
-2. Another Artist - Another Track
-...
+1. Westend, SIDEPIECE - Take Your Places Extended Mix
+2. bradeazy - Up Down Extended Mix
+3. Sean Paul, Odd Mob - Get Busy Odd Mob Extended Club Mix
 
 Proceed with download? (y/n): y
 
 Starting downloads...
 ============================================================
 
-[1/20] Processing: Artist Name - Track Title
-  Downloading: Artist Name - Track Title.mp3
-  ✓ Downloaded: Artist Name - Track Title.mp3
+[1/3] Processing: Westend, SIDEPIECE - Take Your Places
+  Downloading: Westend, SIDEPIECE - Take Your Places.mp3
+  ✓ Downloaded successfully
 
-...
+[2/3] Processing: bradeazy - Up Down
+  Downloading: bradeazy - Up Down.mp3
+  ✓ Downloaded successfully
+
+[3/3] Processing: Sean Paul, Odd Mob - Get Busy Odd Mob Extended
+  Downloading: Sean Paul, Odd Mob - Get Busy Odd Mob Extended.mp3
+  ✓ Downloaded successfully
 
 ============================================================
 Download Summary
 ============================================================
-Total tracks:      20
-Downloaded:        18
+Total tracks:      3
+Downloaded:        3
 Already existed:   0
-Failed:            2
+Failed:            0
 
-Success rate: 90.0%
+Success rate: 100.0%
 
 Files saved to: downloads/
 ============================================================
 ```
+
+## JSON Format Details
+
+Each track object should have:
+- `artist_name`: The artist(s) name (required)
+- `song_name`: The track name, including remix info (required)
+- `label`: The record label (optional)
+
+The script automatically:
+- Separates remix info from track names
+- Handles multiple artists
+- Creates clean filenames
+- Skips already downloaded tracks
+
+## Using the Example File
+
+An example file `basshouse_t100.json` is included with 100 Bass House tracks:
+
+```bash
+python beatport_downloader.py --json-file basshouse_t100.json
+```
+
+## Tips
+
+1. **Multiple Artists**: Separate with commas
+   ```json
+   "artist_name": "Artist 1, Artist 2, Artist 3"
+   ```
+
+2. **Remix Info**: Include in the song name
+   ```json
+   "song_name": "Track Name Extended Mix"
+   "song_name": "Track Name Original Mix"
+   "song_name": "Track Name Artist Remix"
+   ```
+
+3. **Special Characters**: Use proper JSON escaping
+   ```json
+   "song_name": "Track Name (feat. Someone)"
+   ```
+
+4. **Custom Output**: Specify a different folder
+   ```bash
+   python beatport_downloader.py --json-file tracks.json --output-dir "my_music"
+   ```
+
+## Troubleshooting
+
+**File not found:**
+```bash
+# Use absolute path
+python beatport_downloader.py --json-file "/full/path/to/tracks.json"
+```
+
+**Invalid JSON:**
+- Check for missing commas between objects
+- Ensure all quotes are properly closed
+- Use a JSON validator online
+
+**No tracks found:**
+- Verify `artist_name` and `song_name` fields exist
+- Check that the JSON is an array `[...]`
+
+## Next Steps
+
+- See [README.md](README.md) for full documentation
+- See [AUTHENTICATION.md](AUTHENTICATION.md) for private playlist solutions
+- Try other input methods (URL, HTML file)
