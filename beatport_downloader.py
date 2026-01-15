@@ -47,7 +47,7 @@ class BeatportPlaylistDownloader:
         }
 
     def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
-            local_html: Optional[str] = None):
+            local_html: Optional[str] = None, base_music_dir: Optional[str] = None):
         """
         Run the complete download process.
 
@@ -55,7 +55,18 @@ class BeatportPlaylistDownloader:
             url: Beatport playlist URL (optional)
             json_file: Path to JSON file with track data (optional)
             local_html: Path to local HTML file (optional)
+            base_music_dir: Base directory for music downloads (optional)
         """
+        # If using JSON file and base_music_dir is provided, create folder from JSON filename
+        if json_file and base_music_dir:
+            json_filename = os.path.basename(json_file)
+            folder_name = os.path.splitext(json_filename)[0]
+            new_output_dir = os.path.join(base_music_dir, folder_name)
+
+            # Update the downloader's output directory
+            self.downloader.output_dir = new_output_dir
+            self.downloader._ensure_output_dir()
+
         print("=" * 60)
         print("Beatport Playlist Downloader")
         print("=" * 60)
@@ -63,6 +74,7 @@ class BeatportPlaylistDownloader:
             print("Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)")
         else:
             print(f"Download source: {self.source.upper()}")
+        print(f"Output directory: {self.downloader.output_dir}")
         print()
 
         tracks = []
@@ -222,13 +234,14 @@ def main():
         epilog="""
 Examples:
   # Use JSON file with AUTO mode (default - searches both sources, downloads longer)
+  # Downloads to /Users/srinidhi/Music/{json_filename}/
   python beatport_downloader.py --json-file tracks.json
 
   # Use JSON file with SoundCloud only
   python beatport_downloader.py --json-file tracks.json --source soundcloud
 
-  # Use JSON file with YouTube only
-  python beatport_downloader.py --json-file tracks.json --source youtube
+  # Use JSON file with custom output directory
+  python beatport_downloader.py --json-file tracks.json --output-dir /path/to/folder
 
   # Use Beatport URL
   python beatport_downloader.py --url https://www.beatport.com/library/playlists/12345
@@ -243,6 +256,12 @@ Download Sources:
   - auto: (DEFAULT) Searches both SoundCloud and YouTube, downloads the longer version
   - soundcloud: Searches SoundCloud only
   - youtube: Searches YouTube only
+
+Output Directory:
+  - When using --json-file: Creates folder named after JSON file in /Users/srinidhi/Music/
+    Example: basshouse_t100.json -> /Users/srinidhi/Music/basshouse_t100/
+  - Override with --output-dir to specify custom location
+  - For URLs/HTML files: Uses --output-dir value (default: downloads/)
 
 JSON Format:
   [
@@ -280,8 +299,8 @@ JSON Format:
         '--output-dir',
         '-o',
         type=str,
-        default='downloads',
-        help='Output directory for downloaded files (default: downloads)'
+        default=None,
+        help='Output directory for downloaded files (overrides default JSON-based location)'
     )
 
     parser.add_argument(
@@ -295,15 +314,30 @@ JSON Format:
 
     args = parser.parse_args()
 
+    # Determine output directory
+    if args.output_dir:
+        # User specified custom output directory
+        output_dir = args.output_dir
+        base_music_dir = None
+    elif args.json_file:
+        # Using JSON file - use temporary dir, will be updated in run()
+        output_dir = 'downloads'  # temporary
+        base_music_dir = '/Users/srinidhi/Music'
+    else:
+        # URL or HTML - use default downloads folder
+        output_dir = 'downloads'
+        base_music_dir = None
+
     # Create and run downloader
     downloader = BeatportPlaylistDownloader(
-        output_dir=args.output_dir,
+        output_dir=output_dir,
         source=args.source
     )
     downloader.run(
         url=args.url,
         json_file=args.json_file,
-        local_html=args.local_html
+        local_html=args.local_html,
+        base_music_dir=base_music_dir
     )
 
 

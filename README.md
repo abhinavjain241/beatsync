@@ -86,13 +86,20 @@ The fastest and most reliable method is to use a JSON file with track data:
 
 ```bash
 # AUTO mode (default) - Searches both SoundCloud and YouTube, downloads longer version
+# Downloads to /Users/srinidhi/Music/{json_filename}/
 python beatport_downloader.py --json-file tracks.json
+
+# Example: basshouse_t100.json downloads to /Users/srinidhi/Music/basshouse_t100/
+python beatport_downloader.py --json-file basshouse_t100.json
 
 # SoundCloud only
 python beatport_downloader.py --json-file tracks.json --source soundcloud
 
 # YouTube only
 python beatport_downloader.py --json-file tracks.json --source youtube
+
+# Custom output directory (override default location)
+python beatport_downloader.py --json-file tracks.json --output-dir /custom/path
 ```
 
 **JSON Format:**
@@ -187,10 +194,18 @@ python beatport_downloader.py --help
 
 ## Output
 
-Downloaded tracks are saved to the `downloads/` directory with the naming format:
-```
-Artist - Track.mp3
-```
+### When Using JSON Files
+
+Files are automatically organized by playlist:
+- **Location**: `/Users/srinidhi/Music/{json_filename}/`
+- **Example**: `basshouse_t100.json` → `/Users/srinidhi/Music/basshouse_t100/`
+- **Naming**: `Artist - Track.mp3`
+
+### When Using URLs or HTML Files
+
+Downloaded files are saved in the `downloads` folder (or specified output directory):
+- **Location**: `./downloads/` (or custom via `--output-dir`)
+- **Naming**: `Artist - Track.mp3`
 
 ## Example
 
@@ -203,6 +218,7 @@ $ python beatport_downloader.py --json-file basshouse_t100.json
 Beatport Playlist Downloader
 ============================================================
 Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)
+Output directory: /Users/srinidhi/Music/basshouse_t100
 
 Reading JSON file: basshouse_t100.json
 Found 100 tracks in JSON file
@@ -247,7 +263,7 @@ Failed:            2
 
 Success rate: 90.0%
 
-Files saved to: downloads/
+Files saved to: /Users/srinidhi/Music/basshouse_t100/
 ============================================================
 ```
 
