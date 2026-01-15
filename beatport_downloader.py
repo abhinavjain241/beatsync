@@ -23,6 +23,7 @@ import argparse
 from typing import List, Dict, Optional
 from scraper import BeatportScraper
 from downloader import AudioDownloader
+from metadata_writer import MetadataWriter
 
 
 class BeatportPlaylistDownloader:
@@ -38,13 +39,17 @@ class BeatportPlaylistDownloader:
         """
         self.scraper = BeatportScraper()
         self.downloader = AudioDownloader(output_dir, source)
+        self.metadata_writer = MetadataWriter()
         self.source = source
         self.stats = {
             'total': 0,
             'downloaded': 0,
             'failed': 0,
-            'skipped': 0
+            'skipped': 0,
+            'metadata_added': 0,
+            'metadata_failed': 0
         }
+        self.track_metadata_map = {}
 
     def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
             local_html: Optional[str] = None, base_music_dir: Optional[str] = None):
@@ -83,6 +88,8 @@ class BeatportPlaylistDownloader:
         if json_file:
             print(f"Loading tracks from JSON file: {json_file}")
             tracks = self.scraper.load_json_file(json_file)
+            # Store metadata for later use
+            self._store_track_metadata(tracks)
 
         # Priority 2: Local HTML file
         elif local_html:
@@ -177,6 +184,49 @@ class BeatportPlaylistDownloader:
             label_info = f" [{track['label']}]" if track.get('label') else ""
             print(f"{i}. {search_string}{label_info}")
 
+    def _store_track_metadata(self, tracks: List[Dict[str, str]]):
+        """
+        Store track metadata for later lookup.
+
+        Args:
+            tracks: List of track dictionaries
+        """
+        for track in tracks:
+            # Create a normalized key for matching
+            search_query = self.scraper.create_search_string(track)
+            normalized_key = self._normalize_text(search_query)
+            self.track_metadata_map[normalized_key] = track
+
+    def _normalize_text(self, text: str) -> str:
+        """
+        Normalize text for comparison (using same logic as downloader).
+
+        Args:
+            text: Text to normalize
+
+        Returns:
+            Normalized text
+        """
+        import re
+        text = text.lower()
+        text = re.sub(r'[^\w\s]', '', text)
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip()
+
+    def _get_metadata_for_track(self, track: Dict[str, str]) -> Optional[Dict[str, str]]:
+        """
+        Get metadata for a track from the stored map.
+
+        Args:
+            track: Track dictionary with 'artist' and 'track' keys
+
+        Returns:
+            Metadata dictionary or None if not found
+        """
+        search_query = self.scraper.create_search_string(track)
+        normalized_key = self._normalize_text(search_query)
+        return self.track_metadata_map.get(normalized_key)
+
     def _download_tracks(self, tracks: List[Dict[str, str]]):
         """Download all tracks."""
         for i, track in enumerate(tracks, 1):
@@ -193,6 +243,20 @@ class BeatportPlaylistDownloader:
                     self.stats['skipped'] += 1
                 else:
                     self.stats['downloaded'] += 1
+
+                # Apply metadata if we have it and the file exists
+                if actual_filename:
+                    metadata = self._get_metadata_for_track(track)
+                    if metadata and not already_existed:
+                        mp3_path = os.path.join(self.downloader.output_dir, actual_filename)
+                        try:
+                            if self.metadata_writer.apply_metadata_to_track(mp3_path, metadata):
+                                self.stats['metadata_added'] += 1
+                            else:
+                                self.stats['metadata_failed'] += 1
+                        except Exception as e:
+                            print(f"  ⚠ Metadata error (skipping): {e}")
+                            self.stats['metadata_failed'] += 1
             else:
                 self.stats['failed'] += 1
 
@@ -206,6 +270,13 @@ class BeatportPlaylistDownloader:
         print(f"Downloaded:        {self.stats['downloaded']}")
         print(f"Already existed:   {self.stats['skipped']}")
         print(f"Failed:            {self.stats['failed']}")
+
+        # Show metadata stats if applicable
+        if self.stats['metadata_added'] > 0 or self.stats['metadata_failed'] > 0:
+            print(f"Metadata added:    {self.stats['metadata_added']}")
+            if self.stats['metadata_failed'] > 0:
+                print(f"Metadata failed:   {self.stats['metadata_failed']}")
+
         print()
 
         success_rate = 0

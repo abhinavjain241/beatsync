@@ -4,3 +4,4 @@ yt-dlp>=2023.12.30
 lxml>=4.9.0
 selenium>=4.16.0
 webdriver-manager>=4.0.1
+mutagen>=1.47.0

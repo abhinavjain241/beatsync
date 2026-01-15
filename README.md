@@ -5,6 +5,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 ## Features
 
 - Modern web interface for easy downloads
+- **NEW: Automatic MP3 metadata tagging - Embeds artist, title, label, genre, BPM, key, and album art**
 - **NEW: Smart track matching - Validates search results to ensure correct tracks (50% minimum match)**
 - **NEW: Uses actual track metadata from SoundCloud/YouTube for accurate filenames**
 - **NEW: Intelligent duplicate detection - Recognizes similar filenames (80% similarity threshold)**
@@ -14,7 +15,7 @@ A modern web application that downloads music from Beatport playlists by scrapin
 - **NEW: Automatic filtering of DJ sets (max 15 minutes per track)**
 - Scrapes Beatport playlist URLs to extract track information
 - Intelligent duration comparison to get extended mixes
-- Downloads as high-quality MP3 files
+- Downloads as high-quality MP3 files with embedded metadata
 - Real-time progress tracking with match score percentages
 - Fallback to local HTML file if URL scraping fails
 - Skip already downloaded tracks
@@ -106,7 +107,7 @@ python beatport_downloader.py --json-file tracks.json --source youtube
 python beatport_downloader.py --json-file tracks.json --output-dir /custom/path
 ```
 
-**JSON Format:**
+**JSON Format (Basic):**
 ```json
 [
   {
@@ -119,6 +120,22 @@ python beatport_downloader.py --json-file tracks.json --output-dir /custom/path
   }
 ]
 ```
+
+**JSON Format (With Metadata):**
+```json
+[
+  {
+    "artist_name": "Vintage Culture, Gabss",
+    "song_name": "Lost Original Mix",
+    "label_name": "AFFAIRS",
+    "genre": "Melodic House & Techno",
+    "bpm_key": "128 BPM - G Minor",
+    "album_art": "./album_art_folder/track_image.jpg"
+  }
+]
+```
+
+When additional fields are provided, they will be automatically embedded as ID3 tags in the downloaded MP3 files.
 
 #### Using Beatport URL
 
@@ -175,7 +192,8 @@ python beatport_downloader.py --help
 7. **Select**: Chooses the longer version (usually the extended mix) with match score display
 8. **Check Duplicates**: Intelligently detects if track already exists (80% similarity)
 9. **Download**: Downloads the selected audio and converts it to MP3 format
-10. **Save**: Saves files using the actual track title from SoundCloud/YouTube metadata
+10. **Tag**: Embeds metadata (artist, title, label, genre, BPM, key, album art) if provided in JSON
+11. **Save**: Saves files using the actual track title from SoundCloud/YouTube metadata
 
 ### Download Modes
 
@@ -207,12 +225,28 @@ Files are automatically organized by playlist:
 - **Location**: `/Users/srinidhi/Music/{json_filename}/`
 - **Example**: `basshouse_t100.json` → `/Users/srinidhi/Music/basshouse_t100/`
 - **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Extended Mix).mp3`)
+- **Metadata**: If JSON includes metadata fields (label_name, genre, bpm_key, album_art), they are embedded as ID3 tags
 
 ### When Using URLs or HTML Files
 
 Downloaded files are saved in the `downloads` folder (or specified output directory):
 - **Location**: `./downloads/` (or custom via `--output-dir`)
 - **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Official Audio).mp3`)
+- **Metadata**: No metadata is embedded (requires JSON format with metadata fields)
+
+## MP3 Metadata Support
+
+When using JSON files with metadata fields, the downloader automatically embeds ID3 tags:
+
+- **Title** (TIT2): From `song_name` field
+- **Artist** (TPE1): From `artist_name` field
+- **Album** (TALB): From `label_name` field (record label)
+- **Genre** (TCON): From `genre` field
+- **BPM** (TBPM): Extracted from `bpm_key` field (e.g., "128 BPM - G Minor" → 128)
+- **Key** (TKEY): Extracted from `bpm_key` field (e.g., "128 BPM - G Minor" → "G Minor")
+- **Album Art** (APIC): Embedded from image file specified in `album_art` field
+
+If metadata is missing or cannot be written, the download continues without interruption.
 
 ## Example
 
@@ -249,6 +283,7 @@ Starting downloads...
   ✓ Selected SoundCloud (longer version)
   Downloading: Artist Name - Track Name (Extended Mix).mp3
   ✓ Downloaded: Artist Name - Track Name (Extended Mix).mp3
+  ✓ Added Artist: Artist Name | Label: AFFAIRS | 128 BPM - G Minor
 
 [2/20] Processing: Another Artist - Another Track
   Searching both SoundCloud and YouTube...
@@ -256,6 +291,7 @@ Starting downloads...
   YouTube only: Another Artist - Another Track (Extended Mix) (7:20) [match: 88%]
   Downloading: Another Artist - Another Track (Extended Mix).mp3
   ✓ Downloaded: Another Artist - Another Track (Extended Mix).mp3
+  ✓ Added Artist: Another Artist | Label: Record Label | 130 BPM - F Minor
 
 [3/20] Processing: Previously Downloaded - Track Name
   Searching both SoundCloud and YouTube...
@@ -279,6 +315,7 @@ Total tracks:      20
 Downloaded:        18
 Already existed:   0
 Failed:            2
+Metadata added:    18
 
 Success rate: 90.0%
 
