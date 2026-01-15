@@ -185,11 +185,11 @@ python beatport_downloader.py --help
 
 1. **Input**: Accepts JSON file (recommended), Beatport URL, or local HTML file
 2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
-3. **Search**: In AUTO mode (default), fetches **top 5 results** from BOTH SoundCloud AND YouTube
-4. **Match**: Calculates relevance score for each result against your query
-5. **Filter**: Automatically removes tracks longer than 15 minutes (likely DJ sets)
-6. **Select Best Match**: Picks the most relevant track from each source (50% minimum match score)
-7. **Compare**: Between the best matches, chooses the longer version for better quality
+3. **Search**: In AUTO mode (default), searches BOTH SoundCloud AND YouTube simultaneously
+4. **Validate**: Verifies search results match the requested track (50% minimum match score)
+5. **Compare**: Gets duration information from both sources without downloading
+6. **Filter**: Automatically filters out tracks longer than 15 minutes (likely DJ sets)
+7. **Select**: Chooses the longer version (usually the extended mix) with match score display
 8. **Check Duplicates**: Intelligently detects if track already exists (80% similarity)
 9. **Download**: Downloads the selected audio and converts it to MP3 format
 10. **Tag**: Embeds metadata (artist, title, label, genre, BPM, key, album art) if provided in JSON
@@ -197,11 +197,9 @@ python beatport_downloader.py --help
 
 ### Download Modes
 
-- **AUTO** (default): Intelligent selection from top 5 results on both platforms
-  - Fetches 5 results from SoundCloud + 5 from YouTube
-  - Finds most relevant match from each source
-  - Selects longer version between the two best matches
-  - Best for accuracy and getting extended/original mixes
+- **AUTO** (default): Searches both SoundCloud and YouTube, downloads the longer version
+  - Best for getting extended mixes and longest versions
+  - Automatically compares durations and selects the better source
   - Example: `python beatport_downloader.py --json-file tracks.json`
 
 - **SoundCloud**: Searches SoundCloud only
