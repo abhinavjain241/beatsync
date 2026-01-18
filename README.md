@@ -1,527 +1,275 @@
 # Beatport Playlist Downloader
 
-A modern web application that downloads music from Beatport playlists by scraping track information and downloading audio from SoundCloud or YouTube. Features both a web UI and command-line interface.
+Download complete Beatport playlists automatically. Simply paste a URL or upload an HTML file, and get high-quality MP3s with full metadata and album art.
 
-**Includes ready-to-use sample JSON files for popular Beatport Top 100 playlists (Bass House, Melodic Techno, Tech House)!**
+## What Does This Do?
+
+This tool downloads music from Beatport playlists:
+- **Easy Input**: Paste a Beatport URL or upload a saved HTML file
+- **Smart Search**: Automatically finds tracks on SoundCloud and YouTube
+- **Best Quality**: Downloads the longest/best version available (extended mixes preferred)
+- **Complete Metadata**: Adds artist, title, album art, genre, label, BPM, and key
+- **Skip Duplicates**: Automatically skips tracks you already have
+- **Real-Time Progress**: Watch download progress for each track
+
+## Quick Start Guide (Web Interface - Recommended)
+
+### Step 1: Install Requirements
+
+You need to install these programs first (one-time setup):
+
+**1. Install Python**
+- Download from [python.org](https://www.python.org/downloads/)
+- During installation, check "Add Python to PATH"
+
+**2. Install Node.js**
+- Download from [nodejs.org](https://nodejs.org/)
+- Use the LTS (recommended) version
+
+**3. Install Chrome Browser**
+- Download from [google.com/chrome](https://www.google.com/chrome/)
+- Needed for extracting playlists from URLs
+
+### Step 2: Setup the Application
+
+1. **Download this project** and extract it to a folder
+2. **Open Terminal** (Mac/Linux) or **Command Prompt** (Windows)
+3. **Navigate to the project folder**:
+   ```bash
+   cd path/to/beatport-downloader
+   ```
+   Replace `path/to/beatport-downloader` with the actual folder location
+
+4. **Install Python dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Install Node.js dependencies**:
+   ```bash
+   npm install
+   ```
+
+### Step 3: Start the Application
+
+In the project folder, run:
+```bash
+npm start
+```
+
+You should see a message like `Server running on http://localhost:3000`
+
+### Step 4: Use the Application
+
+1. **Open your web browser**
+2. **Go to** `http://localhost:3000`
+3. **Choose your input method**:
+   - **URL** (Recommended): Paste a Beatport playlist URL
+   - **HTML File**: Upload a saved Beatport page
+4. **Click "Download Playlist"**
+5. **Wait** for the downloads to complete
+
+Your music will be saved in the `downloads/` folder with complete metadata and album art!
+
+## Using the Command Line (Advanced Users)
+
+If you prefer the command line or want faster downloads:
+
+### Using Sample JSON Files (Fastest Method)
+
+The project includes ready-to-use JSON files with popular Beatport Top 100 playlists:
+
+```bash
+# Download Bass House Top 100
+python3 beatport_downloader.py --json-file basshouse_t100.json
+
+# Download Melodic Techno Top 100
+python3 beatport_downloader.py --json-file melodictech_t100.json
+
+# Download Tech House Top 100
+python3 beatport_downloader.py --json-file techhouse_t100.json
+```
+
+### Download from URL
+
+```bash
+python3 beatport_downloader.py --url "https://www.beatport.com/chart/..."
+```
+
+### Download from HTML File
+
+```bash
+python3 beatport_downloader.py --local-html playlist.html
+```
+
+### Create Your Own JSON File
+
+Extract a Beatport playlist to JSON format:
+
+```bash
+python3 url_to_json.py https://www.beatport.com/chart/...
+```
+
+This creates a JSON file you can use for faster, more reliable downloads.
+
+## Where Are My Downloads?
+
+### Web Interface
+- Files are saved in the `downloads/` folder
+- Example: `downloads/Artist Name - Track Title.mp3`
+
+### Command Line with JSON Files
+- Files are organized by playlist name
+- Location: `~/Music/{playlist_name}/`
+- Example: `~/Music/basshouse_t100/Artist Name - Track Title.mp3`
+
+## Troubleshooting
+
+### "Python not found" error
+- Make sure Python is installed and added to PATH
+- Try using `python` instead of `python3` on Windows
+- Restart your terminal after installing Python
+
+### "npm not found" error
+- Install Node.js from [nodejs.org](https://nodejs.org/)
+- Restart your terminal after installation
+
+### "Selenium not installed" error
+```bash
+pip install selenium
+```
+
+### Port 3000 already in use
+Change the port when starting:
+```bash
+PORT=3001 npm start
+```
+Then go to `http://localhost:3001` in your browser
+
+### Tracks not downloading
+- Check your internet connection
+- Some tracks may not be available on SoundCloud or YouTube
+- Check the console for specific error messages
+
+### ChromeDriver issues
+- Make sure Chrome browser is installed
+- Selenium 4+ automatically manages ChromeDriver
+- If problems persist, try updating Selenium: `pip install --upgrade selenium`
+
+## Optional: Login to Beatport
+
+Some playlists require a Beatport account. To use authentication:
+
+1. Create a `.env` file in the project folder
+2. Add your credentials:
+   ```
+   BEATPORT_EMAIL=your@email.com
+   BEATPORT_PASSWORD=yourpassword
+   ```
+3. Use the `--login` flag:
+   ```bash
+   python3 url_to_json.py --login https://www.beatport.com/chart/...
+   ```
 
 ## Features
 
-- **Includes sample JSON files - Get started immediately with Bass House, Melodic Techno, and Tech House Top 100 playlists**
-- Modern web interface for easy downloads
-- **NEW: Album art URL support - Use direct image URLs or local paths in JSON files**
-- **NEW: Enhanced track matching - Intelligently parses artists, track names, and mix types (Extended Mix, Remix, etc.)**
-- **NEW: Advanced source selection - Compares top 5 results from each platform for best match**
-- **NEW: Smart relevance scoring - Balances track name accuracy with duration (10% threshold)**
-- **NEW: Automatic MP3 metadata tagging - Embeds artist, title, label, genre, BPM, key, and album art**
-- **NEW: Rekordbox-optimized metadata - ID3v2.3 tags with proper encoding for DJ software**
-- **NEW: Smart track matching - Validates search results to ensure correct tracks (50% minimum match)**
-- **NEW: Uses actual track metadata from SoundCloud/YouTube for accurate filenames**
-- **NEW: Intelligent duplicate detection - Recognizes similar filenames (80% similarity threshold)**
-- **NEW: AUTO mode - Searches BOTH SoundCloud AND YouTube, downloads the longer version**
-- **NEW: JSON file input for fastest and most reliable track loading**
-- **NEW: YouTube download support alongside SoundCloud**
-- **NEW: Automatic filtering of DJ sets (max 15 minutes per track)**
-- Scrapes Beatport playlist URLs to extract track information
-- Intelligent duration comparison to get extended mixes
-- Downloads as high-quality MP3 files with embedded metadata
-- Real-time progress tracking with match score percentages
-- Fallback to local HTML file if URL scraping fails
-- Skip already downloaded tracks
-- Detailed download summary
-- Command-line interface for automation
+- **Multiple Input Methods**: URL, HTML file, or JSON file
+- **Automatic Track Search**: Finds tracks on SoundCloud and YouTube
+- **Smart Version Selection**: Prefers extended mixes over radio edits
+- **Complete Metadata**: Embeds artist, title, album art, genre, label, BPM, key
+- **Duplicate Detection**: Skips files you already have (80% similarity)
+- **Batch Processing**: Download entire playlists with one command
+- **Real-Time Progress**: See progress for each track
+- **Automatic Filtering**: Removes DJ sets over 15 minutes
 
-## Requirements
+## System Requirements
 
-- Python 3.7 or higher
-- ffmpeg (required by yt-dlp for audio conversion)
+- **Python**: 3.7 or higher
+- **Node.js**: 14 or higher
+- **Chrome or Chromium**: Latest version
+- **Internet connection**: Required for downloads
+- **ffmpeg**: Automatically installed with Python dependencies
 
-## Installation
+## File Organization
 
-### 1. Install System Dependencies
-
-**macOS:**
-```bash
-brew install ffmpeg node
+```
+beatport-downloader/
+├── downloads/              # Your downloaded music (web interface)
+├── ~/Music/               # Command line downloads (organized by playlist)
+├── frontend/              # Web interface files
+├── docs/                  # Technical documentation
+├── beatport_downloader.py # Main download script
+├── url_to_json.py        # URL extraction script
+├── server.js             # Web server
+└── README.md             # This file
 ```
 
-**Ubuntu/Debian:**
-```bash
-sudo apt update
-sudo apt install ffmpeg nodejs npm python3-pip
-```
+## Tips for Best Results
 
-**Windows:**
-- Download ffmpeg from https://ffmpeg.org/download.html
-- Download Node.js from https://nodejs.org/
+- **Extended Mixes**: The tool automatically prefers longer versions
+- **Album Art**: High-resolution images are embedded in each file
+- **Metadata**: ID3 tags work with iTunes, Music.app, and DJ software
+- **Playlists**: Can handle 100+ tracks in one batch
+- **Resume Downloads**: Already downloaded files are skipped automatically
 
-### 2. Install Python Dependencies
+## Need More Help?
 
-```bash
-pip install -r requirements.txt
-```
+- **Technical Documentation**: See the `docs/` folder for detailed guides
+- **Authentication Issues**: Check `docs/AUTHENTICATION.md`
+- **Metadata Problems**: See `docs/METADATA_TROUBLESHOOTING.md`
+- **Advanced Features**: Read `docs/ARCHITECTURE.md`
 
-### 3. Install Node.js Dependencies
-
-```bash
-npm install
-cd frontend && npm install && cd ..
-```
-
-## Usage
-
-### Command Line (Recommended)
-
-The recommended way to use this tool is through the command line with the sample JSON files included in the project folder.
-
-#### Quick Start - Using Sample JSON Files
-
-The project includes several ready-to-use JSON files with popular Beatport Top 100 tracks:
-
-- **basshouse_t100.json** - Bass House Top 100
-- **melodictech_t100.json** - Melodic Techno Top 100
-- **techhouse_t100.json** - Tech House Top 100
-
-Simply run:
+## Command Line Quick Reference
 
 ```bash
-# Download Bass House Top 100 (default AUTO mode)
-python beatport_downloader.py --json-file basshouse_t100.json
+# Web interface
+npm start                    # Start the web app
 
-# Download Melodic Techno Top 100
-python beatport_downloader.py --json-file melodictech_t100.json
+# Using JSON files (fastest)
+python3 beatport_downloader.py --json-file tracks.json
 
-# Download Tech House Top 100
-python beatport_downloader.py --json-file techhouse_t100.json
-```
+# Using URLs
+python3 beatport_downloader.py --url "https://www.beatport.com/..."
 
-Files will be automatically saved to `~/Music/{json_filename}/` with proper metadata.
+# Using HTML files
+python3 beatport_downloader.py --local-html playlist.html
 
-#### Using JSON File (Full Details)
+# Extract URL to JSON
+python3 url_to_json.py "https://www.beatport.com/..."
 
-The fastest and most reliable method is to use a JSON file with track data:
-
-```bash
-# AUTO mode (default) - Searches both SoundCloud and YouTube, downloads longer version
-# Downloads to ~/Music/{json_filename}/
-python beatport_downloader.py --json-file tracks.json
-
-# Example: basshouse_t100.json downloads to ~/Music/basshouse_t100/
-python beatport_downloader.py --json-file basshouse_t100.json
+# Custom output folder
+python3 beatport_downloader.py --json-file tracks.json --output-dir /path/to/folder
 
 # SoundCloud only
-python beatport_downloader.py --json-file tracks.json --source soundcloud
+python3 beatport_downloader.py --json-file tracks.json --source soundcloud
 
 # YouTube only
-python beatport_downloader.py --json-file tracks.json --source youtube
-
-# Custom output directory (override default location)
-python beatport_downloader.py --json-file tracks.json --output-dir /custom/path
-```
-
-**JSON Format (Basic):**
-```json
-[
-  {
-    "artist_name": "Artist Name",
-    "song_name": "Track Name Extended Mix"
-  },
-  {
-    "artist_name": "Another Artist",
-    "song_name": "Another Track Original Mix"
-  }
-]
-```
-
-**JSON Format (With Metadata):**
-```json
-[
-  {
-    "artist_name": "Vintage Culture, Gabss",
-    "song_name": "Lost Original Mix",
-    "label_name": "AFFAIRS",
-    "genre": "Melodic House & Techno",
-    "bpm_key": "128 BPM - G Minor",
-    "album_art": "./album_art_folder/track_image.jpg"
-  }
-]
-```
-
-When additional fields are provided, they will be automatically embedded as ID3 tags in the downloaded MP3 files.
-
-#### Using Beatport URL
-
-```bash
-# AUTO mode (default) - Searches both sources
-python beatport_downloader.py --url "https://www.beatport.com/chart/..."
-
-# Specific source
-python beatport_downloader.py --url "https://www.beatport.com/chart/..." --source youtube
-```
-
-#### Using Local HTML File
-
-```bash
-# AUTO mode (default) - Searches both sources
-python beatport_downloader.py --local-html playlist.html
-
-# Specific source
-python beatport_downloader.py --local-html playlist.html --source soundcloud
-```
-
-#### Interactive Mode
-
-```bash
-python beatport_downloader.py
-```
-
-Select from multiple input options when prompted.
-
-#### Additional Options
-
-```bash
-# Specify custom output directory
-python beatport_downloader.py --json-file tracks.json --output-dir "my_music"
-
-# Force a specific source
-python beatport_downloader.py --json-file tracks.json --source youtube
-
-# Combine options
-python beatport_downloader.py --json-file tracks.json --source soundcloud --output-dir "my_music"
+python3 beatport_downloader.py --json-file tracks.json --source youtube
 
 # Show help
-python beatport_downloader.py --help
+python3 beatport_downloader.py --help
 ```
 
-### Web Interface (Alternative)
-
-If you prefer a graphical interface:
-
-1. Install dependencies (see Installation section)
-2. Start the application:
-
-```bash
-npm run dev
-```
-
-3. Open your browser and go to `http://localhost:5173`
-4. Enter your Beatport playlist URL and click "Download Playlist"
-5. Watch the progress in real-time
-
-For production build and server:
-
-```bash
-npm run build
-npm run start
-```
-
-Then open `http://localhost:3000`
-
-## How It Works
-
-1. **Input**: Accepts JSON file (recommended), Beatport URL, or local HTML file
-2. **Parsing**: Extracts Artist, Track Name, and Remix information from input
-3. **Search**: In AUTO mode (default), searches BOTH SoundCloud AND YouTube simultaneously
-4. **Validate**: Verifies search results match the requested track (50% minimum match score)
-5. **Compare**: Gets duration information from both sources without downloading
-6. **Filter**: Automatically filters out tracks longer than 15 minutes (likely DJ sets)
-7. **Select**: Chooses the longer version (usually the extended mix) with match score display
-8. **Check Duplicates**: Intelligently detects if track already exists (80% similarity)
-9. **Download**: Downloads the selected audio and converts it to MP3 format
-10. **Tag**: Embeds metadata (artist, title, label, genre, BPM, key, album art) if provided in JSON
-11. **Save**: Saves files using the actual track title from SoundCloud/YouTube metadata
-
-### Download Modes
-
-- **AUTO** (default): Searches both SoundCloud and YouTube, downloads the longer version
-  - Best for getting extended mixes and longest versions
-  - Automatically compares durations and selects the better source
-  - Example: `python beatport_downloader.py --json-file tracks.json`
-
-- **SoundCloud**: Searches SoundCloud only
-  - Good for DJ mixes, remixes, and electronic music
-  - Example: `python beatport_downloader.py --json-file tracks.json --source soundcloud`
-
-- **YouTube**: Searches YouTube only
-  - Alternative source with broader music catalog
-  - Example: `python beatport_downloader.py --json-file tracks.json --source youtube`
-
-### Why Use JSON Files?
-
-- **Fastest**: No need to wait for page loading or scrolling
-- **Most Reliable**: No issues with authentication or dynamic content
-- **Portable**: Easy to share, backup, and reuse
-- **Flexible**: Works with any source (Beatport, Spotify, manual lists, etc.)
-
-## Output
-
-### When Using JSON Files
-
-Files are automatically organized by playlist:
-- **Location**: `~/Music/{json_filename}/`
-- **Example**: `basshouse_t100.json` → `~/Music/basshouse_t100/`
-- **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Extended Mix).mp3`)
-- **Metadata**: If JSON includes metadata fields (label_name, genre, bpm_key, album_art), they are embedded as ID3 tags
-
-### When Using URLs or HTML Files
-
-Downloaded files are saved in the `downloads` folder (or specified output directory):
-- **Location**: `./downloads/` (or custom via `--output-dir`)
-- **Naming**: Uses actual track title from SoundCloud/YouTube (e.g., `Artist - Track Name (Official Audio).mp3`)
-- **Metadata**: No metadata is embedded (requires JSON format with metadata fields)
-
-## MP3 Metadata Support
-
-When using JSON files with metadata fields, the downloader automatically embeds ID3v2.4 tags (fully compatible with macOS):
-
-- **Title** (TIT2): From `song_name` field
-- **Artist** (TPE1): From `artist_name` field
-- **Album** (TALB): From `label_name` field (record label)
-- **Genre** (TCON): From `genre` field
-- **BPM** (TBPM): Extracted from `bpm_key` field (e.g., "128 BPM - G Minor" → 128)
-- **Key** (TKEY): Extracted from `bpm_key` field (e.g., "128 BPM - G Minor" → "G Minor")
-- **Album Art** (APIC): Embedded from image file specified in `album_art` field
-
-The metadata writer:
-- Uses ID3v2.4 format for maximum compatibility with macOS Music/iTunes
-- Properly overwrites existing tags to ensure clean metadata
-- Handles UTF-8 encoding for international characters
-- Continues downloading if metadata writing fails
-
-### Testing and Verifying Metadata
-
-#### Test Metadata Writing System
-
-Test that the metadata writing system works correctly:
-
-```bash
-python3 test_metadata_write.py
-```
-
-This creates a test MP3 and writes metadata to verify everything works.
-
-#### Check Metadata in Existing Files
-
-Check what metadata is in a downloaded MP3 file:
-
-```bash
-python3 check_mp3_metadata.py path/to/your/track.mp3
-```
-
-This shows all tags, album art status, and whether the file is properly tagged for Rekordbox.
-
-#### Troubleshooting Metadata Issues
-
-If metadata isn't showing in your files or Rekordbox:
-
-1. **Run the test script first:**
-   ```bash
-   python3 test_metadata_write.py
-   ```
-
-2. **Check a downloaded file:**
-   ```bash
-   python3 check_mp3_metadata.py downloads/track.mp3
-   ```
-
-3. **Review the detailed logs** when downloading - look for:
-   - `[Metadata] Starting metadata write`
-   - `✓✓✓ METADATA WRITE SUCCESSFUL`
-   - Any `⚠` warning messages
-
-4. **See the troubleshooting guide:**
-   ```bash
-   cat METADATA_TROUBLESHOOTING.md
-   ```
-
-The new logging system provides detailed output showing exactly what metadata is being written and any errors that occur.
-
-## Example
-
-### Using JSON File with AUTO Mode
-
-```bash
-$ python beatport_downloader.py --json-file basshouse_t100.json
-
-============================================================
-Beatport Playlist Downloader
-============================================================
-Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)
-Output directory: ~/Music/basshouse_t100
-
-Reading JSON file: basshouse_t100.json
-Found 100 tracks in JSON file
-✓ Successfully parsed 100 tracks
-
-Tracks to download:
-------------------------------------------------------------
-1. Artist Name - Track Name (Remix)
-2. Another Artist - Another Track
-...
-
-Proceed with download? (y/n): y
-
-Starting downloads...
-============================================================
-
-[1/20] Processing: Artist Name - Track Name
-  Searching both SoundCloud and YouTube...
-  SoundCloud: Artist Name - Track Name (Extended Mix) (6:45) [match: 95%]
-  YouTube: Artist Name - Track Name (Radio Edit) (3:30) [match: 90%]
-  ✓ Selected SoundCloud (longer version)
-  Downloading: Artist Name - Track Name (Extended Mix).mp3
-  ✓ Downloaded: Artist Name - Track Name (Extended Mix).mp3
-  ✓ Added Artist: Artist Name | Label: AFFAIRS | 128 BPM - G Minor
-
-[2/20] Processing: Another Artist - Another Track
-  Searching both SoundCloud and YouTube...
-  ⚠ SoundCloud result doesn't match query: Different Artist - Different Song
-  YouTube only: Another Artist - Another Track (Extended Mix) (7:20) [match: 88%]
-  Downloading: Another Artist - Another Track (Extended Mix).mp3
-  ✓ Downloaded: Another Artist - Another Track (Extended Mix).mp3
-  ✓ Added Artist: Another Artist | Label: Record Label | 130 BPM - F Minor
-
-[3/20] Processing: Previously Downloaded - Track Name
-  Searching both SoundCloud and YouTube...
-  SoundCloud: Previously Downloaded - Track Name (Official Audio) (5:15) [match: 92%]
-  YouTube: Previously Downloaded - Track Name (4:50) [match: 88%]
-  ✓ Selected SoundCloud (longer version)
-  ✓ Already exists: Previously Downloaded - Track Name (Official Audio).mp3
-
-[4/20] Processing: DJ Name - Live Set
-  Searching both SoundCloud and YouTube...
-  SoundCloud: DJ Name - Full Live Set (125:30) - TOO LONG, skipping
-  YouTube: DJ Name - Live Set Recording (90:45) - TOO LONG, skipping
-  ✗ No valid tracks found
-
-...
-
-============================================================
-Download Summary
-============================================================
-Total tracks:      20
-Downloaded:        18
-Already existed:   0
-Failed:            2
-Metadata added:    18
-
-Success rate: 90.0%
-
-Files saved to: ~/Music/basshouse_t100/
-============================================================
-```
-
-## Authentication & Private Playlists
-
-**Important:** URLs like `https://www.beatport.com/library/playlists/XXXXXX` are private and require authentication.
-
-For detailed solutions, see [AUTHENTICATION.md](AUTHENTICATION.md)
-
-**Quick solutions:**
-- Use public Beatport charts instead (Top 100, genre charts)
-- Save the playlist page as HTML after logging in
-- Use the debug helper: `python inspect_html.py` to analyze issues
-
-## Troubleshooting
-
-### No Tracks Found / Private Playlists
-
-If the scraper can't find tracks, the playlist might require authentication:
-1. Check `debug.html` (generated automatically) to see what was loaded
-2. Run `python inspect_html.py` to analyze the HTML structure
-3. See [AUTHENTICATION.md](AUTHENTICATION.md) for detailed solutions
-
-### 403 Forbidden Error
-
-If you get a 403 error when accessing Beatport:
-1. Save the playlist page as HTML from your browser
-2. Use the local HTML file option when prompted
-
-### yt-dlp Not Found
-
-Install yt-dlp:
-```bash
-pip install yt-dlp
-```
-
-### ffmpeg Not Found
-
-Install ffmpeg using the instructions in the Installation section.
-
-### No Tracks Found
-
-- Verify the URL points to a valid Beatport playlist
-- Try using the local HTML file option
-- Check that the page contains track information
-
-## Project Structure
-
-```
-.
-├── server.js                    # Node.js Express backend
-├── beatport_downloader.py       # Python orchestration script
-├── scraper.py                   # Beatport scraping logic (Selenium + BeautifulSoup)
-├── downloader.py                # yt-dlp download logic
-├── inspect_html.py              # Debug helper for analyzing HTML
-├── requirements.txt             # Python dependencies
-├── package.json                 # Node.js dependencies
-├── AUTHENTICATION.md            # Guide for private playlists
-├── frontend/                    # React web interface
-│   ├── vite.config.js
-│   ├── index.html
-│   ├── src/
-│   │   ├── main.jsx
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   ├── index.css
-│   │   └── components/
-│   │       ├── DownloadForm.jsx
-│   │       ├── ProgressDisplay.jsx
-│   │       └── SummaryDisplay.jsx
-│   └── package.json
-└── downloads/                   # Output directory (created automatically)
-```
-
-## Troubleshooting
-
-### Web UI Issues
-
-**Port already in use:**
-```bash
-# Change the port
-PORT=3001 npm run start
-```
-
-**Cannot connect to frontend/backend:**
-- Make sure both services are running: `npm run dev`
-- Check that `http://localhost:5173` (dev) or `http://localhost:3000` (production) is accessible
-- Check browser console for errors (F12)
-
-**Downloads not starting:**
-- Verify Python and dependencies are installed
-- Check server logs for errors
-- Ensure the Beatport URL is valid
-
-### Command Line Issues
-
-**403 Forbidden Error:**
-If you get a 403 error when accessing Beatport:
-1. Save the playlist page as HTML from your browser
-2. Use the local HTML file option when prompted
-
-**yt-dlp Not Found:**
-Install yt-dlp:
-```bash
-pip install yt-dlp
-```
-
-**ffmpeg Not Found:**
-Install ffmpeg using the instructions in the Installation section.
-
-**No Tracks Found:**
-- Verify the URL points to a valid Beatport playlist
-- Try using the local HTML file option
-- Check that the page contains track information
+## Example Workflow
+
+### Web Interface Workflow
+1. Start the app: `npm start`
+2. Open browser: `http://localhost:3000`
+3. Paste Beatport URL
+4. Click "Download Playlist"
+5. Find your music in `downloads/` folder
+
+### Command Line Workflow
+1. Extract playlist: `python3 url_to_json.py "https://www.beatport.com/chart/..."`
+2. Download tracks: `python3 beatport_downloader.py --json-file output.json`
+3. Find your music in `~/Music/output/` folder
 
 ## License
 
-MIT
+This tool is for personal use only. Please respect copyright laws and artist rights.
+
+---
+
+**Ready to start?** Follow the Quick Start Guide above, or run `npm start` if you've already installed everything!
+
+For detailed technical documentation, see the `docs/` folder.
