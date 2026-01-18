@@ -9,12 +9,22 @@ export default function App() {
   const [progress, setProgress] = useState(null)
   const [summary, setSummary] = useState(null)
   const [error, setError] = useState(null)
+  const [stage, setStage] = useState(null)
+
+  const resetToHome = () => {
+    setIsDownloading(false)
+    setProgress(null)
+    setSummary(null)
+    setError(null)
+    setStage(null)
+  }
 
   const handleDownload = async (input) => {
     setIsDownloading(true)
     setProgress(null)
     setSummary(null)
     setError(null)
+    setStage(null)
 
     try {
       let response
@@ -57,23 +67,45 @@ export default function App() {
           if (!line) continue
           try {
             const data = JSON.parse(line)
-            if (data.type === 'progress') {
+            console.log('[RECEIVED]', data)
+
+            if (data.type === 'stage') {
+              setStage({
+                stage: data.stage,
+                message: data.message
+              })
+              console.log('[STAGE]', data.stage, data.message)
+            } else if (data.type === 'progress') {
               setProgress(data.data)
             } else if (data.type === 'summary') {
               setSummary(data.data)
             } else if (data.type === 'error') {
-              setError(data.message)
+              console.error('[ERROR RECEIVED]', data)
+              setError({
+                message: data.message,
+                details: data.details,
+                stage: data.stage,
+                exitCode: data.exitCode
+              })
+              setIsDownloading(false)
             }
           } catch (e) {
-            console.log('Parse error:', e)
+            console.error('Parse error:', e, 'Line:', line)
           }
         }
       }
     } catch (err) {
-      setError(err.message || 'An error occurred')
       console.error('Download error:', err)
-    } finally {
+      setError({
+        message: err.message || 'An unexpected error occurred',
+        details: err.toString(),
+        stage: 'client_error'
+      })
       setIsDownloading(false)
+    } finally {
+      if (!error) {
+        setIsDownloading(false)
+      }
     }
   }
 
@@ -86,27 +118,49 @@ export default function App() {
         </header>
 
         <main className="main">
-          {!isDownloading && !progress && !summary && (
+          {!isDownloading && !progress && !summary && !error && (
             <DownloadForm onDownload={handleDownload} disabled={isDownloading} />
           )}
 
-          {(isDownloading || progress) && (
-            <ProgressDisplay progress={progress} isLoading={isDownloading} />
+          {(isDownloading || progress) && !error && (
+            <ProgressDisplay progress={progress} isLoading={isDownloading} stage={stage} />
           )}
 
-          {summary && (
-            <SummaryDisplay summary={summary} onReset={() => {
-              setSummary(null)
-              setProgress(null)
-            }} />
+          {summary && !error && (
+            <SummaryDisplay summary={summary} onReset={resetToHome} />
           )}
 
           {error && (
-            <div className="error-banner">
-              <div className="error-content">
-                <span className="error-icon">⚠</span>
-                <p>{error}</p>
-                <button onClick={() => setError(null)} className="error-close">×</button>
+            <div className="error-container">
+              <div className="error-card">
+                <div className="error-header">
+                  <span className="error-icon">⚠</span>
+                  <h2>Download Failed</h2>
+                </div>
+                <div className="error-body">
+                  <p className="error-message">{typeof error === 'string' ? error : error.message}</p>
+                  {error.stage && (
+                    <p className="error-stage">
+                      <strong>Failed at:</strong> {error.stage.replace(/_/g, ' ')}
+                    </p>
+                  )}
+                  {error.exitCode && (
+                    <p className="error-code">
+                      <strong>Exit code:</strong> {error.exitCode}
+                    </p>
+                  )}
+                  {error.details && (
+                    <details className="error-details">
+                      <summary>Technical Details</summary>
+                      <pre>{error.details}</pre>
+                    </details>
+                  )}
+                </div>
+                <div className="error-actions">
+                  <button onClick={resetToHome} className="btn-primary">
+                    Back to Home
+                  </button>
+                </div>
               </div>
             </div>
           )}

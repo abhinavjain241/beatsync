@@ -35,11 +35,20 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
   const { url } = req.body
   const htmlFile = req.file
 
+  console.log('\n========================================')
+  console.log('NEW DOWNLOAD REQUEST')
+  console.log('========================================')
+  console.log('URL:', url || 'none')
+  console.log('HTML File:', htmlFile ? htmlFile.originalname : 'none')
+  console.log('Timestamp:', new Date().toISOString())
+
   if (!url && !htmlFile) {
+    console.error('ERROR: No URL or HTML file provided')
     return res.status(400).json({ error: 'URL or HTML file is required' })
   }
 
   const downloadId = Date.now().toString()
+  console.log('Download ID:', downloadId)
 
   res.setHeader('Content-Type', 'application/x-ndjson')
   res.setHeader('Transfer-Encoding', 'chunked')
@@ -49,15 +58,23 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
   let htmlFilePath = htmlFile ? htmlFile.path : null
 
   function sendProgress(data) {
+    console.log('[PROGRESS]', JSON.stringify(data, null, 2))
     res.write(JSON.stringify(data) + '\n')
   }
 
   try {
     if (url) {
+      console.log('\n--- STAGE 1: URL EXTRACTION ---')
+      console.log('Starting URL extraction process...')
+      sendProgress({ type: 'stage', stage: 'extraction', message: 'Extracting playlist from URL...' })
       sendProgress({ type: 'progress', data: { message: 'Extracting playlist from URL...', current: 0, total: 0 } })
 
       const urlToJsonScript = path.join(__dirname, 'url_to_json.py')
       jsonFilePath = path.join(tmpdir(), `beatport-${Date.now()}.json`)
+
+      console.log('Script path:', urlToJsonScript)
+      console.log('Output JSON path:', jsonFilePath)
+      console.log('Spawning python3 process...')
 
       const extractProcess = spawn('python3', [urlToJsonScript, url, '-o', jsonFilePath], {
         cwd: __dirname,
@@ -65,38 +82,72 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
       })
 
       let extractError = ''
+      let extractOutput = ''
+
+      extractProcess.stdout.on('data', (data) => {
+        const output = data.toString()
+        extractOutput += output
+        console.log('[URL_EXTRACT_STDOUT]', output.trim())
+      })
+
       extractProcess.stderr.on('data', (data) => {
-        extractError += data.toString()
+        const error = data.toString()
+        extractError += error
+        console.error('[URL_EXTRACT_STDERR]', error.trim())
       })
 
       const extractExitCode = await new Promise((resolve) => {
-        extractProcess.on('close', resolve)
+        extractProcess.on('close', (code) => {
+          console.log('URL extraction process closed with code:', code)
+          resolve(code)
+        })
       })
 
       if (extractExitCode !== 0) {
-        sendProgress({ type: 'error', message: `Failed to extract playlist: ${extractError}` })
+        console.error('ERROR: URL extraction failed!')
+        console.error('Exit code:', extractExitCode)
+        console.error('Error output:', extractError)
+        sendProgress({
+          type: 'error',
+          stage: 'extraction',
+          message: `Failed to extract playlist from URL (exit code ${extractExitCode})`,
+          details: extractError || 'No error details available'
+        })
         res.end()
         if (jsonFilePath) await fs.unlink(jsonFilePath).catch(() => {})
         return
       }
 
+      console.log('URL extraction successful!')
+      console.log('JSON file created at:', jsonFilePath)
+      sendProgress({ type: 'stage', stage: 'download_prep', message: 'Playlist extracted successfully. Starting downloads...' })
       sendProgress({ type: 'progress', data: { message: 'Playlist extracted successfully. Starting downloads...', current: 0, total: 0 } })
     }
 
+    console.log('\n--- STAGE 2: DOWNLOAD PROCESS ---')
     const downloaderScript = path.join(__dirname, 'beatport_downloader.py')
     let downloaderArgs = []
 
     if (jsonFilePath) {
       downloaderArgs = ['--json-file', jsonFilePath]
+      console.log('Using JSON file:', jsonFilePath)
     } else if (htmlFilePath) {
       downloaderArgs = ['--local-html', htmlFilePath]
+      console.log('Using HTML file:', htmlFilePath)
     }
+
+    console.log('Downloader script:', downloaderScript)
+    console.log('Downloader args:', downloaderArgs)
+    console.log('Spawning downloader process...')
+
+    sendProgress({ type: 'stage', stage: 'downloading', message: 'Starting track download process...' })
 
     const pythonProcess = spawn('python3', [downloaderScript, ...downloaderArgs], {
       cwd: __dirname,
       stdio: ['ignore', 'pipe', 'pipe']
     })
 
+    console.log('Downloader process spawned with PID:', pythonProcess.pid)
     ongoingDownloads.set(downloadId, pythonProcess)
 
   let buffer = ''
@@ -106,6 +157,7 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
 
   pythonProcess.stdout.on('data', (data) => {
     const output = data.toString()
+    console.log('[DOWNLOADER_STDOUT]', output.trim())
     buffer += output
 
     const lines = buffer.split('\n')
@@ -115,6 +167,7 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
       if (!line.trim()) continue
 
       const lowerLine = line.toLowerCase()
+      console.log('[PARSING_LINE]', line)
 
       if (lowerLine.includes('found ') && lowerLine.includes(' track')) {
         const match = line.match(/found (\d+) track/)
@@ -237,45 +290,77 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
   pythonProcess.stderr.on('data', (data) => {
     const error = data.toString().trim()
     if (error) {
+      console.error('[DOWNLOADER_STDERR]', error)
       sendProgress({
         type: 'error',
-        message: error
+        stage: 'downloading',
+        message: error,
+        details: error
       })
     }
   })
 
   pythonProcess.on('close', async (code) => {
+    console.log('\n--- PROCESS COMPLETE ---')
+    console.log('Downloader process closed with code:', code)
+    console.log('Download ID:', downloadId)
+
     ongoingDownloads.delete(downloadId)
 
     if (code !== 0) {
+      console.error('ERROR: Process failed with exit code:', code)
       sendProgress({
         type: 'error',
-        message: `Process exited with code ${code}`
+        stage: 'process_exit',
+        message: `Download process failed (exit code ${code})`,
+        details: `The download process exited unexpectedly. This usually means there was an error fetching or processing the tracks. Check the activity log for more details.`,
+        exitCode: code
+      })
+    } else {
+      console.log('SUCCESS: Process completed successfully')
+    }
+
+    console.log('Cleaning up temporary files...')
+    if (jsonFilePath) {
+      await fs.unlink(jsonFilePath).catch((err) => {
+        console.error('Failed to delete JSON file:', err)
+      })
+    }
+    if (htmlFilePath) {
+      await fs.unlink(htmlFilePath).catch((err) => {
+        console.error('Failed to delete HTML file:', err)
       })
     }
 
-    if (jsonFilePath) {
-      await fs.unlink(jsonFilePath).catch(() => {})
-    }
-    if (htmlFilePath) {
-      await fs.unlink(htmlFilePath).catch(() => {})
-    }
-
+    console.log('Request complete')
+    console.log('========================================\n')
     res.end()
   })
   } catch (error) {
+    console.error('\n!!! EXCEPTION CAUGHT !!!')
+    console.error('Error:', error)
+    console.error('Stack:', error.stack)
+
     sendProgress({
       type: 'error',
-      message: error.message || 'An error occurred'
+      stage: 'exception',
+      message: error.message || 'An unexpected error occurred',
+      details: error.stack || error.toString()
     })
 
+    console.log('Cleaning up after exception...')
     if (jsonFilePath) {
-      await fs.unlink(jsonFilePath).catch(() => {})
+      await fs.unlink(jsonFilePath).catch((err) => {
+        console.error('Failed to delete JSON file:', err)
+      })
     }
     if (htmlFilePath) {
-      await fs.unlink(htmlFilePath).catch(() => {})
+      await fs.unlink(htmlFilePath).catch((err) => {
+        console.error('Failed to delete HTML file:', err)
+      })
     }
 
+    console.log('========================================\n')
     res.end()
   }
 })

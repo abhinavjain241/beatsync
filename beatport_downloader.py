@@ -63,59 +63,98 @@ class BeatportPlaylistDownloader:
             local_html: Path to local HTML file (optional)
             base_music_dir: Base directory for music downloads (optional)
         """
-        # If using JSON file and base_music_dir is provided, create folder from JSON filename
-        if json_file and base_music_dir:
-            json_filename = os.path.basename(json_file)
-            folder_name = os.path.splitext(json_filename)[0]
-            new_output_dir = os.path.join(base_music_dir, folder_name)
+        try:
+            print("[STAGE] Initializing downloader", flush=True)
 
-            # Update the downloader's output directory
-            self.downloader.output_dir = new_output_dir
-            self.downloader._ensure_output_dir()
+            # If using JSON file and base_music_dir is provided, create folder from JSON filename
+            if json_file and base_music_dir:
+                json_filename = os.path.basename(json_file)
+                folder_name = os.path.splitext(json_filename)[0]
+                new_output_dir = os.path.join(base_music_dir, folder_name)
 
-        print("=" * 60)
-        print("Beatport Playlist Downloader")
-        print("=" * 60)
-        if self.source == 'auto':
-            print("Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)")
-        else:
-            print(f"Download source: {self.source.upper()}")
-        print(f"Output directory: {self.downloader.output_dir}")
-        print()
+                # Update the downloader's output directory
+                self.downloader.output_dir = new_output_dir
+                self.downloader._ensure_output_dir()
+                print(f"[INFO] Output directory set to: {new_output_dir}", flush=True)
 
-        tracks = []
+            print("=" * 60, flush=True)
+            print("Beatport Playlist Downloader", flush=True)
+            print("=" * 60, flush=True)
+            if self.source == 'auto':
+                print("Download mode: AUTO (searches both SoundCloud & YouTube, downloads longer version)", flush=True)
+            else:
+                print(f"Download source: {self.source.upper()}", flush=True)
+            print(f"Output directory: {self.downloader.output_dir}", flush=True)
+            print(flush=True)
 
-        # Priority 1: JSON file (fastest and most reliable)
-        if json_file:
-            print(f"Loading tracks from JSON file: {json_file}")
-            tracks = self.scraper.load_json_file(json_file)
-            # Store JSON file directory for resolving relative album art paths
-            self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
-            # Store metadata for later use
-            self._store_track_metadata(tracks)
+            tracks = []
+
+            # Priority 1: JSON file (fastest and most reliable)
+            if json_file:
+                print("[STAGE] Loading JSON file", flush=True)
+                print(f"Loading tracks from JSON file: {json_file}", flush=True)
+
+                if not os.path.exists(json_file):
+                    print(f"[ERROR] JSON file not found: {json_file}", flush=True)
+                    sys.exit(1)
+
+                try:
+                    tracks = self.scraper.load_json_file(json_file)
+                    print(f"[SUCCESS] Loaded {len(tracks)} tracks from JSON", flush=True)
+                    # Store JSON file directory for resolving relative album art paths
+                    self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
+                    # Store metadata for later use
+                    self._store_track_metadata(tracks)
+                except Exception as e:
+                    print(f"[ERROR] Failed to parse JSON file: {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
+                    sys.exit(1)
 
         # Priority 2: Local HTML file
         elif local_html:
-            print(f"Loading tracks from local HTML: {local_html}")
-            html = self.scraper.load_local_html(local_html)
-            if html:
-                print("Parsing track information...")
-                tracks = self.scraper.parse_tracks(html)
-            else:
-                print("Failed to load HTML content.")
-                return
+            print("[STAGE] Loading HTML file", flush=True)
+            print(f"Loading tracks from local HTML: {local_html}", flush=True)
+
+            if not os.path.exists(local_html):
+                print(f"[ERROR] HTML file not found: {local_html}", flush=True)
+                sys.exit(1)
+
+            try:
+                html = self.scraper.load_local_html(local_html)
+                if html:
+                    print("[STAGE] Parsing HTML content", flush=True)
+                    tracks = self.scraper.parse_tracks(html)
+                    print(f"[SUCCESS] Parsed {len(tracks)} tracks from HTML", flush=True)
+                else:
+                    print("[ERROR] Failed to load HTML content", flush=True)
+                    sys.exit(1)
+            except Exception as e:
+                print(f"[ERROR] Failed to process HTML file: {e}", flush=True)
+                import traceback
+                traceback.print_exc()
+                sys.exit(1)
 
         # Priority 3: URL scraping
         elif url:
-            print(f"Fetching tracks from URL: {url}")
-            html = self.scraper.fetch_html(url)
+            print("[STAGE] Fetching URL", flush=True)
+            print(f"Fetching tracks from URL: {url}", flush=True)
 
-            if not html:
-                print("Failed to fetch URL. Exiting...")
-                return
+            try:
+                html = self.scraper.fetch_html(url)
 
-            print("Parsing track information...")
-            tracks = self.scraper.parse_tracks(html)
+                if not html:
+                    print("[ERROR] Failed to fetch URL - no HTML returned", flush=True)
+                    sys.exit(1)
+
+                print("[STAGE] Parsing URL content", flush=True)
+                tracks = self.scraper.parse_tracks(html)
+                print(f"[SUCCESS] Parsed {len(tracks)} tracks from URL", flush=True)
+            except Exception as e:
+                print(f"[ERROR] Failed to fetch or parse URL: {e}", flush=True)
+                import traceback
+                traceback.print_exc()
+                sys.exit(1)
 
         # Interactive mode: prompt user for input
         else:
@@ -147,38 +186,57 @@ class BeatportPlaylistDownloader:
                         print("Parsing track information...")
                         tracks = self.scraper.parse_tracks(html)
 
-        if not tracks:
-            print()
-            print("No tracks found. Please check your input.")
-            print()
-            print("Tips:")
-            print("- For JSON files: Ensure the format is correct (see example)")
-            print("- For URLs: Make sure the URL points to a valid Beatport playlist")
-            print("- For HTML: Save the page after tracks have loaded")
-            return
+            if not tracks:
+                print("[ERROR] No tracks found in input", flush=True)
+                print()
+                print("No tracks found. Please check your input.")
+                print()
+                print("Tips:")
+                print("- For JSON files: Ensure the format is correct (see example)")
+                print("- For URLs: Make sure the URL points to a valid Beatport playlist")
+                print("- For HTML: Save the page after tracks have loaded")
+                sys.exit(1)
 
-        self.stats['total'] = len(tracks)
-        print(f"Found {len(tracks)} tracks")
-        print()
+            self.stats['total'] = len(tracks)
+            print(f"[SUCCESS] Found {len(tracks)} tracks", flush=True)
+            print(f"Found {len(tracks)} tracks", flush=True)
+            print(flush=True)
 
-        # Display tracks
-        self._display_tracks(tracks)
+            # Display tracks
+            print("[STAGE] Displaying track list", flush=True)
+            self._display_tracks(tracks)
 
-        # Confirm before downloading
-        print()
-        response = input("Proceed with download? (y/n): ").strip().lower()
-        if response not in ['y', 'yes']:
-            print("Download cancelled.")
-            return
+            # Confirm before downloading
+            print(flush=True)
+            response = input("Proceed with download? (y/n): ").strip().lower()
+            if response not in ['y', 'yes']:
+                print("[INFO] Download cancelled by user", flush=True)
+                sys.exit(0)
 
-        # Download tracks
-        print()
-        print("Starting downloads...")
-        print("=" * 60)
-        self._download_tracks(tracks)
+            # Download tracks
+            print(flush=True)
+            print("[STAGE] Starting download process", flush=True)
+            print("Starting downloads...", flush=True)
+            print("=" * 60, flush=True)
 
-        # Display summary
-        self._display_summary()
+            try:
+                self._download_tracks(tracks)
+            except Exception as e:
+                print(f"[ERROR] Download process failed: {e}", flush=True)
+                import traceback
+                traceback.print_exc()
+                sys.exit(1)
+
+            # Display summary
+            print("[STAGE] Generating summary", flush=True)
+            self._display_summary()
+            print("[SUCCESS] Download process completed", flush=True)
+
+        except Exception as e:
+            print(f"[FATAL ERROR] Unexpected error in run(): {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
 
     def _display_tracks(self, tracks: List[Dict[str, str]]):
         """Display list of tracks that will be downloaded."""
