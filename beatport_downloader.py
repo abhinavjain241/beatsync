@@ -111,80 +111,80 @@ class BeatportPlaylistDownloader:
                     traceback.print_exc()
                     sys.exit(1)
 
-        # Priority 2: Local HTML file
-        elif local_html:
-            print("[STAGE] Loading HTML file", flush=True)
-            print(f"Loading tracks from local HTML: {local_html}", flush=True)
+            # Priority 2: Local HTML file
+            elif local_html:
+                print("[STAGE] Loading HTML file", flush=True)
+                print(f"Loading tracks from local HTML: {local_html}", flush=True)
 
-            if not os.path.exists(local_html):
-                print(f"[ERROR] HTML file not found: {local_html}", flush=True)
-                sys.exit(1)
-
-            try:
-                html = self.scraper.load_local_html(local_html)
-                if html:
-                    print("[STAGE] Parsing HTML content", flush=True)
-                    tracks = self.scraper.parse_tracks(html)
-                    print(f"[SUCCESS] Parsed {len(tracks)} tracks from HTML", flush=True)
-                else:
-                    print("[ERROR] Failed to load HTML content", flush=True)
-                    sys.exit(1)
-            except Exception as e:
-                print(f"[ERROR] Failed to process HTML file: {e}", flush=True)
-                import traceback
-                traceback.print_exc()
-                sys.exit(1)
-
-        # Priority 3: URL scraping
-        elif url:
-            print("[STAGE] Fetching URL", flush=True)
-            print(f"Fetching tracks from URL: {url}", flush=True)
-
-            try:
-                html = self.scraper.fetch_html(url)
-
-                if not html:
-                    print("[ERROR] Failed to fetch URL - no HTML returned", flush=True)
+                if not os.path.exists(local_html):
+                    print(f"[ERROR] HTML file not found: {local_html}", flush=True)
                     sys.exit(1)
 
-                print("[STAGE] Parsing URL content", flush=True)
-                tracks = self.scraper.parse_tracks(html)
-                print(f"[SUCCESS] Parsed {len(tracks)} tracks from URL", flush=True)
-            except Exception as e:
-                print(f"[ERROR] Failed to fetch or parse URL: {e}", flush=True)
-                import traceback
-                traceback.print_exc()
-                sys.exit(1)
-
-        # Interactive mode: prompt user for input
-        else:
-            print("Select input method:")
-            print("1. JSON file (recommended)")
-            print("2. Beatport playlist URL")
-            print("3. Local HTML file")
-            print()
-            choice = input("Enter choice (1-3): ").strip()
-
-            if choice == '1':
-                json_file = input("Enter path to JSON file: ").strip()
-                if json_file:
-                    self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
-                    tracks = self.scraper.load_json_file(json_file)
-                    self._store_track_metadata(tracks)
-            elif choice == '2':
-                url = input("Enter Beatport playlist URL: ").strip()
-                if url:
-                    html = self.scraper.fetch_html(url)
-                    if html:
-                        print("Parsing track information...")
-                        tracks = self.scraper.parse_tracks(html)
-            elif choice == '3':
-                local_html = input("Enter path to local HTML file: ").strip()
-                if local_html:
+                try:
                     html = self.scraper.load_local_html(local_html)
                     if html:
-                        print("Parsing track information...")
+                        print("[STAGE] Parsing HTML content", flush=True)
                         tracks = self.scraper.parse_tracks(html)
+                        print(f"[SUCCESS] Parsed {len(tracks)} tracks from HTML", flush=True)
+                    else:
+                        print("[ERROR] Failed to load HTML content", flush=True)
+                        sys.exit(1)
+                except Exception as e:
+                    print(f"[ERROR] Failed to process HTML file: {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
+                    sys.exit(1)
+
+            # Priority 3: URL scraping
+            elif url:
+                print("[STAGE] Fetching URL", flush=True)
+                print(f"Fetching tracks from URL: {url}", flush=True)
+
+                try:
+                    html = self.scraper.fetch_html(url)
+
+                    if not html:
+                        print("[ERROR] Failed to fetch URL - no HTML returned", flush=True)
+                        sys.exit(1)
+
+                    print("[STAGE] Parsing URL content", flush=True)
+                    tracks = self.scraper.parse_tracks(html)
+                    print(f"[SUCCESS] Parsed {len(tracks)} tracks from URL", flush=True)
+                except Exception as e:
+                    print(f"[ERROR] Failed to fetch or parse URL: {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
+                    sys.exit(1)
+
+            # Interactive mode: prompt user for input
+            else:
+                print("Select input method:")
+                print("1. JSON file (recommended)")
+                print("2. Beatport playlist URL")
+                print("3. Local HTML file")
+                print()
+                choice = input("Enter choice (1-3): ").strip()
+
+                if choice == '1':
+                    json_file = input("Enter path to JSON file: ").strip()
+                    if json_file:
+                        self.json_file_dir = os.path.dirname(os.path.abspath(json_file))
+                        tracks = self.scraper.load_json_file(json_file)
+                        self._store_track_metadata(tracks)
+                elif choice == '2':
+                    url = input("Enter Beatport playlist URL: ").strip()
+                    if url:
+                        html = self.scraper.fetch_html(url)
+                        if html:
+                            print("Parsing track information...")
+                            tracks = self.scraper.parse_tracks(html)
+                elif choice == '3':
+                    local_html = input("Enter path to local HTML file: ").strip()
+                    if local_html:
+                        html = self.scraper.load_local_html(local_html)
+                        if html:
+                            print("Parsing track information...")
+                            tracks = self.scraper.parse_tracks(html)
 
             if not tracks:
                 print("[ERROR] No tracks found in input", flush=True)
