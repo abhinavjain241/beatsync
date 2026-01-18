@@ -10,20 +10,32 @@ export default function App() {
   const [summary, setSummary] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleDownload = async (url) => {
+  const handleDownload = async (input) => {
     setIsDownloading(true)
     setProgress(null)
     setSummary(null)
     setError(null)
 
     try {
-      const response = await fetch('/api/download', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url })
-      })
+      let response
+
+      if (input.type === 'url') {
+        response = await fetch('/api/download', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: input.value })
+        })
+      } else {
+        const formData = new FormData()
+        formData.append('htmlFile', input.value)
+
+        response = await fetch('/api/download', {
+          method: 'POST',
+          body: formData
+        })
+      }
 
       if (!response.ok) {
         throw new Error('Failed to start download')

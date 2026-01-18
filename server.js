@@ -4,6 +4,9 @@ import { spawn } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
+import multer from 'multer'
+import fs from 'fs/promises'
+import { tmpdir } from 'os'
 
 dotenv.config()
 
@@ -13,17 +16,27 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3000
 
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: tmpdir(),
+    filename: (req, file, cb) => {
+      cb(null, `beatport-${Date.now()}-${file.originalname}`)
+    }
+  })
+})
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'frontend', 'dist')))
 
 let ongoingDownloads = new Map()
 
-app.post('/api/download', (req, res) => {
+app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
   const { url } = req.body
+  const htmlFile = req.file
 
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' })
+  if (!url && !htmlFile) {
+    return res.status(400).json({ error: 'URL or HTML file is required' })
   }
 
   const downloadId = Date.now().toString()
@@ -32,14 +45,59 @@ app.post('/api/download', (req, res) => {
   res.setHeader('Transfer-Encoding', 'chunked')
   res.setHeader('Cache-Control', 'no-cache')
 
-  const pythonScript = path.join(__dirname, 'beatport_downloader.py')
+  let jsonFilePath = null
+  let htmlFilePath = htmlFile ? htmlFile.path : null
 
-  const pythonProcess = spawn('python3', [pythonScript, url], {
-    cwd: __dirname,
-    stdio: ['ignore', 'pipe', 'pipe']
-  })
+  function sendProgress(data) {
+    res.write(JSON.stringify(data) + '\n')
+  }
 
-  ongoingDownloads.set(downloadId, pythonProcess)
+  try {
+    if (url) {
+      sendProgress({ type: 'progress', data: { message: 'Extracting playlist from URL...', current: 0, total: 0 } })
+
+      const urlToJsonScript = path.join(__dirname, 'url_to_json.py')
+      jsonFilePath = path.join(tmpdir(), `beatport-${Date.now()}.json`)
+
+      const extractProcess = spawn('python3', [urlToJsonScript, url, '-o', jsonFilePath], {
+        cwd: __dirname,
+        stdio: ['ignore', 'pipe', 'pipe']
+      })
+
+      let extractError = ''
+      extractProcess.stderr.on('data', (data) => {
+        extractError += data.toString()
+      })
+
+      const extractExitCode = await new Promise((resolve) => {
+        extractProcess.on('close', resolve)
+      })
+
+      if (extractExitCode !== 0) {
+        sendProgress({ type: 'error', message: `Failed to extract playlist: ${extractError}` })
+        res.end()
+        if (jsonFilePath) await fs.unlink(jsonFilePath).catch(() => {})
+        return
+      }
+
+      sendProgress({ type: 'progress', data: { message: 'Playlist extracted successfully. Starting downloads...', current: 0, total: 0 } })
+    }
+
+    const downloaderScript = path.join(__dirname, 'beatport_downloader.py')
+    let downloaderArgs = []
+
+    if (jsonFilePath) {
+      downloaderArgs = ['--json-file', jsonFilePath]
+    } else if (htmlFilePath) {
+      downloaderArgs = ['--local-html', htmlFilePath]
+    }
+
+    const pythonProcess = spawn('python3', [downloaderScript, ...downloaderArgs], {
+      cwd: __dirname,
+      stdio: ['ignore', 'pipe', 'pipe']
+    })
+
+    ongoingDownloads.set(downloadId, pythonProcess)
 
   let buffer = ''
   let current = 0
@@ -186,7 +244,7 @@ app.post('/api/download', (req, res) => {
     }
   })
 
-  pythonProcess.on('close', (code) => {
+  pythonProcess.on('close', async (code) => {
     ongoingDownloads.delete(downloadId)
 
     if (code !== 0) {
@@ -196,11 +254,29 @@ app.post('/api/download', (req, res) => {
       })
     }
 
+    if (jsonFilePath) {
+      await fs.unlink(jsonFilePath).catch(() => {})
+    }
+    if (htmlFilePath) {
+      await fs.unlink(htmlFilePath).catch(() => {})
+    }
+
     res.end()
   })
+  } catch (error) {
+    sendProgress({
+      type: 'error',
+      message: error.message || 'An error occurred'
+    })
 
-  function sendProgress(data) {
-    res.write(JSON.stringify(data) + '\n')
+    if (jsonFilePath) {
+      await fs.unlink(jsonFilePath).catch(() => {})
+    }
+    if (htmlFilePath) {
+      await fs.unlink(htmlFilePath).catch(() => {})
+    }
+
+    res.end()
   }
 })
 
