@@ -53,7 +53,8 @@ class BeatportPlaylistDownloader:
         self.json_file_dir = None
 
     def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
-            local_html: Optional[str] = None, base_music_dir: Optional[str] = None):
+            local_html: Optional[str] = None, base_music_dir: Optional[str] = None,
+            auto_confirm: bool = False):
         """
         Run the complete download process.
 
@@ -62,6 +63,7 @@ class BeatportPlaylistDownloader:
             json_file: Path to JSON file with track data (optional)
             local_html: Path to local HTML file (optional)
             base_music_dir: Base directory for music downloads (optional)
+            auto_confirm: Skip confirmation prompt (for non-interactive mode)
         """
         try:
             print("[STAGE] Initializing downloader", flush=True)
@@ -208,10 +210,13 @@ class BeatportPlaylistDownloader:
 
             # Confirm before downloading
             print(flush=True)
-            response = input("Proceed with download? (y/n): ").strip().lower()
-            if response not in ['y', 'yes']:
-                print("[INFO] Download cancelled by user", flush=True)
-                sys.exit(0)
+            if not auto_confirm:
+                response = input("Proceed with download? (y/n): ").strip().lower()
+                if response not in ['y', 'yes']:
+                    print("[INFO] Download cancelled by user", flush=True)
+                    sys.exit(0)
+            else:
+                print("[INFO] Auto-confirming download (non-interactive mode)", flush=True)
 
             # Download tracks
             print(flush=True)
@@ -480,6 +485,13 @@ JSON Format:
         help='Download source: auto (default - searches both and downloads longer), soundcloud, or youtube'
     )
 
+    parser.add_argument(
+        '--yes',
+        '-y',
+        action='store_true',
+        help='Auto-confirm download without prompting (for non-interactive mode)'
+    )
+
     args = parser.parse_args()
 
     # Determine output directory
@@ -505,7 +517,8 @@ JSON Format:
         url=args.url,
         json_file=args.json_file,
         local_html=args.local_html,
-        base_music_dir=base_music_dir
+        base_music_dir=base_music_dir,
+        auto_confirm=args.yes
     )
 
 

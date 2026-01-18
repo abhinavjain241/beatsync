@@ -129,10 +129,10 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
     let downloaderArgs = []
 
     if (jsonFilePath) {
-      downloaderArgs = ['--json-file', jsonFilePath]
+      downloaderArgs = ['--json-file', jsonFilePath, '--yes']
       console.log('Using JSON file:', jsonFilePath)
     } else if (htmlFilePath) {
-      downloaderArgs = ['--local-html', htmlFilePath]
+      downloaderArgs = ['--local-html', htmlFilePath, '--yes']
       console.log('Using HTML file:', htmlFilePath)
     }
 
