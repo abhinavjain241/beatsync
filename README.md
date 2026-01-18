@@ -45,10 +45,12 @@ You need to install these programs first (one-time setup):
    pip install -r requirements.txt
    ```
 
-5. **Install Node.js dependencies**:
+5. **Install Node.js dependencies** (this will also build the frontend automatically):
    ```bash
    npm install
    ```
+
+   Wait for the installation to complete. You should see "built in" message at the end.
 
 ### Step 3: Start the Application
 
@@ -155,6 +157,13 @@ Then go to `http://localhost:3001` in your browser
 - Make sure Chrome browser is installed
 - Selenium 4+ automatically manages ChromeDriver
 - If problems persist, try updating Selenium: `pip install --upgrade selenium`
+
+### "ENOENT: no such file or directory, stat frontend/dist/index.html"
+The frontend hasn't been built yet. Run:
+```bash
+npm run build
+```
+Then try `npm start` again. If you just installed, the build should happen automatically during `npm install`.
 
 ## Optional: Login to Beatport
 
