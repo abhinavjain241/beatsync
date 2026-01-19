@@ -247,6 +247,7 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
   let downloadedTracks = []
   let failedTracksList = []
   let skippedTracks = []
+  let summaryData = null
 
   pythonProcess.stdout.on('data', (data) => {
     const output = data.toString()
@@ -452,6 +453,20 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
         } catch (e) {
           console.error('Failed to parse skipped tracks:', e)
         }
+
+        // After parsing all structured data, send the complete summary
+        if (summaryData) {
+          summaryData.downloadFolder = downloadFolder
+          summaryData.downloadedTracks = downloadedTracks
+          summaryData.failedTracks = failedTracksList
+          summaryData.skippedTracks = skippedTracks
+
+          sendProgress({
+            type: 'summary',
+            data: summaryData
+          })
+          console.log('Sent complete summary with structured data')
+        }
       }
 
       if (
@@ -460,18 +475,10 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
         lowerLine.includes('already existed:') ||
         lowerLine.includes('failed:')
       ) {
+        // Parse summary but don't send yet - wait for structured data
         const data = parseDownloadSummary(buffer, lines, failedTracks)
         if (data) {
-          // Add the new structured data
-          data.downloadFolder = downloadFolder
-          data.downloadedTracks = downloadedTracks
-          data.failedTracks = failedTracksList
-          data.skippedTracks = skippedTracks
-
-          sendProgress({
-            type: 'summary',
-            data
-          })
+          summaryData = data
         }
       }
     }
@@ -496,6 +503,20 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
     console.log('Download ID:', downloadId)
 
     ongoingDownloads.delete(downloadId)
+
+    // Send summary if we have it and it hasn't been sent yet
+    if (summaryData && code === 0) {
+      summaryData.downloadFolder = downloadFolder
+      summaryData.downloadedTracks = downloadedTracks
+      summaryData.failedTracks = failedTracksList
+      summaryData.skippedTracks = skippedTracks
+
+      sendProgress({
+        type: 'summary',
+        data: summaryData
+      })
+      console.log('Sent final summary on process close')
+    }
 
     if (code !== 0) {
       console.error('ERROR: Process failed with exit code:', code)

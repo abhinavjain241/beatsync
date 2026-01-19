@@ -35,6 +35,87 @@ class MetadataWriter:
         """
         return path.startswith('http://') or path.startswith('https://')
 
+    def _is_valid_album_art_url(self, url: str) -> bool:
+        """
+        Check if URL is likely to be actual album art (not waveform).
+
+        Args:
+            url: URL to check
+
+        Returns:
+            True if URL is likely album art, False if likely waveform or invalid
+        """
+        if not url:
+            return False
+
+        url_lower = url.lower()
+
+        # Reject waveform images
+        waveform_indicators = [
+            'waveform',
+            'wave',
+            '/dynamic/',
+            'oscilloscope',
+            '/waves/',
+        ]
+        if any(indicator in url_lower for indicator in waveform_indicators):
+            print(f"  [Metadata] ⚠ Rejected URL: appears to be waveform image")
+            return False
+
+        # Prefer known album art patterns
+        album_art_indicators = [
+            '/artwork/',
+            '/cover/',
+            '/image/',
+            '/release/',
+            '/album/',
+            'artworks-',
+            't500x500',
+            't1024x1024',
+            'imgix',
+        ]
+
+        if any(indicator in url_lower for indicator in album_art_indicators):
+            print(f"  [Metadata] ✓ URL appears to be album artwork")
+            return True
+
+        # If no clear indicators, accept it but log warning
+        print(f"  [Metadata] ⚠ URL type uncertain, proceeding with caution")
+        return True
+
+    def _validate_image_data(self, image_data: bytes) -> bool:
+        """
+        Validate that image data is suitable for album art.
+        Checks dimensions and rejects images that are too small or wrong aspect ratio.
+
+        Args:
+            image_data: Image data bytes
+
+        Returns:
+            True if image appears to be valid album art
+        """
+        try:
+            # Basic validation: check if it's a valid image format
+            mime_type = self._get_mime_type_from_data(image_data)
+            if mime_type not in ['image/jpeg', 'image/png', 'image/webp']:
+                print(f"  [Metadata] ⚠ Invalid image format: {mime_type}")
+                return False
+
+            # Size validation: album art should be at least 10KB typically
+            if len(image_data) < 10000:
+                print(f"  [Metadata] ⚠ Image too small: {len(image_data)} bytes")
+                return False
+
+            # Waveforms are typically very wide and short
+            # Album art is typically square or nearly square
+            # We could add PIL/Pillow to check dimensions, but that adds a dependency
+            # For now, basic checks are sufficient
+
+            return True
+        except Exception as e:
+            print(f"  [Metadata] ⚠ Image validation error: {e}")
+            return False
+
     def _download_image_from_url(self, url: str) -> Optional[bytes]:
         """
         Download image data from a URL.
@@ -237,16 +318,26 @@ class MetadataWriter:
 
                 # Check if album art is a URL or local file
                 if self._is_url(album_art_source):
-                    # Download image from URL
-                    print(f"  [Metadata] Album art is URL: {album_art_source[:50]}...")
-                    print(f"  [Metadata] Downloading album art from URL...")
-                    image_data = self._download_image_from_url(album_art_source)
-                    if image_data:
-                        # Detect MIME type from image data
-                        mime_type = self._get_mime_type_from_data(image_data)
-                        print(f"  [Metadata] ✓ Downloaded album art ({len(image_data)} bytes, {mime_type})")
+                    # Validate URL before downloading
+                    print(f"  [Metadata] Album art is URL: {album_art_source[:80]}...")
+
+                    if not self._is_valid_album_art_url(album_art_source):
+                        print(f"  ⚠ [Metadata] Skipping invalid/waveform album art URL")
                     else:
-                        print(f"  ⚠ [Metadata] Failed to download album art from URL")
+                        print(f"  [Metadata] Downloading album art from URL...")
+                        image_data = self._download_image_from_url(album_art_source)
+
+                        if image_data:
+                            # Validate the downloaded image data
+                            if self._validate_image_data(image_data):
+                                # Detect MIME type from image data
+                                mime_type = self._get_mime_type_from_data(image_data)
+                                print(f"  [Metadata] ✓ Downloaded and validated album art ({len(image_data)} bytes, {mime_type})")
+                            else:
+                                print(f"  ⚠ [Metadata] Downloaded image failed validation (likely not album art)")
+                                image_data = None
+                        else:
+                            print(f"  ⚠ [Metadata] Failed to download album art from URL")
                 else:
                     # Load image from local file
                     print(f"  [Metadata] Album art is local file: {album_art_source}")

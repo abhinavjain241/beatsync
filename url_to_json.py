@@ -375,21 +375,85 @@ def normalize_genre(value: Any) -> str:
 
 
 def normalize_image(value: Any) -> str:
-    if isinstance(value, str):
-        return value
-    if isinstance(value, dict):
-        for key in ("uri", "url"):
-            if key in value:
-                return str(value[key])
-        for entry in value.values():
-            if isinstance(entry, str) and entry.startswith("http"):
-                return entry
-    if isinstance(value, list):
-        for entry in value:
-            image = normalize_image(entry)
-            if image:
-                return image
-    return ""
+    """
+    Extract album art URL from various data structures.
+    Intelligently filters out waveform images and selects actual album covers.
+    """
+    def is_waveform_image(url: str) -> bool:
+        """Check if URL is likely a waveform image."""
+        if not url:
+            return False
+        url_lower = url.lower()
+        # Common patterns for waveform images
+        waveform_indicators = [
+            'waveform',
+            'wave',
+            '/dynamic/',
+            'oscilloscope',
+            '/waves/',
+        ]
+        return any(indicator in url_lower for indicator in waveform_indicators)
+
+    def is_likely_album_art(url: str) -> bool:
+        """Check if URL is likely album artwork."""
+        if not url:
+            return False
+        url_lower = url.lower()
+        # Common patterns for album art
+        art_indicators = [
+            '/artwork/',
+            '/cover/',
+            '/image/',
+            '/release/',
+            '/album/',
+            'artworks-',
+            't500x500',  # Beatport uses this for album art
+            't1024x1024',
+            'imgix',
+        ]
+        return any(indicator in url_lower for indicator in art_indicators)
+
+    def extract_urls(value: Any) -> list:
+        """Recursively extract all URLs from a data structure."""
+        urls = []
+
+        if isinstance(value, str) and value.startswith("http"):
+            urls.append(value)
+        elif isinstance(value, dict):
+            # Check specific keys first
+            for key in ("uri", "url", "src", "dynamicUri"):
+                if key in value:
+                    url = str(value[key])
+                    if url.startswith("http"):
+                        urls.append(url)
+            # Then check all values
+            for entry in value.values():
+                urls.extend(extract_urls(entry))
+        elif isinstance(value, list):
+            for entry in value:
+                urls.extend(extract_urls(entry))
+
+        return urls
+
+    # Extract all possible URLs
+    all_urls = extract_urls(value)
+
+    if not all_urls:
+        return ""
+
+    # Filter and prioritize URLs
+    # First, try to find URLs that are definitely album art
+    album_art_urls = [url for url in all_urls if is_likely_album_art(url) and not is_waveform_image(url)]
+    if album_art_urls:
+        return album_art_urls[0]
+
+    # If no obvious album art, filter out waveforms and take the first remaining
+    non_waveform_urls = [url for url in all_urls if not is_waveform_image(url)]
+    if non_waveform_urls:
+        return non_waveform_urls[0]
+
+    # Last resort: return first URL even if it might be a waveform
+    return all_urls[0]
 
 
 def normalize_track(track: dict[str, Any]) -> dict[str, str]:
