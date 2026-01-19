@@ -166,8 +166,38 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
 
       try {
         const { stdout } = await execPromise(`python3 "${extractPath}"`)
+
+        // Check if extraction was successful
+        let extractedData = []
+        try {
+          extractedData = JSON.parse(stdout)
+        } catch (e) {
+          console.error('Failed to parse extraction output:', e)
+        }
+
+        if (!extractedData || extractedData.length === 0) {
+          console.error('HTML file contains no track data')
+          sendProgress({
+            type: 'error',
+            stage: 'html_conversion',
+            message: 'HTML file does not contain track data. Saved HTML files from Beatport don\'t preserve playlist information.',
+            details: 'To download tracks, please use one of these methods instead:\n\n' +
+                    '1. Enter the Beatport playlist URL directly (recommended)\n' +
+                    '2. Use the url_to_json.py script to convert the live URL to JSON first:\n' +
+                    '   python3 url_to_json.py <beatport-url>\n' +
+                    '3. Upload the generated JSON file instead of HTML\n\n' +
+                    'Note: Saved HTML files only contain the page structure, not the dynamically loaded track data.'
+          })
+          res.end()
+          await fs.unlink(htmlFilePath).catch(() => {})
+          await fs.unlink(htmlTempPath).catch(() => {})
+          await fs.unlink(extractPath).catch(() => {})
+          await fs.unlink(convertedJsonPath).catch(() => {})
+          return
+        }
+
         await fs.writeFile(convertedJsonPath, stdout)
-        console.log('HTML converted to JSON successfully')
+        console.log(`HTML converted to JSON successfully - ${extractedData.length} tracks found`)
 
         // Clean up temp files
         await fs.unlink(htmlTempPath).catch(() => {})
@@ -182,7 +212,7 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
         sendProgress({
           type: 'error',
           stage: 'html_conversion',
-          message: 'Failed to extract playlist data from HTML file. The HTML file may not contain valid playlist data.',
+          message: 'Failed to extract playlist data from HTML file.',
           details: conversionError.message
         })
         res.end()

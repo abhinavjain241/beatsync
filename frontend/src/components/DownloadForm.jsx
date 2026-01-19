@@ -6,6 +6,7 @@ export default function DownloadForm({ onDownload, disabled }) {
   const [htmlFile, setHtmlFile] = useState(null)
   const [inputType, setInputType] = useState('url')
   const [isLoading, setIsLoading] = useState(false)
+  const [fileType, setFileType] = useState('html')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,6 +30,12 @@ export default function DownloadForm({ onDownload, disabled }) {
     const file = e.target.files[0]
     if (file) {
       setHtmlFile(file)
+      // Auto-detect file type
+      if (file.name.endsWith('.json')) {
+        setFileType('json')
+      } else {
+        setFileType('html')
+      }
     }
   }
 
@@ -54,7 +61,7 @@ export default function DownloadForm({ onDownload, disabled }) {
             onClick={() => setInputType('file')}
             disabled={disabled || isLoading}
           >
-            HTML File
+            JSON File
           </button>
         </div>
       </div>
@@ -77,17 +84,24 @@ export default function DownloadForm({ onDownload, disabled }) {
         </div>
       ) : (
         <div className="form-group">
-          <label htmlFor="htmlFile" className="label">Beatport Playlist HTML File</label>
+          <label htmlFor="htmlFile" className="label">Beatport Playlist File (JSON or HTML)</label>
           <input
             id="htmlFile"
             type="file"
-            accept=".html,.htm"
+            accept=".json,.html,.htm"
             onChange={handleFileChange}
             disabled={disabled || isLoading}
             className="input file-input"
           />
           {htmlFile && (
-            <p className="input-hint">Selected: {htmlFile.name}</p>
+            <>
+              <p className="input-hint">Selected: {htmlFile.name}</p>
+              {fileType === 'html' && (
+                <p className="input-hint warning">
+                  Note: Saved HTML files often don't contain track data. If this fails, use the Beatport URL instead or convert to JSON using url_to_json.py first.
+                </p>
+              )}
+            </>
           )}
         </div>
       )}
@@ -111,7 +125,7 @@ export default function DownloadForm({ onDownload, disabled }) {
         <p>
           {inputType === 'url'
             ? 'Enter a Beatport playlist URL and we\'ll automatically extract and download all tracks.'
-            : 'Upload a saved Beatport playlist HTML file to extract and download all tracks.'}
+            : 'Upload a JSON file containing playlist data. Use url_to_json.py to convert Beatport URLs to JSON format.'}
         </p>
         <ul>
           <li>Searches for each track on SoundCloud and YouTube</li>
