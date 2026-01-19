@@ -64,8 +64,17 @@ export default function ProgressDisplay({ progress, isLoading, stage }) {
             <p className="current-track">
               <strong>{currentTrack.artist}</strong> - {currentTrack.track}
             </p>
+            {currentTrack.status === 'processing' && (
+              <p className="track-status">Searching for track...</p>
+            )}
             {currentTrack.status === 'downloading' && (
               <p className="track-status">Downloading...</p>
+            )}
+            {currentTrack.status === 'success' && (
+              <p className="track-status success">Downloaded successfully</p>
+            )}
+            {currentTrack.status === 'skipped' && (
+              <p className="track-status exists">Already exists, skipping</p>
             )}
             {currentTrack.status === 'exists' && (
               <p className="track-status exists">Already exists, skipping</p>
@@ -106,6 +115,8 @@ export default function ProgressDisplay({ progress, isLoading, stage }) {
                 {log.track?.status === 'processing' && '🔄'}
                 {log.track?.status === 'downloading' && '⬇️'}
                 {log.track?.status === 'completed' && '✓'}
+                {log.track?.status === 'success' && '✓'}
+                {log.track?.status === 'skipped' && '↩️'}
                 {log.track?.status === 'exists' && '↩️'}
                 {log.track?.status === 'failed' && '✗'}
                 {!log.track?.status && '•'}

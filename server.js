@@ -243,9 +243,15 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
   let trackCount = 0
   let failedTracks = []
 
+  let downloadFolder = ''
+  let downloadedTracks = []
+  let failedTracksList = []
+  let skippedTracks = []
+
   pythonProcess.stdout.on('data', (data) => {
     const output = data.toString()
-    console.log('[DOWNLOADER_STDOUT]', output.trim())
+    // Only log raw output for debugging - comment this out to avoid duplicate logs
+    // console.log('[DOWNLOADER_STDOUT]', output.trim())
     buffer += output
 
     const lines = buffer.split('\n')
@@ -255,7 +261,15 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
       if (!line.trim()) continue
 
       const lowerLine = line.toLowerCase()
-      console.log('[PARSING_LINE]', line)
+      // Only log meaningful lines, not every single line
+      const isStructuredMessage = line.includes('[TRACK_START]') || line.includes('[TRACK_RESULT]') ||
+        line.includes('[DOWNLOAD_FOLDER]') || line.includes('[DOWNLOADED_TRACKS]') ||
+        line.includes('[FAILED_TRACKS]') || line.includes('[SKIPPED_TRACKS]')
+
+      if (isStructuredMessage || lowerLine.includes('processing') || lowerLine.includes('downloading') ||
+          lowerLine.includes('error') || lowerLine.includes('failed')) {
+        console.log('[PROGRESS]', line)
+      }
 
       if (lowerLine.includes('found ') && lowerLine.includes(' track')) {
         const match = line.match(/found (\d+) track/)
@@ -370,6 +384,76 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
         })
       }
 
+      // Parse structured track start message
+      if (line.startsWith('[TRACK_START]')) {
+        const parts = line.substring('[TRACK_START]'.length).trim().split(' | ')
+        if (parts.length >= 3) {
+          const [progress, artist, track] = parts
+          const [curr, tot] = progress.split('/')
+          current = parseInt(curr)
+          total = parseInt(tot)
+
+          sendProgress({
+            type: 'progress',
+            data: {
+              total,
+              current,
+              track: { artist, track, status: 'processing' },
+              message: `Processing: ${artist} - ${track}`
+            }
+          })
+        }
+      }
+
+      // Parse structured track result message
+      if (line.startsWith('[TRACK_RESULT]')) {
+        const parts = line.substring('[TRACK_RESULT]'.length).trim().split(' | ')
+        if (parts.length >= 3) {
+          const [status, artist, track] = parts
+          sendProgress({
+            type: 'progress',
+            data: {
+              total,
+              current,
+              track: { artist, track, status: status.toLowerCase() },
+              message: `${status}: ${artist} - ${track}`
+            }
+          })
+        }
+      }
+
+      // Parse download folder
+      if (line.startsWith('[DOWNLOAD_FOLDER]')) {
+        downloadFolder = line.substring('[DOWNLOAD_FOLDER]'.length).trim()
+      }
+
+      // Parse downloaded tracks list
+      if (line.startsWith('[DOWNLOADED_TRACKS]')) {
+        try {
+          downloadedTracks = JSON.parse(line.substring('[DOWNLOADED_TRACKS]'.length).trim())
+        } catch (e) {
+          console.error('Failed to parse downloaded tracks:', e)
+        }
+      }
+
+      // Parse failed tracks list
+      if (line.startsWith('[FAILED_TRACKS]')) {
+        try {
+          failedTracksList = JSON.parse(line.substring('[FAILED_TRACKS]'.length).trim())
+        } catch (e) {
+          console.error('Failed to parse failed tracks:', e)
+        }
+      }
+
+      // Parse skipped tracks list
+      if (line.startsWith('[SKIPPED_TRACKS]')) {
+        try {
+          skippedTracks = JSON.parse(line.substring('[SKIPPED_TRACKS]'.length).trim())
+        } catch (e) {
+          console.error('Failed to parse skipped tracks:', e)
+        }
+      }
+
       if (
         lowerLine.includes('total tracks:') ||
         lowerLine.includes('downloaded:') ||
@@ -378,6 +462,12 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
       ) {
         const data = parseDownloadSummary(buffer, lines, failedTracks)
         if (data) {
+          // Add the new structured data
+          data.downloadFolder = downloadFolder
+          data.downloadedTracks = downloadedTracks
+          data.failedTracks = failedTracksList
+          data.skippedTracks = skippedTracks
+
           sendProgress({
             type: 'summary',
             data

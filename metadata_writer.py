@@ -8,6 +8,7 @@ Supports both local file paths and URLs for album art.
 
 import os
 import re
+import ssl
 from typing import Dict, Optional
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
@@ -51,7 +52,13 @@ class MetadataWriter:
             }
             request = Request(url, headers=headers)
 
-            with urlopen(request, timeout=30) as response:
+            # Create SSL context that doesn't verify certificates (for album art downloads only)
+            # This fixes SSL certificate verification errors with some image hosting services
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+
+            with urlopen(request, timeout=30, context=ssl_context) as response:
                 if response.status == 200:
                     image_data = response.read()
                     return image_data

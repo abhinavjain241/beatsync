@@ -51,6 +51,9 @@ class BeatportPlaylistDownloader:
         }
         self.track_metadata_map = {}
         self.json_file_dir = None
+        self.downloaded_tracks = []
+        self.failed_tracks = []
+        self.skipped_tracks = []
 
     def run(self, url: Optional[str] = None, json_file: Optional[str] = None,
             local_html: Optional[str] = None, base_music_dir: Optional[str] = None,
@@ -309,7 +312,10 @@ class BeatportPlaylistDownloader:
     def _download_tracks(self, tracks: List[Dict[str, str]]):
         """Download all tracks."""
         for i, track in enumerate(tracks, 1):
-            print(f"\n[{i}/{len(tracks)}] Processing: {track['artist']} - {track['track']}")
+            print(f"\n[{i}/{len(tracks)}] Processing: {track['artist']} - {track['track']}", flush=True)
+
+            # Output structured progress for UI
+            print(f"[TRACK_START] {i}/{len(tracks)} | {track['artist']} | {track['track']}", flush=True)
 
             # Create search query
             search_query = self.scraper.create_search_string(track)
@@ -320,8 +326,12 @@ class BeatportPlaylistDownloader:
             if success:
                 if already_existed:
                     self.stats['skipped'] += 1
+                    self.skipped_tracks.append({'artist': track['artist'], 'track': track['track'], 'filename': actual_filename})
+                    print(f"[TRACK_RESULT] SKIPPED | {track['artist']} | {track['track']} | {actual_filename}", flush=True)
                 else:
                     self.stats['downloaded'] += 1
+                    self.downloaded_tracks.append({'artist': track['artist'], 'track': track['track'], 'filename': actual_filename})
+                    print(f"[TRACK_RESULT] SUCCESS | {track['artist']} | {track['track']} | {actual_filename}", flush=True)
 
                 # Apply metadata if we have it and the file exists
                 if actual_filename and not already_existed:
@@ -368,9 +378,12 @@ class BeatportPlaylistDownloader:
                         print(f"  ⚠ No metadata found for track in JSON")
             else:
                 self.stats['failed'] += 1
+                self.failed_tracks.append({'artist': track['artist'], 'track': track['track']})
+                print(f"[TRACK_RESULT] FAILED | {track['artist']} | {track['track']} | N/A", flush=True)
 
     def _display_summary(self):
         """Display download summary statistics."""
+        import json
         print()
         print("=" * 60)
         print("Download Summary")
@@ -397,6 +410,12 @@ class BeatportPlaylistDownloader:
         print()
         print(f"Files saved to: {self.downloader.output_dir}/")
         print("=" * 60)
+
+        # Output structured data for UI
+        print(f"[DOWNLOAD_FOLDER] {self.downloader.output_dir}", flush=True)
+        print(f"[DOWNLOADED_TRACKS] {json.dumps(self.downloaded_tracks)}", flush=True)
+        print(f"[FAILED_TRACKS] {json.dumps(self.failed_tracks)}", flush=True)
+        print(f"[SKIPPED_TRACKS] {json.dumps(self.skipped_tracks)}", flush=True)
 
 
 def main():
