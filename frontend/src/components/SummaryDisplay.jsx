@@ -5,7 +5,8 @@ export default function SummaryDisplay({ summary, onReset }) {
     total = 0,
     downloaded = 0,
     skipped = 0,
-    failed = 0
+    failed = 0,
+    failedTracks = []
   } = summary || {}
 
   const successCount = downloaded + skipped
@@ -51,6 +52,20 @@ export default function SummaryDisplay({ summary, onReset }) {
           <p>⚠ Download completed with some failures. Please check the results.</p>
         )}
       </div>
+
+      {failedTracks && failedTracks.length > 0 && (
+        <div className="failed-tracks-section">
+          <h3>Failed Tracks</h3>
+          <div className="failed-tracks-list">
+            {failedTracks.map((track, index) => (
+              <div key={index} className="failed-track-item">
+                <span className="failed-icon">✗</span>
+                <span className="failed-track-name">{track}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="summary-actions">
         <button onClick={onReset} className="button button-primary">

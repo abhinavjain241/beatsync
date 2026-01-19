@@ -1,12 +1,15 @@
 import express from 'express'
 import cors from 'cors'
-import { spawn } from 'child_process'
+import { spawn, exec } from 'child_process'
+import { promisify } from 'util'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 import multer from 'multer'
 import fs from 'fs/promises'
 import { tmpdir } from 'os'
+
+const execPromise = promisify(exec)
 
 dotenv.config()
 
@@ -132,8 +135,62 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
       downloaderArgs = ['--json-file', jsonFilePath, '--yes']
       console.log('Using JSON file:', jsonFilePath)
     } else if (htmlFilePath) {
-      downloaderArgs = ['--local-html', htmlFilePath, '--yes']
-      console.log('Using HTML file:', htmlFilePath)
+      // Convert HTML to JSON first
+      sendProgress({ type: 'stage', stage: 'html_conversion', message: 'Converting HTML to JSON format...' })
+      console.log('Converting HTML file to JSON...')
+
+      const convertScript = path.join(__dirname, 'url_to_json.py')
+      const convertedJsonPath = path.join(tmpdir(), `converted-${Date.now()}.json`)
+
+      // Read HTML file and use url_to_json extraction logic
+      const htmlContent = await fs.readFile(htmlFilePath, 'utf-8')
+      const htmlTempPath = path.join(tmpdir(), `temp-${Date.now()}.html`)
+      await fs.writeFile(htmlTempPath, htmlContent)
+
+      // Use a simpler Python script to extract from local HTML
+      const extractScript = `
+import sys
+import json
+sys.path.insert(0, '${__dirname}')
+from url_to_json import extract_script_json, build_playlist_data
+
+with open('${htmlTempPath}', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+playlist = build_playlist_data(html)
+print(json.dumps(playlist, indent=2, ensure_ascii=False))
+`
+
+      const extractPath = path.join(tmpdir(), `extract-${Date.now()}.py`)
+      await fs.writeFile(extractPath, extractScript)
+
+      try {
+        const { stdout } = await execPromise(`python3 "${extractPath}"`)
+        await fs.writeFile(convertedJsonPath, stdout)
+        console.log('HTML converted to JSON successfully')
+
+        // Clean up temp files
+        await fs.unlink(htmlTempPath).catch(() => {})
+        await fs.unlink(extractPath).catch(() => {})
+
+        // Use the converted JSON file
+        jsonFilePath = convertedJsonPath
+        downloaderArgs = ['--json-file', convertedJsonPath, '--yes']
+        console.log('Using converted JSON file:', convertedJsonPath)
+      } catch (conversionError) {
+        console.error('HTML conversion failed:', conversionError)
+        sendProgress({
+          type: 'error',
+          stage: 'html_conversion',
+          message: 'Failed to extract playlist data from HTML file. The HTML file may not contain valid playlist data.',
+          details: conversionError.message
+        })
+        res.end()
+        await fs.unlink(htmlFilePath).catch(() => {})
+        await fs.unlink(htmlTempPath).catch(() => {})
+        await fs.unlink(extractPath).catch(() => {})
+        return
+      }
     }
 
     console.log('Downloader script:', downloaderScript)
@@ -154,6 +211,7 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
   let current = 0
   let total = 0
   let trackCount = 0
+  let failedTracks = []
 
   pythonProcess.stdout.on('data', (data) => {
     const output = data.toString()
@@ -189,6 +247,10 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
         const match = line.match(/\[(\d+)\/(\d+)\]\s+processing:\s+(.+)/i)
         if (match) {
           current = parseInt(match[1])
+          // Extract total from the [X/Y] format if we haven't set it yet
+          if (total === 0) {
+            total = parseInt(match[2])
+          }
           const fullName = match[3]
           const parts = fullName.split(' - ')
           const artist = parts[0] || ''
@@ -259,6 +321,14 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
       }
 
       if (lowerLine.includes('✗')) {
+        // Extract track name from failure message
+        // Format: "✗ Failed: Artist - Track Name"
+        const failMatch = line.match(/✗\s*(?:failed|error)[:\s]*(.+)/i)
+        if (failMatch) {
+          const trackName = failMatch[1].trim()
+          failedTracks.push(trackName)
+        }
+
         sendProgress({
           type: 'progress',
           data: {
@@ -276,7 +346,7 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
         lowerLine.includes('already existed:') ||
         lowerLine.includes('failed:')
       ) {
-        const data = parseDownloadSummary(buffer, lines)
+        const data = parseDownloadSummary(buffer, lines, failedTracks)
         if (data) {
           sendProgress({
             type: 'summary',
@@ -381,7 +451,7 @@ app.listen(PORT, () => {
   console.log(`Frontend: http://localhost:${PORT}`)
 })
 
-function parseDownloadSummary(fullBuffer, lines) {
+function parseDownloadSummary(fullBuffer, lines, failedTracks = []) {
   const allText = fullBuffer + lines.join('\n')
 
   const totalMatch = allText.match(/total tracks:\s*(\d+)/i)
@@ -394,7 +464,8 @@ function parseDownloadSummary(fullBuffer, lines) {
       total: parseInt(totalMatch[1]),
       downloaded: downloadedMatch ? parseInt(downloadedMatch[1]) : 0,
       skipped: existedMatch ? parseInt(existedMatch[1]) : 0,
-      failed: failedMatch ? parseInt(failedMatch[1]) : 0
+      failed: failedMatch ? parseInt(failedMatch[1]) : 0,
+      failedTracks: failedTracks
     }
   }
 

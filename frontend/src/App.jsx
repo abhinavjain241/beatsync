@@ -11,6 +11,13 @@ export default function App() {
   const [error, setError] = useState(null)
   const [stage, setStage] = useState(null)
 
+  const getCurrentPage = () => {
+    if (error) return 'error'
+    if (summary) return 'summary'
+    if (isDownloading || progress) return 'progress'
+    return 'home'
+  }
+
   const resetToHome = () => {
     setIsDownloading(false)
     setProgress(null)
@@ -109,28 +116,49 @@ export default function App() {
     }
   }
 
+  const currentPage = getCurrentPage()
+
   return (
     <div className="app">
       <div className="container">
         <header className="header">
           <h1>Beatport Playlist Downloader</h1>
           <p className="subtitle">Download music from Beatport playlists to your computer</p>
+
+          {currentPage !== 'error' && (
+            <div className="page-indicator">
+              <div className={`indicator-step ${currentPage === 'home' ? 'active' : currentPage !== 'home' ? 'completed' : ''}`}>
+                <div className="step-number">1</div>
+                <div className="step-label">Select Source</div>
+              </div>
+              <div className="indicator-line"></div>
+              <div className={`indicator-step ${currentPage === 'progress' ? 'active' : currentPage === 'summary' ? 'completed' : ''}`}>
+                <div className="step-number">2</div>
+                <div className="step-label">Download</div>
+              </div>
+              <div className="indicator-line"></div>
+              <div className={`indicator-step ${currentPage === 'summary' ? 'active' : ''}`}>
+                <div className="step-number">3</div>
+                <div className="step-label">Complete</div>
+              </div>
+            </div>
+          )}
         </header>
 
         <main className="main">
-          {!isDownloading && !progress && !summary && !error && (
+          {currentPage === 'home' && (
             <DownloadForm onDownload={handleDownload} disabled={isDownloading} />
           )}
 
-          {(isDownloading || progress) && !error && (
+          {currentPage === 'progress' && (
             <ProgressDisplay progress={progress} isLoading={isDownloading} stage={stage} />
           )}
 
-          {summary && !error && (
+          {currentPage === 'summary' && (
             <SummaryDisplay summary={summary} onReset={resetToHome} />
           )}
 
-          {error && (
+          {currentPage === 'error' && (
             <div className="error-container">
               <div className="error-card">
                 <div className="error-header">
