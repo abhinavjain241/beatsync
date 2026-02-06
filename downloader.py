@@ -589,3 +589,138 @@ class AudioDownloader:
         if not os.path.exists(self.output_dir):
             return set()
         return set(os.listdir(self.output_dir))
+
+    def get_playlist_tracks(self, playlist_url: str) -> List[Dict]:
+        """
+        Get all tracks from a SoundCloud playlist URL with full metadata.
+
+        Args:
+            playlist_url: SoundCloud playlist/likes URL
+
+        Returns:
+            List of track dicts: {'title': str, 'artist': str, 'url': str, 'duration': int}
+        """
+        # Use --dump-json without --flat-playlist to get full metadata
+        command = [
+            'yt-dlp',
+            '--dump-json',
+            '--no-download',
+            playlist_url
+        ]
+
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=300  # Longer timeout since we're fetching full metadata
+            )
+
+            if result.returncode != 0:
+                print(f"  ✗ yt-dlp error: {result.stderr.strip()}")
+                return []
+
+            tracks = []
+            for line in result.stdout.strip().split('\n'):
+                if line:
+                    try:
+                        info = json.loads(line)
+                        url = info.get('webpage_url') or info.get('url', '')
+                        tracks.append({
+                            'title': info.get('title', 'Unknown'),
+                            'artist': info.get('uploader') or info.get('artist') or info.get('channel') or 'Unknown Artist',
+                            'url': url,
+                            'duration': info.get('duration', 0)
+                        })
+                    except json.JSONDecodeError:
+                        continue
+            return tracks
+
+        except Exception as e:
+            print(f"  ✗ Error fetching playlist: {e}")
+            return []
+
+    def sync_soundcloud_playlist(self, playlist_url: str) -> Dict[str, int]:
+        """
+        Download new tracks from a SoundCloud playlist, skip existing ones.
+
+        Args:
+            playlist_url: SoundCloud playlist URL
+
+        Returns:
+            Stats dict: {'total': int, 'downloaded': int, 'skipped': int, 'failed': int}
+        """
+        stats = {'total': 0, 'downloaded': 0, 'skipped': 0, 'failed': 0}
+
+        print(f"Fetching playlist from SoundCloud...")
+        tracks = self.get_playlist_tracks(playlist_url)
+
+        if not tracks:
+            print("  ✗ Could not fetch playlist or playlist is empty")
+            return stats
+
+        stats['total'] = len(tracks)
+        print(f"  Found {len(tracks)} tracks in playlist")
+        print()
+
+        for i, track in enumerate(tracks, 1):
+            title = track['title']
+            artist = track.get('artist', 'Unknown Artist')
+            url = track['url']
+
+            print(f"[{i}/{len(tracks)}] {title} - {artist}")
+
+            # Check for valid URL
+            if not url or not url.startswith('http'):
+                print(f"  ✗ Invalid URL: {url}")
+                stats['failed'] += 1
+                continue
+
+            # Check if already exists (check both title and full name)
+            existing = self.check_existing_file(title) or self.check_existing_file(f"{title} - {artist}")
+            if existing:
+                print(f"  ✓ Already exists: {existing}")
+                stats['skipped'] += 1
+                continue
+
+            # Check duration
+            if track['duration'] and track['duration'] > self.MAX_DURATION:
+                print(f"  ✗ Too long: {self._format_duration(track['duration'])} (max 15 min)")
+                stats['failed'] += 1
+                continue
+
+            # Download with filename: "title - artist.mp3"
+            actual_filename = self.sanitize_filename(f"{title} - {artist}") + '.mp3'
+            output_path = os.path.join(self.output_dir, actual_filename)
+            output_template = os.path.join(self.output_dir, actual_filename.replace('.mp3', ''))
+
+            command = [
+                'yt-dlp',
+                '--extract-audio',
+                '--audio-format', 'mp3',
+                '--audio-quality', '0',
+                '--output', output_template + '.%(ext)s',
+                '--no-playlist',
+                url
+            ]
+
+            try:
+                print(f"  Downloading from: {url}")
+                result = subprocess.run(command, capture_output=True, text=True, timeout=300)
+
+                if result.returncode == 0 and os.path.exists(output_path):
+                    print(f"  ✓ Downloaded: {actual_filename}")
+                    stats['downloaded'] += 1
+                else:
+                    error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+                    print(f"  ✗ Download failed: {error_msg}")
+                    stats['failed'] += 1
+
+            except subprocess.TimeoutExpired:
+                print(f"  ✗ Timeout")
+                stats['failed'] += 1
+            except Exception as e:
+                print(f"  ✗ Error: {e}")
+                stats['failed'] += 1
+
+        return stats
