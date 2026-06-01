@@ -4,6 +4,104 @@ import DownloadForm from './components/DownloadForm'
 import ProgressDisplay from './components/ProgressDisplay'
 import SummaryDisplay from './components/SummaryDisplay'
 
+function dispatchRequest(input) {
+  if (input.mode === 'tracklist-to-spotify') {
+    return fetch('/api/tracklist-to-spotify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tracklist: input.tracklist, name: input.name }),
+    })
+  }
+  if (input.mode === 'spotify-to-download') {
+    return fetch('/api/download-from-spotify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playlistUrl: input.playlistUrl }),
+    })
+  }
+  // beatport (default)
+  if (input.type === 'url') {
+    return fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: input.value }),
+    })
+  }
+  const formData = new FormData()
+  formData.append('htmlFile', input.value)
+  return fetch('/api/download', { method: 'POST', body: formData })
+}
+
+// The Beatport flow sends {type: 'stage'|'progress'|'summary'|'error'} directly.
+// The Spotify flows send {type: 'event', tag, payload} and {type: 'log'|'done'};
+// we translate those into the same progress/summary shape.
+function handleStreamMessage(data, state, { setStage, setProgress, setSummary, setError, setIsDownloading }) {
+  if (data.type === 'stage') {
+    setStage({ stage: data.stage, message: data.message })
+    return
+  }
+  if (data.type === 'progress') {
+    setProgress(data.data)
+    return
+  }
+  if (data.type === 'summary') {
+    setSummary(data.data)
+    return
+  }
+  if (data.type === 'error') {
+    setError({ message: data.message, details: data.details, stage: data.stage, exitCode: data.exitCode })
+    setIsDownloading(false)
+    return
+  }
+
+  if (data.type === 'event') {
+    const { tag, payload } = data
+    if (tag === 'STAGE') {
+      setStage({ stage: 'working', message: typeof payload === 'string' ? payload : '' })
+    } else if (tag === 'TRACK_START') {
+      setProgress({
+        current: payload.index,
+        total: payload.total,
+        message: `Searching: ${payload.query}`,
+        track: { name: payload.query },
+      })
+    } else if (tag === 'TRACK_RESULT') {
+      state.trackResults.push(payload)
+      const matchedLabel = payload.matched_name
+        ? `${payload.matched_artists?.join(', ') || ''} – ${payload.matched_name}`
+        : payload.filename || payload.query
+      setProgress({
+        current: payload.index,
+        total: state.trackResults[0]?.total ?? payload.index,
+        message: `[${payload.status}] ${matchedLabel}`,
+        track: { name: matchedLabel, status: payload.status },
+      })
+    } else if (tag === 'PLAYLIST_CREATED') {
+      state.playlist = payload
+    } else if (tag === 'DOWNLOAD_FOLDER') {
+      state.downloadFolder = payload
+    } else if (tag === 'SUMMARY') {
+      setSummary({
+        ...payload,
+        mode: state.mode,
+        playlist: state.playlist,
+        downloadFolder: state.downloadFolder,
+        trackResults: state.trackResults,
+      })
+    }
+    return
+  }
+
+  if (data.type === 'done') {
+    if (data.exitCode && data.exitCode !== 0 && data.exitCode !== 2) {
+      setError({ message: `Process exited with code ${data.exitCode}`, stage: 'subprocess', exitCode: data.exitCode })
+      setIsDownloading(false)
+    }
+    return
+  }
+  // 'log' messages are ignored in the UI (they're in the server console)
+}
+
 export default function App() {
   const [isDownloading, setIsDownloading] = useState(false)
   const [progress, setProgress] = useState(null)
@@ -34,33 +132,13 @@ export default function App() {
     setStage(null)
 
     try {
-      let response
-
-      if (input.type === 'url') {
-        response = await fetch('/api/download', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ url: input.value })
-        })
-      } else {
-        const formData = new FormData()
-        formData.append('htmlFile', input.value)
-
-        response = await fetch('/api/download', {
-          method: 'POST',
-          body: formData
-        })
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to start download')
-      }
+      const response = await dispatchRequest(input)
+      if (!response.ok) throw new Error('Failed to start download')
 
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
+      const eventState = { trackResults: [], playlist: null, mode: input.mode }
 
       while (true) {
         const { done, value } = await reader.read()
@@ -74,28 +152,7 @@ export default function App() {
           if (!line) continue
           try {
             const data = JSON.parse(line)
-            console.log('[RECEIVED]', data)
-
-            if (data.type === 'stage') {
-              setStage({
-                stage: data.stage,
-                message: data.message
-              })
-              console.log('[STAGE]', data.stage, data.message)
-            } else if (data.type === 'progress') {
-              setProgress(data.data)
-            } else if (data.type === 'summary') {
-              setSummary(data.data)
-            } else if (data.type === 'error') {
-              console.error('[ERROR RECEIVED]', data)
-              setError({
-                message: data.message,
-                details: data.details,
-                stage: data.stage,
-                exitCode: data.exitCode
-              })
-              setIsDownloading(false)
-            }
+            handleStreamMessage(data, eventState, { setStage, setProgress, setSummary, setError, setIsDownloading })
           } catch (e) {
             console.error('Parse error:', e, 'Line:', line)
           }

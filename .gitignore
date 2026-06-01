@@ -3,6 +3,14 @@ node_modules
 
 # Python
 __pycache__
+.venv
+.cache-spotify
+
+# macOS
+.DS_Store
+
+# Downloaded media
+downloads/
 
 # Cursor
 .specstory

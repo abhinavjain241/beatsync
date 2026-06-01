@@ -1,6 +1,10 @@
 import './SummaryDisplay.css'
 
 export default function SummaryDisplay({ summary, onReset }) {
+  if (summary?.mode === 'tracklist-to-spotify') {
+    return <SpotifyPlaylistSummary summary={summary} onReset={onReset} />
+  }
+
   const {
     total = 0,
     downloaded = 0,
@@ -118,6 +122,57 @@ export default function SummaryDisplay({ summary, onReset }) {
         <button onClick={onReset} className="button button-primary">
           Download Another Playlist
         </button>
+      </div>
+    </div>
+  )
+}
+
+function SpotifyPlaylistSummary({ summary, onReset }) {
+  const { matched = 0, low_confidence = 0, missing = 0, total = 0, playlist_url, trackResults = [] } = summary
+  return (
+    <div className="summary-container">
+      <div className="summary-header">
+        <h2>Spotify Playlist Created</h2>
+        <div className="summary-badge success">{matched + low_confidence} / {total} matched</div>
+      </div>
+
+      <div className="stats-grid">
+        <div className="stat-card total"><div className="stat-value">{total}</div><div className="stat-label">Total</div></div>
+        <div className="stat-card downloaded"><div className="stat-value">{matched}</div><div className="stat-label">Matched</div></div>
+        <div className="stat-card skipped"><div className="stat-value">{low_confidence}</div><div className="stat-label">Low Confidence</div></div>
+        <div className="stat-card failed"><div className="stat-value">{missing}</div><div className="stat-label">Missing</div></div>
+      </div>
+
+      {playlist_url && (
+        <div className="download-folder-section">
+          <h3>Playlist</h3>
+          <a href={playlist_url} target="_blank" rel="noreferrer">{playlist_url}</a>
+        </div>
+      )}
+
+      <div className="tracks-lists">
+        {trackResults.length > 0 && (
+          <div className="successful-tracks-section">
+            <h3>Results</h3>
+            <div className="tracks-list">
+              {trackResults.map((r, i) => (
+                <div key={i} className={`track-item ${r.status === 'missing' ? 'failed' : r.status === 'low_confidence' ? 'skipped' : 'downloaded'}`}>
+                  <span className="track-icon">{r.status === 'missing' ? '✗' : r.status === 'low_confidence' ? '?' : '✓'}</span>
+                  <div className="track-info">
+                    <span className="track-name">{r.query}</span>
+                    {r.matched_name && (
+                      <span className="track-status-badge">→ {r.matched_artists?.join(', ')} – {r.matched_name} ({Math.round((r.score ?? 0) * 100)}%)</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="summary-actions">
+        <button onClick={onReset} className="button button-primary">Start Over</button>
       </div>
     </div>
   )

@@ -583,6 +583,84 @@ app.get('/api/downloads', (req, res) => {
   })
 })
 
+function streamPython(res, scriptArgs, { stdinPayload = null } = {}) {
+  res.setHeader('Content-Type', 'application/x-ndjson')
+  res.setHeader('Transfer-Encoding', 'chunked')
+  res.setHeader('Cache-Control', 'no-cache')
+
+  const proc = spawn('python3', scriptArgs, {
+    cwd: __dirname,
+    stdio: [stdinPayload != null ? 'pipe' : 'ignore', 'pipe', 'pipe']
+  })
+
+  if (stdinPayload != null) {
+    proc.stdin.write(stdinPayload)
+    proc.stdin.end()
+  }
+
+  let buffer = ''
+  const send = (obj) => res.write(JSON.stringify(obj) + '\n')
+
+  proc.stdout.on('data', (chunk) => {
+    buffer += chunk.toString()
+    const lines = buffer.split('\n')
+    buffer = lines.pop()
+    for (const line of lines) {
+      if (!line.trim()) continue
+      console.log('[PY_STDOUT]', line)
+
+      const tagged = line.match(/^\[([A-Z_]+)\](?:\s+(.*))?$/)
+      if (tagged) {
+        const tag = tagged[1]
+        const rest = tagged[2] ?? ''
+        let payload
+        try { payload = JSON.parse(rest) } catch { payload = rest }
+        send({ type: 'event', tag, payload })
+      } else {
+        send({ type: 'log', message: line })
+      }
+    }
+  })
+
+  proc.stderr.on('data', (chunk) => {
+    const text = chunk.toString()
+    console.error('[PY_STDERR]', text.trim())
+    send({ type: 'log', stream: 'stderr', message: text.trim() })
+  })
+
+  proc.on('close', (code) => {
+    send({ type: 'done', exitCode: code })
+    res.end()
+  })
+
+  proc.on('error', (err) => {
+    send({ type: 'error', message: err.message })
+    res.end()
+  })
+}
+
+app.post('/api/tracklist-to-spotify', (req, res) => {
+  const { tracklist, name, description, public: isPublic } = req.body || {}
+  if (!tracklist || !name) {
+    return res.status(400).json({ error: 'tracklist and name are required' })
+  }
+  const args = [path.join(__dirname, 'tracklist_to_spotify.py'), '--stdin', '--name', name]
+  if (description) args.push('--description', description)
+  if (isPublic) args.push('--public')
+  streamPython(res, args, { stdinPayload: tracklist })
+})
+
+app.post('/api/download-from-spotify', (req, res) => {
+  const { playlistUrl, source, baseMusicDir } = req.body || {}
+  if (!playlistUrl) {
+    return res.status(400).json({ error: 'playlistUrl is required' })
+  }
+  const args = [path.join(__dirname, 'spotify_to_download.py'), playlistUrl]
+  if (source) args.push('--source', source)
+  if (baseMusicDir) args.push('--base-music-dir', baseMusicDir)
+  streamPython(res, args)
+})
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
 })
