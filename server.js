@@ -65,8 +65,10 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
     res.write(JSON.stringify(data) + '\n')
   }
 
+  const isSpotifyUrl = url && url.includes('open.spotify.com/playlist')
+
   try {
-    if (url) {
+    if (url && !isSpotifyUrl) {
       console.log('\n--- STAGE 1: URL EXTRACTION ---')
       console.log('Starting URL extraction process...')
       sendProgress({ type: 'stage', stage: 'extraction', message: 'Extracting playlist from URL...' })
@@ -127,14 +129,27 @@ app.post('/api/download', upload.single('htmlFile'), async (req, res) => {
       sendProgress({ type: 'progress', data: { message: 'Playlist extracted successfully. Starting downloads...', current: 0, total: 0 } })
     }
 
-    console.log('\n--- STAGE 2: DOWNLOAD PROCESS ---')
-    const downloaderScript = path.join(__dirname, 'beatport_downloader.py')
-    let downloaderArgs = []
+    if (isSpotifyUrl) {
+      console.log('\n--- STAGE 1: SPOTIFY (no extraction needed) ---')
+      sendProgress({ type: 'stage', stage: 'downloading', message: 'Connecting to Spotify and fetching playlist...' })
+    }
 
-    if (jsonFilePath) {
+    console.log('\n--- STAGE 2: DOWNLOAD PROCESS ---')
+    let downloaderScript, downloaderArgs
+
+    if (isSpotifyUrl) {
+      downloaderScript = path.join(__dirname, 'spotify_downloader.py')
+      downloaderArgs = [url, '--yes']
+      console.log('Using Spotify downloader for:', url)
+    } else {
+      downloaderScript = path.join(__dirname, 'beatport_downloader.py')
+      downloaderArgs = []
+    }
+
+    if (!isSpotifyUrl && jsonFilePath) {
       downloaderArgs = ['--json-file', jsonFilePath, '--yes']
       console.log('Using JSON file:', jsonFilePath)
-    } else if (htmlFilePath) {
+    } else if (!isSpotifyUrl && htmlFilePath) {
       // Convert HTML to JSON first
       sendProgress({ type: 'stage', stage: 'html_conversion', message: 'Converting HTML to JSON format...' })
       console.log('Converting HTML file to JSON...')
@@ -227,7 +242,9 @@ print(json.dumps(playlist, indent=2, ensure_ascii=False))
     console.log('Downloader args:', downloaderArgs)
     console.log('Spawning downloader process...')
 
-    sendProgress({ type: 'stage', stage: 'downloading', message: 'Starting track download process...' })
+    if (!isSpotifyUrl) {
+      sendProgress({ type: 'stage', stage: 'downloading', message: 'Starting track download process...' })
+    }
 
     const pythonProcess = spawn('python3', [downloaderScript, ...downloaderArgs], {
       cwd: __dirname,
